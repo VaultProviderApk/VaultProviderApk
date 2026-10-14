@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VaultProvider Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #0b0f19;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        #authWrapper {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            max-width: 100%;
+            background-color: #1a1f2c;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            border: none;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 140px; 
+            background-color: #007bff;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+            overflow-y: auto;
+            white-space: nowrap;
+            height: 100%;
+        }
+
+        .sidebar.collapsed {
+            width: 55px;
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 130px;
+            }
+            .sidebar.collapsed {
+                width: 50px;
+            }
+        }
+
+        .sidebar-toggle-btn {
+            background: rgba(0, 0, 0, 0.15);
+            border: none;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .sidebar-toggle-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item-custom {
+            display: flex;
+            align-items: center;
+            padding: 14px 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item-custom:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .nav-item-custom i {
+            font-size: 16px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .nav-text {
+            margin-left: 12px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Content Area Styling */
+        .content-area {
+            flex: 1;
+            background-color: #0b0f19;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card-custom {
+            background-color: #131a29;
+            border: 1px solid #1f293d;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .balance-badge-top {
+            background-color: #13221c;
+            border: 1px solid #1f3d2f;
+            border-radius: 30px;
+            padding: 4px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-badge-top span {
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-custom {
+            background-color: #10b981;
+            color: white;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .btn-custom:hover {
+            background-color: #059669;
+            color: white;
+        }
+
+        .modal-content, .offcanvas {
+            background-color: #131a29;
+            color: white;
+            border: 1px solid #1f293d;
+        }
+
+        .payment-box {
+            background-color: #1a2234;
+            border: 1px solid #2a374e;
+            border-radius: 10px;
+            display: none;
+        }
+        .payment-box.active {
+            display: block;
+        }
+
+        .section-view {
+            display: none;
+        }
+        .section-view.active {
+            display: block;
+        }
+
+        .auth-container {
+            max-width: 440px;
+            width: 100%;
+            margin: auto;
+            background-color: #0d1322;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        .auth-brand-logo {
+            max-height: 65px;
+            width: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+            object-fit: contain;
+        }
+
+        .input-group-custom {
+            background-color: #131a29;
+            border: 1px solid #2d3748;
+            border-radius: 30px;
+            overflow: hidden;
+            padding: 4px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group-custom input {
+            background: transparent !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+        }
+        .input-group-custom input::placeholder {
+            color: #ffffff !important;
+            opacity: 0.85;
+        }
+
+        .menu-item-custom {
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: 0.2s;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+        .menu-item-custom:hover {
+            background-color: #10b981;
+            color: #fff;
+        }
+
+        #mainAppWrapper, #adminApp {
+            display: none;
+        }
+
+        #adminApp {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .text-quality-blue {
+            color: #3b82f6 !important;
+        }
+
+        .folder-toggle-btn {
+            background-color: #182236;
+            border: 1px solid #2a374e;
+            border-radius: 10px;
+            padding: 12px 15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #60a5fa;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .folder-toggle-btn:hover {
+            background-color: #202d47;
+            color: #93c5fd;
+        }
+
+        .sub-folder-btn {
+            background-color: #141c2e;
+            border: 1px solid #243147;
+            border-radius: 8px;
+            padding: 10px 12px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sub-folder-btn:hover {
+            background-color: #1b263e;
+            border-color: #3b82f6;
+            color: #ffffff;
+        }
+        .sub-folder-btn.active-folder {
+            border-color: #10b981;
+            background-color: #162438;
+        }
+
+        /* ================= MAIL / NOTICE BOX STYLES ================= */
+        .mail-box-wrapper {
+            background-color: #0c121e;
+            border: 1px solid #1f2a3d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .mail-header-bar {
+            background: #111a2c;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #1c283d;
+        }
+
+        .mail-header-bar h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 16px;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+        }
+
+        .mail-nav-tabs {
+            display: flex;
+            background: #0f1726;
+            border-bottom: 1px solid #1f2b40;
+        }
+
+        .mail-nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .mail-nav-tab.active {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .mail-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            background: #0a0f19;
+            border-bottom: 1px solid #182335;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .mail-list-container {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .mail-item-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid #162032;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .mail-item-row:hover {
+            background-color: #131c2d;
+        }
+
+        .mail-item-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mail-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .mail-item-sender {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mail-item-sender::before {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background-color: #10b981;
+            border-radius: 50%;
+        }
+
+        .mail-item-date {
+            font-size: 10px;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .mail-item-title {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Detail View Screen */
+        .mail-detail-container {
+            display: none;
+            padding: 12px;
+            background-color: #0b111d;
+            min-height: 250px;
+        }
+
+        .mail-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .mail-back-btn {
+            background: #1e293b;
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .mail-detail-meta {
+            background: #111a2a;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #1a273e;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= AUTHENTICATION AREA ================= -->
+    <div id="authWrapper" class="container text-center">
+        <!-- 1. Login Form -->
+        <div id="loginView" class="auth-container text-start">
+            <div class="text-center mb-4">
+                <img src="https://i.ibb.co.com/SX76YvzN/1000017025.png" alt="Vault Provider Logo" class="auth-brand-logo">
+                <h3 class="fw-bold text-white mt-1 d-flex align-items-center justify-content-center gap-2" style="font-size: 24px;">
+                    <i class="fa-solid fa-right-to-bracket text-info"></i> Login
+                </h3>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">👤</span>
+                        <input type="text" id="loginUsername" class="form-control text-white" placeholder="Username or Email" autocomplete="username" required>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">🔒</span>
+                        <input type="password" id="loginPassword" class="form-control text-white" placeholder="Password" autocomplete="current-password" required>
+                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('loginPassword', this)">👁</button>
+                    </div>
+                </div>
+                <div class="text-end mb-3">
+                    <a href="#" onclick="forgotPassword()" class="small text-info text-decoration-none">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Login</button>
+                <p class="text-center small text-muted">No account yet? <a href="#" onclick="switchAuth('registerView')" class="text-success text-decoration-none fw-bold ms-1">Register</a></p>
+            </form>
+        </div>
+
+        <!-- 2. Register Form -->
+        <div id="registerView" class="auth-container text-start" style="display: none;">
+            <div class="text-center mb-4">
+                <img src="https://i.ibb.co.com/SX76YvzN/1000017025.png" alt="Vault Provider Logo" class="auth-brand-logo">
+                <h3 class="fw-bold text-white mt-1 d-flex align-items-center justify-content-center gap-2" style="font-size: 24px;">
+                    <i class="fa-solid fa-user-plus text-success"></i> Register
+                </h3>
+            </div>
+            <form id="registerForm">
+                <div class="mb-3">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">👤</span>
+                        <input type="text" id="regUsername" class="form-control text-white" placeholder="Username" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">📧</span>
+                        <input type="email" id="regEmail" class="form-control text-white" placeholder="Email Address" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">🔒</span>
+                        <input type="password" id="regPassword" class="form-control text-white" placeholder="Password" required>
+                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('regPassword', this)">👁</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group-custom">
+                        <span class="me-2 text-white">🔒</span>
+                        <input type="password" id="regConfirmPassword" class="form-control text-white" placeholder="Confirm password" required>
+                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('regConfirmPassword', this)">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Register</button>
+                <p class="text-center small text-muted">Already have an account? <a href="#" onclick="switchAuth('loginView')" class="text-white text-decoration-none fw-bold ms-1">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MAIN DASHBOARD AREA WITH TOGGLE SIDEBAR ================= -->
+    <div id="mainAppWrapper" class="main-container">
+        <!-- Sidebar Menu -->
+        <div class="sidebar" id="sidebarMenuPanel">
+            <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                <i class="fa-solid fa-angles-left" id="toggleIcon"></i>
+            </button>
+            <a class="nav-item-custom" onclick="switchSection('homeSection')" title="Home">
+                <i class="fa-solid fa-house"></i>
+                <span class="nav-text">Home</span>
+            </a>
+            <a class="nav-item-custom" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings">
+                <i class="fa-solid fa-gear"></i>
+                <span class="nav-text">Settings</span>
+            </a>
+            <a class="nav-item-custom" onclick="switchSection('servicesMenuSection')" title="Services">
+                <i class="fa-solid fa-square-check"></i>
+                <span class="nav-text">Services</span>
+            </a>
+            <a class="nav-item-custom" data-bs-toggle="offcanvas" data-bs-target="#contactCanvas" title="Contact">
+                <i class="fa-solid fa-address-book"></i>
+                <span class="nav-text">Contact</span>
+            </a>
+            <a class="nav-item-custom" data-bs-toggle="modal" data-bs-target="#depositModal" title="Deposit">
+                <i class="fa-solid fa-wallet"></i>
+                <span class="nav-text">Deposit</span>
+            </a>
+            <a class="nav-item-custom text-warning" onclick="logout()" title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="nav-text">Logout</span>
+            </a>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="https://i.ibb.co.com/SX76YvzN/1000017025.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-info" style="font-size: 13px; line-height: 1.1;">VaultProvider</h6>
+                        <small id="sidebarUserName" class="text-warning fw-semibold" style="font-size: 11px;">User Name</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="balance-badge-top py-1 px-2">
+                        <span id="userFundsDisplay">0.00 USDT</span>
+                        <button class="btn btn-success btn-sm rounded-circle p-0" style="width: 18px; height: 18px; font-size: 10px;" onclick="refreshBalance()">↻</button>
+                    </div>
+                    <button id="navAdminBtn" class="btn btn-outline-danger btn-sm rounded-pill px-2" style="display: none; font-size: 10px;" onclick="openAdminPanel()">⚙ Admin</button>
+                </div>
+            </div>
+
+            <!-- Home Section -->
+            <div id="homeSection" class="section-view active">
+                <!-- MAIL / NOTICE BOX (READ ONLY FOR USERS) -->
+                <div class="mail-box-wrapper mb-3 shadow">
+                    <div class="mail-header-bar">
+                        <h6><i class="fa-solid fa-envelope-open-text text-info me-1"></i> মেইল (নোটিশ বক্স)</h6>
+                    </div>
+
+                    <div class="mail-nav-tabs">
+                        <div class="mail-nav-tab active" id="tabInboxBtn" onclick="switchMailTab('inbox')">
+                            ইনবক্স (<span id="inboxNoticeCount">0</span>)
+                        </div>
+                        <div class="mail-nav-tab" id="tabOutboxBtn" onclick="switchMailTab('outbox')">
+                            আউটবক্স
+                        </div>
+                    </div>
+
+                    <!-- 1. Inbox Main View -->
+                    <div id="mailInboxView">
+                        <div class="mail-toolbar">
+                            <span class="text-secondary small d-flex align-items-center gap-1">
+                                <i class="fa-solid fa-bullhorn text-warning"></i> অফিশিয়াল নোটিশ তালিকা
+                            </span>
+                            <button class="btn btn-sm btn-outline-info py-0 px-2" style="font-size: 11px;" onclick="loadNoticesList()">
+                                <i class="fa-solid fa-rotate-right me-1"></i> রিফ্রেশ
+                            </button>
+                        </div>
+
+                        <!-- Mail List Container -->
+                        <div class="mail-list-container" id="noticeInboxListContainer">
+                            <p class="text-center text-muted small my-3">নোটিশ লোড হচ্ছে...</p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Outbox View -->
+                    <div id="mailOutboxView" style="display: none;" class="p-4 text-center">
+                        <i class="fa-solid fa-paper-plane text-secondary fs-1 mb-2"></i>
+                        <p class="text-muted small mb-0">কোনো প্রেরিত বার্তা নেই।</p>
+                    </div>
+
+                    <!-- 3. Notice Detail View -->
+                    <div id="mailDetailView" class="mail-detail-container">
+                        <div class="mail-detail-header">
+                            <button class="mail-back-btn" onclick="closeMailDetail()" title="Back">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <h6 class="mb-0 fw-bold text-white">বিস্তারিত</h6>
+                        </div>
+                        <div class="mail-detail-meta">
+                            <div class="mb-1"><span class="text-muted">শিরোনাম:</span> <b class="text-warning" id="detNoticeTitle">-</b></div>
+                            <div class="mb-1"><span class="text-muted">প্রেরক:</span> <span class="text-info fw-semibold" id="detNoticeSender">Vault Provider</span></div>
+                            <div><span class="text-muted">সময়:</span> <span class="font-monospace text-light" id="detNoticeTime">-</span></div>
+                        </div>
+                        <div class="p-2 text-white small" id="detNoticeContent" style="white-space: pre-line; line-height: 1.6;"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-3">
+                    <h5 class="fw-bold text-success">Welcome to VaultProvider!</h5>
+                    <p class="small text-muted">আপনার প্রয়োজনীয় অপশনটি সিলেক্ট করুন:</p>
+                </div>
+                <div class="flex-column gap-2 mb-3 d-flex">
+                    <button class="btn btn-warning py-2 fw-bold rounded-pill text-dark shadow-sm" onclick="toggleDeliveriesList()">
+                        📦 My Deliveries / Orders (সকল অর্ডার দেখুন)
+                    </button>
+                    <button class="btn btn-info py-2 fw-bold rounded-pill text-dark shadow-sm" onclick="openDepositRecordModal()">
+                        💰 Deposit Record (ডিপোজিট হিস্টরি দেখুন)
+                    </button>
+                </div>
+                <div id="deliveryListContainer" style="display: none;"></div>
+            </div>
+
+            <!-- Services Main Menu Section -->
+            <div id="servicesMenuSection" class="section-view">
+                <div class="mb-3 text-center">
+                    <span class="badge bg-dark border border-secondary px-3 py-2 rounded-pill fw-bold text-info" style="font-size: 14px;">👤 Shop Accounts & Services</span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('vpnSection')">🌐 VPN Services</button></div>
+                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('proxySection')">⚡ Proxy Services</button></div>
+                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('appleSection')">🍎 Apple Gift Card</button></div>
+                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('aiSection')">🤖 AI Tools & Subscriptions</button></div>
+                </div>
+            </div>
+
+            <!-- VPN Section -->
+            <div id="vpnSection" class="section-view">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
+                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">VPN SERVICES</span>
+                    <span></span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ NordVpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('NordVpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('NordVpn (30 Days)', 1.69, 'Pcs')">30 Days ($1.69)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Chape Vpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Chape Vpn (30 Days)', 5.00, 'Pcs')">30 Days ($5.00)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ AVast Vpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('AVast Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('AVast Vpn (30 Days)', 0.77, 'Pcs')">30 Days ($0.77)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Express Vpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Express Vpn (4 Days)', 0.15, 'Pcs')">4 Days ($0.15)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Express Vpn (30 Days)', 1.31, 'Pcs')">30 Days ($1.31)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Bitdefendar Vpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Bitdefendar Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Bitdefendar Vpn (30 Days)', 0.77, 'Pcs')">30 Days ($0.77)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Hama Vpn <span class="text-quality-blue">(Quality)</span></h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Hama Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Hama Vpn (30 Days)', 0.77, 'Pcs')">30 Days ($0.77)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Atlast Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Atlast Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ BetterNet Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('BetterNet Vpn (7 Days)', 0.31, 'Pcs')">7 Days ($0.31)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Browsec Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Browsec Vpn (7 Days)', 0.31, 'Pcs')">7 Days ($0.31)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ CyberGhost Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('CyberGhost Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Surfshark Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Surfshark Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Hotspot Shield Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Hotspot Shield Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Ip Vanish Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Ip Vanish Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Norton Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Norton Vpn (7 Days)', 0.31, 'Pcs')">7 Days ($0.31)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Proton Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Proton Vpn (14 Day)', 0.54, 'Pcs')">14 Days ($0.54)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ X Vpn</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('X Vpn (7 Days)', 0.23, 'Pcs')">7 Days ($0.23)</button></div></div>
+                </div>
+            </div>
+
+            <!-- Proxy Section -->
+            <div id="proxySection" class="section-view">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
+                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">PROXY SERVICES</span>
+                    <span></span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ KAFKA Gb Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('KAFKA Gb Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('KAFKA Gb Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Datampuls Gb Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Datampuls Gb Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Datampuls Gb Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ 9 Proxy [CD Key]</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('9 Proxy (1 GB)', 1.00, 'GB')">1 GB ($1.00)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('9 Proxy (2 GB)', 2.00, 'GB')">2 GB ($2.00)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Cil Proxy [CD Key]</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Cil Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Cil Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ 711 Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('711 Proxy (1 GB)', 1.00, 'GB')">1 GB ($1.00)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('711 Proxy (2 GB)', 2.00, 'GB')">2 GB ($2.00)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Thordata Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Thordata Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Thordata Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Ip Rocket Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Ip Rocket Proxy (1 GB)', 1.23, 'GB')">1 GB ($1.23)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Ip Rocket Proxy (2 GB)', 2.46, 'GB')">2 GB ($2.46)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Bunny Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Bunny Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Bunny Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Hub Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Hub Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Hub Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">⚡ Miya Proxy</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Miya Proxy (1 GB)', 1.08, 'GB')">1 GB ($1.08)</button><button class="btn btn-outline-primary btn-sm w-50 py-1" onclick="openModal('Miya Proxy (2 GB)', 2.15, 'GB')">2 GB ($2.15)</button></div></div></div>
+                </div>
+            </div>
+
+            <!-- Apple Gift Card Section -->
+            <div id="appleSection" class="section-view">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
+                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">APPLE GIFT CARD</span>
+                    <span></span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">🍎 Apple Gift Card (2 Dollars)</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Apple Gift Card (2 Dollars)', 2.31, 'Card')">Buy Now ($2.31)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">🍎 Apple Gift Card (4 Dollars)</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Apple Gift Card (4 Dollars)', 4.77, 'Card')">Buy Now ($4.77)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">🍎 Apple Gift Card (5 Dollars)</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Apple Gift Card (5 Dollars)', 5.77, 'Card')">Buy Now ($5.77)</button></div></div>
+                </div>
+            </div>
+
+            <!-- AI Tools Section -->
+            <div id="aiSection" class="section-view">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
+                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">AI TOOLS & SUBSCRIPTIONS</span>
+                    <span></span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">✨ Gemini Plus (18 Month)</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Gemini Plus (18 Month)', 1.54, 'Pcs')">Buy Now ($1.54)</button></div></div>
+                    <div class="col-12"><div class="card card-custom p-2"><div class="d-flex justify-content-between mb-1"><h6 class="mb-0 fw-bold fs-6">🎨 Figma Pro Edu (2 Years)</h6><span class="badge bg-success" style="font-size: 10px;">Available</span></div><button class="btn btn-outline-primary btn-sm w-100 py-1" onclick="openModal('Figma Pro Edu (2 Years)', 10.00, 'Pcs')">Buy Now ($10.00)</button></div></div>
+                    <div class="col-12">
+                        <div class="card card-custom p-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <h6 class="mb-0 fw-bold fs-6">▶ YouTube Subscription (1 Month)</h6>
+                                <span class="badge bg-danger" style="font-size: 10px;">Not Available</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm w-100 py-1" disabled style="cursor: not-allowed; opacity: 0.6;">Not Available</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Offcanvas Menu (Contact) -->
+    <div class="offcanvas border-secondary offcanvas-end text-bg-dark" tabindex="-1" id="contactCanvas">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title fw-bold text-info">🎧 Contact / Support</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column gap-2">
+            <a class="menu-item-custom py-2" onclick="openTawkChat(); closeOffcanvas();">🎧 Live Support</a>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div class="modal fade" id="depositModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold fs-5">ডিপোজিট ফর্ম</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <form id="depositForm">
+                        <div class="mb-2">
+                            <label class="form-label small text-info fw-bold">পেমেন্ট মাধ্যম</label>
+                            <select id="paymentMethod" class="form-select bg-dark text-white border-secondary form-select-sm" onchange="togglePaymentBox()" required>
+                                <option value="" selected disabled>-- সিলেক্ট করুন --</option>
+                                <option value="MobileBanking">মোবাইল ব্যাংকিং (Mobile Banking)</option>
+                                <option value="Crypto">ক্রিপ্টো (Crypto)</option>
+                            </select>
+                        </div>
+
+                        <!-- 1. Mobile Banking Box -->
+                        <div id="mobileBankingBox" class="payment-box p-2 mb-2">
+                            <input type="hidden" id="selectedMobileMethod" value="">
+                            <div id="mobileSelectedNotice" class="alert alert-success py-1 px-2 mb-2 small d-none" style="font-size: 11px;"></div>
+                            
+                            <small class="text-info fw-bold d-block mb-2">পেমেন্টের জন্য যেকোনো একটি ফোল্ডারে ক্লিক করুন:</small>
+                            <div class="accordion d-flex flex-column gap-2" id="mobileFoldersAccordion">
+                                
+                                <!-- Folder: bKash -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileBkashCollapse" aria-expanded="false" onclick="selectSubFolder('MobileBanking', 'bKash', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-danger fs-6 folder-status-icon"></i>
+                                            <span>বিকাশ (bKash) <small class="text-warning font-monospace" style="font-size: 10px;">[Min 100৳]</small></span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="mobileBkashCollapse" class="collapse" data-bs-parent="#mobileFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <small class="text-secondary d-block mb-1" style="font-size: 10px;">bKash পার্সোনাল নাম্বার:</small>
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <span class="text-danger fw-bold font-monospace" style="font-size: 13px;">01935164417</span>
+                                                <button type="button" class="btn btn-outline-info btn-sm py-0 px-2 flex-shrink-0" style="font-size: 11px;" onclick="copyToClipboardWithSelect('01935164417', this, 'MobileBanking', 'bKash')">📋 কপি</button>
+                                            </div>
+                                            <small class="text-warning d-block mt-1" style="font-size: 10px;">⚠ এই নাম্বারে সেন্ড মানি করুন।</small>
+                                            <small class="text-info fw-bold d-block mt-1" style="font-size: 11px;">📌 বিকাশে সর্বনিম্ন ডিপোজিট ১০০ টাকা।</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: Nagad -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNagadCollapse" aria-expanded="false" onclick="selectSubFolder('MobileBanking', 'Nagad', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-warning fs-6 folder-status-icon"></i>
+                                            <span>নগদ (Nagad)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="mobileNagadCollapse" class="collapse" data-bs-parent="#mobileFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <small class="text-secondary d-block mb-1" style="font-size: 10px;">Nagad পার্সোনাল নাম্বার:</small>
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <span class="text-warning font-monospace fw-bold" style="font-size: 13px;">01935164417</span>
+                                                <button type="button" class="btn btn-outline-info btn-sm py-0 px-2 flex-shrink-0" style="font-size: 11px;" onclick="copyToClipboardWithSelect('01935164417', this, 'MobileBanking', 'Nagad')">📋 কপি</button>
+                                            </div>
+                                            <small class="text-warning d-block mt-1" style="font-size: 10px;">⚠ এই নাম্বারে সেন্ড মানি করুন।</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: Rocket -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileRocketCollapse" aria-expanded="false" onclick="selectSubFolder('MobileBanking', 'Rocket', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed fs-6 folder-status-icon" style="color: #c054b7;"></i>
+                                            <span>রকেট (Rocket)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="mobileRocketCollapse" class="collapse" data-bs-parent="#mobileFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="bg-white p-1 rounded-2 flex-shrink-0 text-center">
+                                                    <img src="https://quickchart.io/qr?text=01935164417&size=150&margin=1" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=01935164417';" alt="Rocket QR Code" style="width: 75px; height: 75px; display: block; border-radius: 4px;">
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <small class="text-secondary d-block mb-1" style="font-size: 10px;">Rocket পার্সোনাল নাম্বার:</small>
+                                                    <span class="fw-bold font-monospace d-block mb-1" style="font-size: 13px; color: #e475db;">01935164417</span>
+                                                    <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="copyToClipboardWithSelect('01935164417', this, 'MobileBanking', 'Rocket')">📋 কপি</button>
+                                                    <small class="text-warning d-block mt-1" style="font-size: 10px;">⚠ এই নাম্বারে সেন্ড মানি করুন।</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <small class="text-warning d-block mt-2" style="font-size: 11px;">⚠️ সেন্ড মানি শেষ করে ট্রানজেকশন আইডি ও টাকার পরিমাণ দিন।</small>
+                        </div>
+
+                        <!-- 2. Crypto Box -->
+                        <div id="cryptoBox" class="payment-box p-2 mb-2">
+                            <input type="hidden" id="selectedCryptoMethod" value="">
+                            <div id="cryptoSelectedNotice" class="alert alert-success py-1 px-2 mb-2 small d-none" style="font-size: 11px;"></div>
+
+                            <small class="text-info fw-bold d-block mb-2">পেমেন্টের জন্য যেকোনো একটি ফোল্ডারে ক্লিক করুন:</small>
+                            <div class="accordion d-flex flex-column gap-2" id="cryptoFoldersAccordion">
+                                
+                                <!-- Folder: Binance Pay UID -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#cryptoBinanceCollapse" aria-expanded="false" onclick="selectSubFolder('Crypto', 'Binance Pay UID', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-warning fs-6 folder-status-icon"></i>
+                                            <span>Binance (Pay UID)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="cryptoBinanceCollapse" class="collapse" data-bs-parent="#cryptoFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <small class="text-secondary d-block mb-1" style="font-size: 10px;">Binance Pay UID:</small>
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <span class="text-warning font-monospace fw-bold" style="font-size: 12px;">751363394</span>
+                                                <button type="button" class="btn btn-outline-info btn-sm py-0 px-2 flex-shrink-0" style="font-size: 11px;" onclick="copyToClipboardWithSelect('751363394', this, 'Crypto', 'Binance Pay UID')">📋 কপি</button>
+                                            </div>
+                                            <small class="text-warning d-block mt-1" style="font-size: 10px;">⚠️ এই Binance Pay UID তে পে করুন।</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: TRX Tron (Trc-20) -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#cryptoTrxCollapse" aria-expanded="false" onclick="selectSubFolder('Crypto', 'Trx Tron (Trc-20)', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-danger fs-6 folder-status-icon"></i>
+                                            <span>Trx Tron (Trc-20)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="cryptoTrxCollapse" class="collapse" data-bs-parent="#cryptoFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="bg-white p-1 rounded-2 flex-shrink-0 text-center">
+                                                    <img src="https://quickchart.io/qr?text=TVE1gh7mBbs8YtMNpFWVT9cnkrDCkiptuG&size=150&margin=1" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=TVE1gh7mBbs8YtMNpFWVT9cnkrDCkiptuG';" alt="TRX QR Code" style="width: 75px; height: 75px; display: block; border-radius: 4px;">
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <small class="text-secondary d-block mb-1" style="font-size: 10px;">TRC-20 ওয়ালেট অ্যাড্রেস:</small>
+                                                    <span class="text-warning font-monospace text-break d-block mb-1" style="font-size: 11px;">TVE1gh7mBbs8YtMNpFWVT9cnkrDCkiptuG</span>
+                                                    <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="copyToClipboardWithSelect('TVE1gh7mBbs8YtMNpFWVT9cnkrDCkiptuG', this, 'Crypto', 'Trx Tron (Trc-20)')">📋 কপি</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: BNB (Bep-20) -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#cryptoBnbCollapse" aria-expanded="false" onclick="selectSubFolder('Crypto', 'BNB (Bep-20)', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-warning fs-6 folder-status-icon"></i>
+                                            <span>BNB (Bep-20)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="cryptoBnbCollapse" class="collapse" data-bs-parent="#cryptoFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="bg-white p-1 rounded-2 flex-shrink-0 text-center">
+                                                    <img src="https://quickchart.io/qr?text=0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac&size=150&margin=1" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac';" alt="BNB QR Code" style="width: 75px; height: 75px; display: block; border-radius: 4px;">
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <small class="text-secondary d-block mb-1" style="font-size: 10px;">BEP-20 ওয়ালেট অ্যাড্রেস:</small>
+                                                    <span class="text-warning font-monospace text-break d-block mb-1" style="font-size: 11px;">0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac</span>
+                                                    <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="copyToClipboardWithSelect('0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac', this, 'Crypto', 'BNB (Bep-20)')">📋 কপি</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: ETH (Erc-20) -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#cryptoEthCollapse" aria-expanded="false" onclick="selectSubFolder('Crypto', 'ETH (Erc-20)', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-primary fs-6 folder-status-icon"></i>
+                                            <span>ETH (Erc-20)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="cryptoEthCollapse" class="collapse" data-bs-parent="#cryptoFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="bg-white p-1 rounded-2 flex-shrink-0 text-center">
+                                                    <img src="https://quickchart.io/qr?text=0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac&size=150&margin=1" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac';" alt="ETH QR Code" style="width: 75px; height: 75px; display: block; border-radius: 4px;">
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <small class="text-secondary d-block mb-1" style="font-size: 10px;">ERC-20 ওয়ালেট অ্যাড্রেস:</small>
+                                                    <span class="text-warning font-monospace text-break d-block mb-1" style="font-size: 11px;">0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac</span>
+                                                    <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="copyToClipboardWithSelect('0x1bf329ff9f0b756e1569baf9da03e86a4bdd7eac', this, 'Crypto', 'ETH (Erc-20)')">📋 কপি</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Folder: LTC -->
+                                <div class="border border-secondary rounded-3 overflow-hidden bg-dark">
+                                    <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#cryptoLtcCollapse" aria-expanded="false" onclick="selectSubFolder('Crypto', 'LTC (Litecoin)', this)">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-folder-closed text-info fs-6 folder-status-icon"></i>
+                                            <span>LTC (Litecoin)</span>
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                                    </button>
+                                    <div id="cryptoLtcCollapse" class="collapse" data-bs-parent="#cryptoFoldersAccordion">
+                                        <div class="p-2 border-top border-secondary bg-black bg-opacity-25">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="bg-white p-1 rounded-2 flex-shrink-0 text-center">
+                                                    <img src="https://quickchart.io/qr?text=Lh2JLpZrtSKyt6rLXrmoMCQ81A18wkYs5e&size=150&margin=1" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=Lh2JLpZrtSKyt6rLXrmoMCQ81A18wkYs5e';" alt="LTC QR Code" style="width: 75px; height: 75px; display: block; border-radius: 4px;">
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <small class="text-secondary d-block mb-1" style="font-size: 10px;">Litecoin ওয়ালেট অ্যাড্রেস:</small>
+                                                    <span class="text-warning font-monospace text-break d-block mb-1" style="font-size: 11px;">Lh2JLpZrtSKyt6rLXrmoMCQ81A18wkYs5e</span>
+                                                    <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="copyToClipboardWithSelect('Lh2JLpZrtSKyt6rLXrmoMCQ81A18wkYs5e', this, 'Crypto', 'LTC (Litecoin)')">📋 কপি</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <small class="text-warning d-block mt-2" style="font-size: 11px;">⚠️ সঠিক নেটওয়ার্ক নির্বাচন করুন।</small>
+                        </div>
+
+                        <div class="mb-2">
+                            <label id="amountLabel" class="form-label small text-info fw-bold">টাকার পরিমাণ (৳)</label>
+                            <input type="number" step="any" id="amount" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: 200" required>
+                        </div>
+                        <div class="mb-2">
+                            <label id="trxLabel" class="form-label small text-info fw-bold">Trx_Id</label>
+                            <input type="text" id="trxId" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="ট্রানজেকশন আইডি" required>
+                        </div>
+                        <button type="submit" id="depositSubmitBtn" class="btn btn-custom w-100 btn-sm py-2 mt-2">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Modal -->
+    <div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold fs-5" id="buyModalTitle">Buy Product</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <form id="buyForm">
+                        <div class="mb-2">
+                            <label class="form-label small text-white fw-bold">Quantity:</label>
+                            <input type="number" id="quantity" class="form-control bg-dark text-white border-secondary form-control-sm" min="1" value="1" required>
+                            <small id="productPriceHint" class="text-warning mt-1 d-block"></small>
+                        </div>
+                        <button type="submit" class="btn btn-custom w-100 btn-sm py-2 mt-2">Confirm Buy</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold fs-5">⚙ Settings (প্রোফাইল সেটিংস)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <form id="settingsForm">
+                        <div class="mb-2"><label class="form-label small text-info">Full Name</label><input type="text" id="setFullName" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="আপনার পুরো নাম দিন" required></div>
+                        <div class="mb-2"><label class="form-label small text-info">Email</label><input type="email" id="setEmail" class="form-control bg-dark text-white border-secondary form-control-sm" readonly></div>
+                        <div class="mb-2"><label class="form-label small text-info">Username</label><input type="text" id="setUsername" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="ইউজারনেম দিন" required></div>
+                        <div class="mb-2"><label class="form-label small text-info">Phone</label><input type="text" id="setPhone" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="ফোন নাম্বার দিন" required></div>
+                        <button type="submit" id="saveSettingsBtn" class="btn btn-custom w-100 btn-sm py-2 mt-2">Save Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Record Modal -->
+    <div class="modal fade" id="depositRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2"><h5 class="modal-title fw-bold fs-5">💰 Deposit History</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body"><div id="userDepositRecordList"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN CONTROL PANEL ================= -->
+    <div id="adminApp" class="container my-3" style="max-width: 650px;">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold text-warning mb-0">⚙ Admin Control Panel</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-info btn-sm py-1 px-3 fw-bold" onclick="refreshAdminPanel()">
+                    🔄 পেজ রিফ্রেশ / রিলোড
+                </button>
+                <button class="btn btn-outline-light btn-sm py-1" onclick="closeAdminPanel()">⬅ Back to App</button>
+            </div>
+        </div>
+        
+        <!-- Multi-Notice Creator for Admin -->
+        <div class="card card-custom p-3 mb-3 border-warning border-opacity-50">
+            <h6 class="fw-bold mb-2 text-warning"><i class="fa-solid fa-bullhorn me-1"></i> Send Notice to Inbox (নতুন নোটিশ যুক্ত করুন)</h6>
+            <form id="adminNoticeForm">
+                <div class="mb-2">
+                    <label class="small text-info fw-bold">নোটিশের শিরোনাম (Title):</label>
+                    <input type="text" id="adminNoticeTitle" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: 💥 VaultProvider এর নতুন আপডেট" required>
+                </div>
+                <div class="mb-2">
+                    <label class="small text-info fw-bold">বিস্তারিত বার্তা (Message Content):</label>
+                    <textarea id="adminNoticeInput" class="form-control bg-dark text-white border-secondary form-control-sm" rows="3" placeholder="এখানে বিস্তারিত নোটিশ লিখুন..." required></textarea>
+                </div>
+                <button type="submit" id="saveNoticeBtn" class="btn btn-warning btn-sm fw-bold px-3 py-1">Send Notice 📢</button>
+            </form>
+            
+            <hr class="border-secondary my-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-info small mb-0">বর্তমান সক্রিয় নোটিশ (২৪ ঘণ্টার মধ্যে):</h6>
+                <small class="text-muted" style="font-size: 11px;">২৪ ঘণ্টার পর অটো-রিমুভ হবে</small>
+            </div>
+            <div id="adminNoticesListContainer" style="max-height: 220px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- User Passwords Management Section -->
+        <div class="card card-custom p-0 mb-3 overflow-hidden border-info border-opacity-25">
+            <button class="folder-toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#userFolderCollapse" aria-expanded="false" onclick="toggleFolderIcon(this)">
+                <span>📁 <b>Users & Passwords Folder</b> <small class="text-muted">(ইউজার তালিকা ফোল্ডার)</small></span>
+                <i class="fa-solid fa-folder-closed fs-5" id="userFolderIcon"></i>
+            </button>
+            <div class="collapse" id="userFolderCollapse">
+                <div class="p-3 bg-dark border-top border-secondary">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-secondary text-white border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="userSearchInput" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="🔍 ইউজারনেম বা ইমেইল দিয়ে সার্চ করুন..." oninput="filterAdminUsers()">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="clearUserSearch()">✕</button>
+                    </div>
+                    <small id="userSearchResultCount" class="text-info d-block mb-2" style="font-size: 11px;"></small>
+                    <div id="adminUserListContainer" style="max-height: 380px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deposit Requests Management Section -->
+        <div class="card card-custom p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-info">💰 Deposit Requests (ডিপোজিট রিকোয়েস্ট)</h6>
+                <small class="text-muted" style="font-size: 11px;">(২৪ ঘণ্টার পর অটো-রিমুভ)</small>
+            </div>
+            <div id="adminDepositListContainer"></div>
+        </div>
+
+        <!-- User Product Orders Management Section -->
+        <div class="card card-custom p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-info">📦 User Product Orders (অর্ডার ম্যানেজমেন্ট)</h6>
+                <small class="text-muted" style="font-size: 11px;">(২৪ ঘণ্টার পর অটো-রিমুভ)</small>
+            </div>
+            <div id="adminOrderListContainer"></div>
+        </div>
+    </div>
+
+    <!-- Admin Product Details Modal -->
+    <div class="modal fade" id="adminApproveModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold text-success">Accept & Send Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <form id="adminApproveForm">
+                        <input type="hidden" id="targetUserEmail">
+                        <input type="hidden" id="targetOrderIndex">
+                        <input type="hidden" id="targetProductName">
+                        
+                        <div class="mb-2">
+                            <label class="form-label small text-info fw-bold" id="adminModalLabel">তথ্য দিন:</label>
+                            <textarea id="adminProductDetails" class="form-control bg-dark text-white border-secondary form-control-sm" rows="3" placeholder="এখানে তথ্য লিখুন..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 btn-sm py-2 mt-2">Send & Complete ✅</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tawk.to Live Chat -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function geologicalDate(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6abb77db42d213344b39d26e/default';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    function openTawkChat() { if (Tawk_API && Tawk_API.maximize) Tawk_API.maximize(); }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Scripts & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyAYJjWinZ3PouFnnS-4tLOirsQiGf4l0zU",
+          authDomain: "valut-provide.firebaseapp.com",
+          projectId: "valut-provide",
+          storageBucket: "valut-provide.firebasestorage.app",
+          messagingSenderId: "773797087087",
+          appId: "1:773797087087:web:7d416fb9b5d187ecb10a9a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const ADMIN_EMAIL = "chironjitkumarsarkarbd@gmail.com";
+        const ADMIN_PASSCODE = "164417";
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+        
+        const DEPOSIT_USD_RATE = 130.0;
+
+        let cachedUsersList = [];
+        let allNoticesList = [];
+
+        function loadSavedCredentials() {
+            let savedId = localStorage.getItem('savedLoginIdentifier');
+            let savedPass = localStorage.getItem('savedLoginPassword');
+            if (savedId) {
+                let userInp = document.getElementById('loginUsername');
+                if (userInp) userInp.value = savedId;
+            }
+            if (savedPass) {
+                let passInp = document.getElementById('loginPassword');
+                if (passInp) passInp.value = savedPass;
+            }
+        }
+
+        window.toggleFolderIcon = function(btn) {
+            let icon = document.getElementById('userFolderIcon');
+            setTimeout(() => {
+                let isExpanded = btn.getAttribute('aria-expanded') === 'true';
+                if (isExpanded) {
+                    icon.className = "fa-solid fa-folder-open fs-5 text-warning";
+                } else {
+                    icon.className = "fa-solid fa-folder-closed fs-5 text-info";
+                }
+            }, 100);
+        }
+
+        function updateSubFolderIcons() {
+            setTimeout(() => {
+                document.querySelectorAll('.sub-folder-btn').forEach(b => {
+                    let icon = b.querySelector('.folder-status-icon');
+                    let isExp = b.getAttribute('aria-expanded') === 'true';
+                    if (icon) {
+                        if (isExp) {
+                            icon.classList.remove('fa-folder-closed');
+                            icon.classList.add('fa-folder-open');
+                        } else {
+                            icon.classList.remove('fa-folder-open');
+                            icon.classList.add('fa-folder-closed');
+                        }
+                    }
+                });
+            }, 150);
+        }
+
+        window.selectSubFolder = function(type, subMethod, btn) {
+            if (type === 'MobileBanking') {
+                document.getElementById('selectedMobileMethod').value = subMethod;
+                document.querySelectorAll('#mobileBankingBox .sub-folder-btn').forEach(b => b.classList.remove('active-folder'));
+                if(btn) btn.classList.add('active-folder');
+
+                let notice = document.getElementById('mobileSelectedNotice');
+                if (notice) {
+                    notice.classList.remove('d-none');
+                    let extraHint = subMethod === 'bKash' ? ' (সর্বনিম্ন ১০০ টাকা)' : '';
+                    notice.innerHTML = `✅ নির্বাচিত মাধ্যম: <b class="text-white">${subMethod}${extraHint}</b>`;
+                }
+            } else if (type === 'Crypto') {
+                document.getElementById('selectedCryptoMethod').value = subMethod;
+                document.querySelectorAll('#cryptoBox .sub-folder-btn').forEach(b => b.classList.remove('active-folder'));
+                if(btn) btn.classList.add('active-folder');
+
+                let notice = document.getElementById('cryptoSelectedNotice');
+                if (notice) {
+                    notice.classList.remove('d-none');
+                    notice.innerHTML = `✅ নির্বাচিত মাধ্যম: <b class="text-white">${subMethod}</b>`;
+                }
+            }
+            updateSubFolderIcons();
+        }
+
+        window.copyToClipboardWithSelect = function(text, btn, type, subMethod) {
+            if (type && subMethod) {
+                if (type === 'MobileBanking') {
+                    document.getElementById('selectedMobileMethod').value = subMethod;
+                    let notice = document.getElementById('mobileSelectedNotice');
+                    if (notice) {
+                        notice.classList.remove('d-none');
+                        let extraHint = subMethod === 'bKash' ? ' (সর্বনিম্ন ১০০ টাকা)' : '';
+                        notice.innerHTML = `✅ নির্বাচিত মাধ্যম: <b class="text-white">${subMethod}${extraHint}</b>`;
+                    }
+                } else if (type === 'Crypto') {
+                    document.getElementById('selectedCryptoMethod').value = subMethod;
+                    let notice = document.getElementById('cryptoSelectedNotice');
+                    if (notice) {
+                        notice.classList.remove('d-none');
+                        notice.innerHTML = `✅ নির্বাচিত মাধ্যম: <b class="text-white">${subMethod}</b>`;
+                    }
+                }
+            }
+            copyToClipboard(text, btn);
+        }
+
+        window.copyToClipboard = function(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                let originalText = btn.innerHTML;
+                btn.innerHTML = "✅ কপি হয়েছে!";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert("কপি করতে সমস্যা হয়েছে!");
+            });
+        }
+
+        window.toggleSidebar = function() {
+            let panel = document.getElementById('sidebarMenuPanel');
+            let icon = document.getElementById('toggleIcon');
+            panel.classList.toggle('collapsed');
+            if(panel.classList.contains('collapsed')) {
+                icon.className = "fa-solid fa-angles-right";
+            } else {
+                icon.className = "fa-solid fa-angles-left";
+            }
+        }
+
+        window.togglePassword = function(fieldId, btn) {
+            let input = document.getElementById(fieldId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerText = "🙈";
+            } else {
+                input.type = "password";
+                btn.innerText = "👁";
+            }
+        }
+
+        window.forgotPassword = async function() {
+            let emailOrUser = prompt("আপনার একাউন্টের ইমেল বা ইউজারনেম দিন:");
+            if (!emailOrUser) return;
+
+            let cleanInput = emailOrUser.trim();
+
+            try {
+                const usersRef = collection(db, "users");
+                let q = query(usersRef, where("email", "==", cleanInput));
+                let snapshot = await getDocs(q);
+                if (snapshot.empty) {
+                    let q2 = query(usersRef, where("username", "==", cleanInput));
+                    snapshot = await getDocs(q2);
+                }
+
+                if (!snapshot.empty) {
+                    let userData = snapshot.docs[0].data();
+                    
+                    if (userData.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                        let adminPassCheck = prompt("অ্যাডমিন পাসকোড দিন:");
+                        if (adminPassCheck === ADMIN_PASSCODE) {
+                            alert(`অ্যাডমিন পাসওয়ার্ড: ${userData.password}`);
+                        } else {
+                            alert("ভুল পাসকোড!");
+                        }
+                    } else {
+                        alert(`আপনার একাউন্টের পাসওয়ার্ড হলো: ${userData.password}`);
+                    }
+                } else {
+                    alert("এই ইমেল বা ইউজারনেম দিয়ে কোনো একাউন্ট পাওয়া যায়নি!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("পাসওয়ার্ড উদ্ধার করতে সমস্যা হয়েছে।");
+            }
+        }
+
+        window.switchAuth = function(viewId) {
+            document.getElementById('loginView').style.display = 'none';
+            document.getElementById('registerView').style.display = 'none';
+            document.getElementById(viewId).style.display = 'block';
+            if (viewId === 'loginView') {
+                loadSavedCredentials();
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let username = document.getElementById('regUsername').value.trim();
+            let email = document.getElementById('regEmail').value.trim();
+            let password = document.getElementById('regPassword').value;
+            let confirmPass = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPass) { alert("Passwords do not match!"); return; }
+
+            try {
+                const userRef = doc(db, "users", email);
+                let snap = await getDoc(userRef);
+                if (snap.exists()) { alert('Account already exists with this email!'); return; }
+
+                let newUser = { fullName: "", username, email, phone: "", password, funds: 0, profileLocked: false, deliveries: [] };
+                await setDoc(userRef, newUser);
+
+                localStorage.setItem('savedLoginIdentifier', email);
+                localStorage.setItem('savedLoginPassword', password);
+
+                localStorage.setItem('vaultUser', JSON.stringify(newUser));
+                localStorage.setItem('isLoggedIn', 'true');
+                checkLoginState();
+            } catch (err) { alert("Registration failed."); }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let identifier = document.getElementById('loginUsername').value.trim();
+            let pass = document.getElementById('loginPassword').value;
+
+            try {
+                const usersRef = collection(db, "users");
+                let q = query(usersRef, where("email", "==", identifier), where("password", "==", pass));
+                let snapshot = await getDocs(q);
+                if (snapshot.empty) {
+                    let q2 = query(usersRef, where("username", "==", identifier), where("password", "==", pass));
+                    snapshot = await getDocs(q2);
+                }
+
+                if (!snapshot.empty) {
+                    let foundUser = snapshot.docs[0].data();
+                    
+                    localStorage.setItem('savedLoginIdentifier', identifier);
+                    localStorage.setItem('savedLoginPassword', pass);
+
+                    localStorage.setItem('vaultUser', JSON.stringify(foundUser));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    checkLoginState();
+                } else { alert('Incorrect credentials!'); }
+            } catch (err) { alert("Login failed."); }
+        });
+
+        document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let fullName = document.getElementById('setFullName').value.trim();
+            let username = document.getElementById('setUsername').value.trim();
+            let phone = document.getElementById('setPhone').value.trim();
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+
+            if (!savedUser || !savedUser.email) {
+                alert("লগইন করা ইউজার পাওয়া যায়নি!");
+                return;
+            }
+
+            let saveBtn = document.getElementById('saveSettingsBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "সংরক্ষণ হচ্ছে...";
+
+            try {
+                const userRef = doc(db, "users", savedUser.email);
+                await updateDoc(userRef, {
+                    fullName: fullName,
+                    username: username,
+                    phone: phone
+                });
+
+                savedUser.fullName = fullName;
+                savedUser.username = username;
+                savedUser.phone = phone;
+                localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+
+                let currentName = savedUser.username || "User";
+                let sidebarUserEl = document.getElementById('sidebarUserName');
+                if (sidebarUserEl) sidebarUserEl.innerText = currentName;
+
+                let modalEl = document.getElementById('settingsModal');
+                let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                alert("আপনার প্রোফাইল তথ্য সফলভাবে সেভ হয়েছে! ✅");
+            } catch(err) {
+                console.error(err);
+                alert("তথ্য সংরক্ষণ করতে সমস্যা হয়েছে: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Save Profile";
+            }
+        });
+
+        // ================= MAIL / NOTICE INBOX LOGIC (ADMIN CONTROLLED) =================
+        window.switchMailTab = function(tab) {
+            let inBtn = document.getElementById('tabInboxBtn');
+            let outBtn = document.getElementById('tabOutboxBtn');
+            let inView = document.getElementById('mailInboxView');
+            let outView = document.getElementById('mailOutboxView');
+            let detailView = document.getElementById('mailDetailView');
+
+            detailView.style.display = 'none';
+
+            if (tab === 'inbox') {
+                inBtn.classList.add('active');
+                outBtn.classList.remove('active');
+                inView.style.display = 'block';
+                outView.style.display = 'none';
+            } else {
+                outBtn.classList.add('active');
+                inBtn.classList.remove('active');
+                inView.style.display = 'none';
+                outView.style.display = 'block';
+            }
+        };
+
+        window.openNoticeDetail = function(noticeId) {
+            let item = allNoticesList.find(n => n.id === noticeId);
+            if (!item) return;
+
+            document.getElementById('mailInboxView').style.display = 'none';
+            document.getElementById('mailOutboxView').style.display = 'none';
+            
+            document.getElementById('detNoticeTitle').innerText = item.title || "নোটিশ";
+            document.getElementById('detNoticeSender').innerText = item.sender || "Vault Provider";
+            document.getElementById('detNoticeTime').innerText = "রেকর্ড টাইম";
+            document.getElementById('detNoticeContent').innerText = item.content || "";
+
+            document.getElementById('mailDetailView').style.display = 'block';
+        };
+
+        window.closeMailDetail = function() {
+            document.getElementById('mailDetailView').style.display = 'none';
+            document.getElementById('mailInboxView').style.display = 'block';
+        };
+
+        async function loadNoticesList() {
+            try {
+                const snap = await getDocs(collection(db, "notices"));
+                allNoticesList = [];
+                let currentTime = Date.now();
+
+                for (const docSnap of snap.docs) {
+                    let noticeData = docSnap.data();
+                    let noticeTime = noticeData.createdAt || 0;
+
+                    if (currentTime - noticeTime > TWENTY_FOUR_HOURS) {
+                        try {
+                            await deleteDoc(doc(db, "notices", docSnap.id));
+                        } catch(e) {
+                            console.error("Notice cleanup error:", e);
+                        }
+                    } else {
+                        allNoticesList.push({ id: docSnap.id, ...noticeData });
+                    }
+                }
+
+                allNoticesList.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderNotices(allNoticesList);
+                renderAdminNotices();
+            } catch (err) {
+                console.error("Notice load error:", err);
+            }
+        }
+
+        function renderNotices(list) {
+            let container = document.getElementById('noticeInboxListContainer');
+            let countBadge = document.getElementById('inboxNoticeCount');
+
+            if (countBadge) countBadge.innerText = list.length;
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted small my-3">ইনবক্সে কোনো নোটিশ নেই।</p>`;
+                return;
+            }
+
+            list.forEach(n => {
+                container.innerHTML += `
+                    <div class="mail-item-row" onclick="openNoticeDetail('${n.id}')">
+                        <div class="mail-item-body">
+                            <div class="mail-item-top">
+                                <span class="mail-item-sender">প্রেরক: ${n.sender || 'Vault Provider'}</span>
+                                <span class="mail-item-date">রেকর্ড টাইম</span>
+                            </div>
+                            <div class="mail-item-title">
+                                শিরোনাম: ${n.title}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        let adminNoticeForm = document.getElementById('adminNoticeForm');
+        if (adminNoticeForm) {
+            adminNoticeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                let title = document.getElementById('adminNoticeTitle').value.trim();
+                let content = document.getElementById('adminNoticeInput').value.trim();
+                let saveBtn = document.getElementById('saveNoticeBtn');
+
+                if (!title || !content) {
+                    alert("দয়া করে শিরোনাম ও বার্তা লিখুন!");
+                    return;
+                }
+
+                saveBtn.disabled = true;
+                saveBtn.innerText = "পাঠানো হচ্ছে...";
+
+                try {
+                    let noticeId = "notice_" + Date.now();
+                    await setDoc(doc(db, "notices", noticeId), {
+                        id: noticeId,
+                        title: title,
+                        sender: "Vault Provider",
+                        content: content,
+                        createdAt: Date.now()
+                    });
+                    
+                    document.getElementById('adminNoticeTitle').value = "";
+                    document.getElementById('adminNoticeInput').value = "";
+                    alert("নোটিশ সফলভাবে ইনবক্সে পাঠানো হয়েছে! ✅");
+                    loadNoticesList();
+                } catch (err) {
+                    console.error("Notice save error:", err);
+                    alert("নোটিশ পাঠাতে সমস্যা হয়েছে: " + err.message);
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = "Send Notice 📢";
+                }
+            });
+        }
+
+        function renderAdminNotices() {
+            let container = document.getElementById('adminNoticesListContainer');
+            if(!container) return;
+            container.innerHTML = "";
+
+            if(allNoticesList.length === 0) {
+                container.innerHTML = "<small class='text-muted'>কোনো সক্রিয় নোটিশ নেই</small>";
+                return;
+            }
+
+            allNoticesList.forEach(n => {
+                container.innerHTML += `
+                    <div class="bg-black p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center">
+                        <div style="max-width: 80%;">
+                            <b class="text-warning small d-block text-truncate">${n.title}</b>
+                            <small class="text-muted" style="font-size: 10px;">🕒 রেকর্ড টাইম</small>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size: 11px;" onclick="deleteAdminNotice('${n.id}')">🗑️ মুছুন</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteAdminNotice = async function(id) {
+            if(!confirm("আপনি কি নিশ্চিতভাবে এই নোটিশটি চিরতরে মুছে ফেলতে চান?")) return;
+            try {
+                await deleteDoc(doc(db, "notices", id));
+                alert("নোটিশ মুছে ফেলা হয়েছে!");
+                loadNoticesList();
+            } catch(e) {
+                alert("ডিলিট করতে সমস্যা হয়েছে: " + e.message);
+            }
+        };
+
+        async function checkLoginState() {
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+
+            if (window.innerWidth <= 600) {
+                let panel = document.getElementById('sidebarMenuPanel');
+                let icon = document.getElementById('toggleIcon');
+                if (panel && !panel.classList.contains('collapsed')) {
+                    panel.classList.add('collapsed');
+                    if (icon) icon.className = "fa-solid fa-angles-right";
+                }
+            }
+
+            if (isLoggedIn === 'true' && savedUser) {
+                await checkAndProcessTimeouts();
+                await checkAdminOnlineStatusForUser(savedUser.email);
+                await loadNoticesList();
+
+                let updatedSnap = await getDoc(doc(db, "users", savedUser.email));
+                if(updatedSnap.exists()) {
+                    savedUser = updatedSnap.data();
+                    localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+                }
+
+                if (sessionStorage.getItem('reopenAdminPanel') === 'true' && savedUser.email === ADMIN_EMAIL) {
+                    sessionStorage.removeItem('reopenAdminPanel');
+                    openAdminPanel(true);
+                    return;
+                }
+
+                document.getElementById('authWrapper').style.display = 'none';
+                document.getElementById('adminApp').style.display = 'none';
+                document.getElementById('mainAppWrapper').style.display = 'flex';
+
+                let currentName = savedUser.username || "User";
+                let sidebarUserEl = document.getElementById('sidebarUserName');
+                if (sidebarUserEl) sidebarUserEl.innerText = currentName;
+
+                document.getElementById('userFundsDisplay').innerText = (savedUser.funds || 0).toFixed(2) + " USDT";
+                
+                document.getElementById('setFullName').value = savedUser.fullName || "";
+                document.getElementById('setEmail').value = savedUser.email || "";
+                document.getElementById('setUsername').value = savedUser.username || "";
+                document.getElementById('setPhone').value = savedUser.phone || "";
+
+                if (savedUser.email === ADMIN_EMAIL) {
+                    document.getElementById('navAdminBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('navAdminBtn').style.display = 'none';
+                }
+                renderDeliveries();
+            } else {
+                document.getElementById('authWrapper').style.display = 'flex';
+                document.getElementById('mainAppWrapper').style.display = 'none';
+                document.getElementById('adminApp').style.display = 'none';
+                switchAuth('loginView');
+                loadSavedCredentials();
+            }
+        }
+
+        window.logout = function() {
+            localStorage.removeItem('isLoggedIn');
+            checkLoginState();
+        }
+
+        window.switchSection = function(sectionId) {
+            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        window.toggleDeliveriesList = function() {
+            let container = document.getElementById('deliveryListContainer');
+            if (container.style.display === "none" || container.style.display === "") {
+                container.style.display = "block";
+                renderDeliveries();
+            } else {
+                container.style.display = "none";
+            }
+        }
+
+        window.openDepositRecordModal = async function() {
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            let container = document.getElementById('userDepositRecordList');
+            container.innerHTML = "<p class='text-center text-muted'>Loading...</p>";
+            
+            let recordModal = new bootstrap.Modal(document.getElementById('depositRecordModal'));
+            recordModal.show();
+
+            try {
+                const depositsRef = collection(db, "deposits");
+                const q = query(depositsRef, where("userEmail", "==", savedUser.email));
+                const snapshot = await getDocs(q);
+
+                container.innerHTML = "";
+                let userDeposits = [];
+                snapshot.forEach(docSnap => { userDeposits.push(docSnap.data()); });
+
+                if (userDeposits.length === 0) {
+                    container.innerHTML = `<p class="text-center text-muted small">কোনো ডিপোজিট রেকর্ড পাওয়া যায়নি।</p>`;
+                } else {
+                    userDeposits.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    userDeposits.forEach(dep => {
+                        let badgeColor = dep.status === 'Accepted' ? 'bg-success' : (dep.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark');
+                        let isUsd = dep.method && (dep.method.includes('Crypto') || dep.method.includes('Binance'));
+                        let trxFieldLabel = isUsd ? 'Your Order_Id' : 'Trx ID';
+                        
+                        let amountDisplay = isUsd 
+                            ? `$${dep.amount} (${Number(dep.amount).toFixed(2)} USDT)` 
+                            : `৳${dep.amount} (${(dep.amount / DEPOSIT_USD_RATE).toFixed(2)} USDT)`;
+                        
+                        container.innerHTML += `
+                            <div class="card bg-dark border border-secondary p-2 mb-2 rounded-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 text-info fw-bold" style="font-size: 13px;">মাধ্যম: ${dep.method} | পরিমাণ: ${amountDisplay}</h6>
+                                        <small class="text-light" style="font-size: 11px;">${trxFieldLabel}: <b>${dep.trxId}</b></small><br>
+                                        <small class="text-muted" style="font-size: 10px;">🕒 রেকর্ড টাইম</small>
+                                    </div>
+                                    <div><span class="badge ${badgeColor}" style="font-size: 10px;">${dep.status}</span></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p class="text-center text-danger small">Error loading records.</p>`;
+            }
+        }
+
+        let selectedProductName = "", selectedProductPrice = 0, unitType = "Pcs";
+        window.openModal = function(name, price, type) {
+            selectedProductName = name; selectedProductPrice = price; unitType = type;
+            document.getElementById('buyModalTitle').innerText = "Buy " + name;
+            document.getElementById('quantity').value = 1;
+            document.getElementById('productPriceHint').innerText = `Price: $${price.toFixed(2)} per ${type} | Total: $${price.toFixed(2)} USDT`;
+            new bootstrap.Modal(document.getElementById('buyModal')).show();
+        }
+
+        document.getElementById('quantity').addEventListener('input', function() {
+            let val = parseInt(this.value) || 1;
+            let total = (val * selectedProductPrice).toFixed(2);
+            document.getElementById('productPriceHint').innerText = `Price: $${selectedProductPrice.toFixed(2)} per ${unitType} | Total: $${total} USDT`;
+        });
+
+        window.togglePaymentBox = function() {
+            let method = document.getElementById('paymentMethod').value;
+            ['mobileBankingBox', 'cryptoBox'].forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.classList.remove('active');
+            });
+
+            let amountLabel = document.getElementById('amountLabel');
+            let amountInput = document.getElementById('amount');
+            let trxLabel = document.getElementById('trxLabel');
+            let trxInput = document.getElementById('trxId');
+
+            if (method === "MobileBanking") {
+                let box = document.getElementById('mobileBankingBox');
+                if(box) box.classList.add('active');
+
+                amountLabel.innerText = "টাকার পরিমাণ (৳)";
+                amountInput.placeholder = "যেমন: 200";
+                trxLabel.innerText = "Trx_Id";
+                trxInput.placeholder = "ট্রানজেকশন আইডি";
+                
+                document.getElementById('selectedMobileMethod').value = "";
+                let notice = document.getElementById('mobileSelectedNotice');
+                if (notice) notice.classList.add('d-none');
+            } else if (method === "Crypto") {
+                let box = document.getElementById('cryptoBox');
+                if(box) box.classList.add('active');
+
+                amountLabel.innerText = "USDT / ডলারের পরিমাণ ($)";
+                amountInput.placeholder = "যেমন: 10 (USDT)";
+                trxLabel.innerText = "Your Order_Id / TxID";
+                trxInput.placeholder = "আপনার Order ID বা TxID দিন";
+
+                document.getElementById('selectedCryptoMethod').value = "";
+                let notice = document.getElementById('cryptoSelectedNotice');
+                if (notice) notice.classList.add('d-none');
+            }
+        }
+
+        document.getElementById('depositForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let method = document.getElementById('paymentMethod').value;
+            let amount = parseFloat(document.getElementById('amount').value);
+            let trxId = document.getElementById('trxId').value.trim();
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("দয়া করে সঠিক পরিমাণ প্রদান করুন!");
+                return;
+            }
+
+            if (!trxId) {
+                alert("দয়া করে Trx_Id বা Order_Id প্রদান করুন!");
+                return;
+            }
+
+            if (method === "MobileBanking") {
+                let subMethod = document.getElementById('selectedMobileMethod').value;
+                if (!subMethod) {
+                    alert("দয়া করে মোবাইল ব্যাংকিং ফোল্ডার থেকে আপনার পেমেন্ট মাধ্যমটি সিলেক্ট করুন!");
+                    return;
+                }
+                
+                if (subMethod === "bKash" && amount < 100) {
+                    alert("⚠️ বিকাশে সর্বনিম্ন ডিপোজিট ১০০ টাকা!");
+                    return;
+                }
+
+                method = `Mobile Banking (${subMethod})`;
+            } else if (method === "Crypto") {
+                let subMethod = document.getElementById('selectedCryptoMethod').value;
+                if (!subMethod) {
+                    alert("দয়া করে ক্রিপ্টো ফোল্ডার থেকে আপনার পেমেন্ট মাধ্যমটি সিলেক্ট করুন!");
+                    return;
+                }
+                method = `Crypto (${subMethod})`;
+            }
+
+            let submitBtn = document.getElementById('depositSubmitBtn');
+            submitBtn.disabled = true;
+            let originalBtnText = submitBtn.innerText;
+            submitBtn.innerText = "যাচাই করা হচ্ছে...";
+
+            try {
+                const dupQuery = query(collection(db, "deposits"), where("trxId", "==", trxId));
+                const dupSnapshot = await getDocs(dupQuery);
+
+                let isDuplicateForSameMethod = false;
+                dupSnapshot.forEach(docSnap => {
+                    let d = docSnap.data();
+                    if (d.method === method) {
+                        isDuplicateForSameMethod = true;
+                    }
+                });
+
+                if (isDuplicateForSameMethod) {
+                    alert(`⚠ এই মাধ্যমে (${method}) এই Trx_ID / Order_ID টি ইতিমধ্যে ব্যবহার করা হয়েছে!`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalBtnText;
+                    return;
+                }
+
+                let now = Date.now();
+                let depId = "dep_" + now;
+                await setDoc(doc(db, "deposits", depId), { 
+                    id: depId, 
+                    userEmail: savedUser.email, 
+                    userName: savedUser.username, 
+                    method: method, 
+                    amount: amount, 
+                    trxId: trxId, 
+                    status: "Pending",
+                    createdAt: now 
+                });
+                
+                bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+                document.getElementById('depositForm').reset();
+                document.getElementById('selectedMobileMethod').value = "";
+                document.getElementById('selectedCryptoMethod').value = "";
+                let mNotice = document.getElementById('mobileSelectedNotice');
+                if (mNotice) mNotice.classList.add('d-none');
+                let cNotice = document.getElementById('cryptoSelectedNotice');
+                if (cNotice) cNotice.classList.add('d-none');
+                togglePaymentBox();
+                alert('Deposit request submitted successfully! ✅');
+            } catch (err) {
+                console.error("Deposit submission error:", err);
+                alert("ডিপোজিট রিকোয়েস্ট সাবমিট করতে সমস্যা হয়েছে: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+            }
+        });
+
+        document.getElementById('buyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let val = parseInt(document.getElementById('quantity').value) || 1;
+            let totalPrice = parseFloat((val * selectedProductPrice).toFixed(2));
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+
+            if ((savedUser.funds || 0) < totalPrice) { 
+                alert(`Insufficient funds! Required $${totalPrice.toFixed(2)} USDT`); 
+                return; 
+            }
+
+            savedUser.funds = parseFloat(((savedUser.funds || 0) - totalPrice).toFixed(2));
+            let newOrder = { 
+                product: selectedProductName, 
+                quantity: val + " " + unitType, 
+                totalPrice: totalPrice, 
+                status: "Processing...", 
+                details: "Awaiting admin delivery.",
+                createdAt: Date.now()
+            };
+            if (!savedUser.deliveries) savedUser.deliveries = [];
+            savedUser.deliveries.unshift(newOrder);
+
+            await updateDoc(doc(db, "users", savedUser.email), { funds: savedUser.funds, deliveries: savedUser.deliveries });
+            localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+            
+            bootstrap.Modal.getInstance(document.getElementById('buyModal')).hide();
+            alert('Order placed successfully! ✅');
+            checkLoginState();
+        });
+
+        async function checkAndProcessTimeouts() {
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                let currentTime = Date.now();
+                let twentyMinutes = 20 * 60 * 1000;
+
+                snapshot.forEach(async (docSnap) => {
+                    let userData = docSnap.data();
+                    let userUpdated = false;
+
+                    if (userData.deliveries && userData.deliveries.length > 0) {
+                        userData.deliveries.forEach(order => {
+                            if (order.status.includes("Processing") && order.createdAt) {
+                                if (currentTime - order.createdAt > twentyMinutes) {
+                                    userData.funds = parseFloat(((userData.funds || 0) + order.totalPrice).toFixed(2));
+                                    order.status = "Time Expired (Refunded ❌)";
+                                    order.details = "Admin did not deliver within 20 minutes. Amount refunded automatically.";
+                                    userUpdated = true;
+                                }
+                            }
+                        });
+
+                        if (userUpdated) {
+                            await updateDoc(doc(db, "users", userData.email), {
+                                funds: userData.funds,
+                                deliveries: userData.deliveries
+                            });
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error("Timeout check error:", err);
+            }
+        }
+
+        async function checkAdminOnlineStatusForUser(userEmail) {
+            try {
+                let adminSnap = await getDoc(doc(db, "admin_status", "status"));
+                let isAdminOnline = adminSnap.exists() ? adminSnap.data().online : false;
+
+                if (isAdminOnline) {
+                    let userRef = doc(db, "users", userEmail);
+                    let userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        let userData = userSnap.data();
+                        let hasProcessingOrder = userData.deliveries && userData.deliveries.some(o => o.status.includes("Processing"));
+
+                        if (hasProcessingOrder && !userData.adminOnlineNotified) {
+                            alert("🔔 নোটিফিকেশন: এডমিন বর্তমানে অনলাইনে আছেন! আপনার অর্ডারের কাজ খুব শীঘ্রই সম্পন্ন করা হবে।");
+                            await updateDoc(userRef, { adminOnlineNotified: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderDeliveries() {
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            let container = document.getElementById('deliveryListContainer');
+            container.innerHTML = "";
+            if (!savedUser || !savedUser.deliveries || savedUser.deliveries.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted small">No orders found.</p>`;
+                return;
+            }
+            savedUser.deliveries.forEach(order => {
+                let badgeClass = order.status.includes("Processing") ? "bg-warning text-dark" : (order.status.includes("Expired") ? "bg-danger text-white" : "bg-success text-white");
+                let showCopyBtn = !order.status.includes("Processing") && !order.status.includes("Rejected") && !order.status.includes("Expired");
+
+                let pLower = order.product.toLowerCase();
+                let isVpn = pLower.includes("vpn");
+                let isProxy = pLower.includes("proxy");
+
+                let displayHtml = "";
+                let rawCopyText = order.details;
+
+                if (showCopyBtn) {
+                    if (isVpn) {
+                        let parts = order.details.split('\n');
+                        let emailPart = parts[0] || order.details;
+                        let passPart = parts[1] || '';
+                        displayHtml = `‎📧 Email: ${emailPart} <br>‎🔒 Password: ${passPart}`;
+                        rawCopyText = order.details; 
+                    } else if (isProxy) {
+                        let proxyUrl = "";
+                        if (pLower.includes("9 proxy")) proxyUrl = "http://9proxy.com";
+                        else if (pLower.includes("cil proxy")) proxyUrl = "http://cliproxy.com";
+                        else if (pLower.includes("711 proxy")) proxyUrl = "http://www.711proxy.com";
+                        else if (pLower.includes("nov proxy")) proxyUrl = "http://novproxy.com";
+                        else if (pLower.includes("thordata proxy")) proxyUrl = "http://www.thordata.com";
+                        else if (pLower.includes("rapid proxy")) proxyUrl = "http://www.rapidproxy.io";
+                        else if (pLower.includes("datampuls gb proxy")) proxyUrl = "https://supproxy.com/dashboard";
+
+                        if (proxyUrl) {
+                            displayHtml = `<a href="${proxyUrl}" target="_blank" class="text-info text-decoration-underline d-block mb-1">${proxyUrl}</a>🔑 Your CD key(s): <br><span class="text-warning">${order.details}</span>`;
+                        } else {
+                            displayHtml = `🔑 Your CD key(s): <br><span class="text-warning">${order.details}</span>`;
+                        }
+                        rawCopyText = order.details;
+                    } else {
+                        displayHtml = order.details;
+                        rawCopyText = order.details;
+                    }
+                } else {
+                    displayHtml = order.details;
+                }
+
+                container.innerHTML += `
+                    <div class="card card-custom p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <h6 class="mb-1 fw-bold">${order.product}</h6>
+                                <small class="text-white">Qty: ${order.quantity} | Paid: $${Number(order.totalPrice).toFixed(2)} USDT</small><br>
+                                <span class="badge ${badgeClass} mt-1">${order.status}</span><br>
+                                <small class="text-muted" style="font-size: 10px;">অর্ডার ইনফো</small>
+                            </div>
+                            <div class="text-end" style="max-width: 55%;">
+                                <div class="small text-info mb-1 fw-semibold" style="white-space: pre-line;">${displayHtml}</div>
+                                ${showCopyBtn ? `<button class="btn btn-outline-info btn-sm py-1 px-3 fw-bold" style="font-size: 12px;" onclick="copyToClipboard(\`${rawCopyText}\`, this)">📋 Copy Now</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.openAdminPanel = async function(isReload = false) {
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            if (!savedUser || savedUser.email !== ADMIN_EMAIL) { alert("Unauthorized!"); return; }
+            
+            if (!isReload) {
+                if (prompt("Enter Admin Password:") !== ADMIN_PASSCODE) {
+                    alert("Unauthorized!");
+                    return;
+                }
+            }
+            
+            await checkAndProcessTimeouts();
+            await setDoc(doc(db, "admin_status", "status"), { online: true, lastSeen: Date.now() });
+
+            document.getElementById('authWrapper').style.display = 'none';
+            document.getElementById('mainAppWrapper').style.display = 'none';
+            document.getElementById('adminApp').style.display = 'block';
+            loadNoticesList();
+            renderAdminUserList();
+            renderAdminDeposits();
+            renderAdminOrders();
+        }
+
+        window.closeAdminPanel = async function() {
+            await setDoc(doc(db, "admin_status", "status"), { online: false, lastSeen: Date.now() });
+            
+            document.getElementById('adminApp').style.display = 'none';
+            checkLoginState();
+        }
+
+        window.refreshAdminPanel = function() {
+            sessionStorage.setItem('reopenAdminPanel', 'true');
+            location.reload();
+        }
+
+        async function renderAdminUserList() {
+            let container = document.getElementById('adminUserListContainer');
+            container.innerHTML = "<p class='text-center text-muted small my-2'>ইউজার লোড হচ্ছে...</p>";
+
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                cachedUsersList = [];
+
+                snapshot.forEach(docSnap => {
+                    cachedUsersList.push(docSnap.data());
+                });
+
+                filterAdminUsers();
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p class='text-center text-danger small'>Error loading users.</p>`;
+            }
+        }
+
+        window.filterAdminUsers = function() {
+            let query = (document.getElementById('userSearchInput').value || '').trim().toLowerCase();
+            let container = document.getElementById('adminUserListContainer');
+            let countLabel = document.getElementById('userSearchResultCount');
+            
+            let filtered = cachedUsersList.filter(u => {
+                let uName = (u.username || '').toLowerCase();
+                let uEmail = (u.email || '').toLowerCase();
+                return uName.includes(query) || uEmail.includes(query);
+            });
+
+            container.innerHTML = "";
+            countLabel.innerText = `মোট ইউজার: ${cachedUsersList.length} টি | পাওয়া গেছে: ${filtered.length} টি`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class='text-center text-muted small my-3'>কোনো ইউজার মেলেনি!</p>`;
+                return;
+            }
+
+            filtered.forEach(u => {
+                container.innerHTML += `
+                    <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2" style="font-size: 12px;">
+                        <div>
+                            <div>👤 <b>${u.username || 'N/A'}</b> (${u.email})</div>
+                            <div class="text-warning">🔒 Pass: <b>${u.password}</b></div>
+                            <small class="text-light opacity-75">ব্যালেন্স: ${(u.funds || 0).toFixed(2)} USDT</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 10px;" onclick="copyToClipboard('${u.password}', this)">📋 Copy Pass</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.clearUserSearch = function() {
+            document.getElementById('userSearchInput').value = "";
+            filterAdminUsers();
+        }
+
+        async function renderAdminDeposits() {
+            let container = document.getElementById('adminDepositListContainer');
+            container.innerHTML = "<p class='text-center text-muted small'>Loading deposits...</p>";
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "deposits"));
+                container.innerHTML = "";
+                let deposits = [];
+                let currentTime = Date.now();
+
+                querySnapshot.forEach(docSnap => {
+                    let dep = docSnap.data();
+                    let depTime = dep.createdAt || parseInt(dep.id.replace('dep_', '')) || 0;
+                    
+                    if (currentTime - depTime <= TWENTY_FOUR_HOURS) {
+                        deposits.push({ ...dep, displayTime: depTime });
+                    }
+                });
+
+                deposits.sort((a, b) => b.displayTime - a.displayTime);
+
+                let visibleCount = 0;
+                deposits.forEach(dep => {
+                    visibleCount++;
+                    let isPending = dep.status === "Pending";
+                    let badgeColor = isPending ? "bg-warning text-dark" : (dep.status === "Accepted" ? "bg-success" : "bg-danger");
+                    let isUsd = dep.method && (dep.method.includes('Crypto') || dep.method.includes('Binance'));
+                    let trxFieldLabel = isUsd ? 'Your Order_Id' : 'Trx ID';
+
+                    let expectedUsdt = isUsd ? dep.amount : (dep.amount / DEPOSIT_USD_RATE);
+                    let amountDisplay = isUsd 
+                        ? `$${dep.amount} <small class="text-info font-monospace">(${Number(dep.amount).toFixed(2)} USDT)</small>` 
+                        : `৳${dep.amount} <small class="text-warning font-monospace">(হবে: ${expectedUsdt.toFixed(2)} USDT)</small>`;
+
+                    container.innerHTML += `
+                        <div class="bg-dark p-3 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <small class="text-warning">User: <b>${dep.userName}</b> (${dep.userEmail})</small>
+                                <h6 class="mb-1 fw-bold text-info">মাধ্যম: ${dep.method} | পরিমাণ: ${amountDisplay}</h6>
+                                <small class="text-light">${trxFieldLabel}: <b>${dep.trxId}</b></small><br>
+                                <div class="mt-1"><span class="badge ${badgeColor}">${dep.status}</span></div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                ${isPending ? `
+                                    <button class="btn btn-success btn-sm px-3 fw-bold py-1" onclick="acceptDeposit('${dep.id}', '${dep.userEmail}', ${dep.amount}, '${dep.method}')">Accept ✅</button>
+                                    <button class="btn btn-danger btn-sm px-3 fw-bold py-1" onclick="rejectDeposit('${dep.id}')">Reject ❌</button>
+                                ` : `<span class="small text-muted fw-bold">হয়ে গেছে (${dep.status})</span>`}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (visibleCount === 0) {
+                    container.innerHTML = `<p class="text-center text-muted small">গত ২৪ ঘণ্টায় কোনো ডিপোজিট রিকোয়েস্ট নেই।</p>`;
+                }
+            } catch(err) {
+                console.error(err);
+                container.innerHTML = `<p class="text-center text-danger small">Error loading deposit requests.</p>`;
+            }
+        }
+
+        window.acceptDeposit = async function(depId, userEmail, amount, method) {
+            let isCrypto = method && (method.includes('Crypto') || method.includes('Binance'));
+            
+            let creditUsdt = isCrypto 
+                ? parseFloat(Number(amount).toFixed(2)) 
+                : parseFloat((amount / DEPOSIT_USD_RATE).toFixed(2));
+            
+            let confirmMsg = isCrypto
+                ? `আপনি কি এই ক্রিপ্টো ডিপোজিটটি এক্সেপ্ট করতে চান?\nডিপোজিট: $${amount}\nইউজারের ওয়ালেটে ব্যালেন্স জমা হবে: ${creditUsdt.toFixed(2)} USDT`
+                : `আপনি কি এই মোবাইল ব্যাংকিং ডিপোজিটটি এক্সেপ্ট করতে চান?\nজমা টাকা: ৳${amount}\nইউজারের ওয়ালেটে জমা হবে: ${creditUsdt.toFixed(2)} USDT`;
+
+            if(!confirm(confirmMsg)) return;
+
+            try {
+                await updateDoc(doc(db, "deposits", depId), { status: "Accepted" });
+
+                const userRef = doc(db, "users", userEmail);
+                let userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    let userData = userSnap.data();
+                    let newFunds = parseFloat(((userData.funds || 0) + creditUsdt).toFixed(2));
+                    await updateDoc(userRef, { funds: newFunds });
+                }
+
+                alert(`ডিপোজিট সফলভাবে এক্সেপ্ট করা হয়েছে এবং ব্যালেন্সে ${creditUsdt.toFixed(2)} USDT যোগ হয়েছে!`);
+                renderAdminDeposits();
+            } catch(err) {
+                console.error(err);
+                alert("Error processing deposit: " + err.message);
+            }
+        }
+
+        window.rejectDeposit = async function(depId) {
+            if(!confirm("আপনি কি এই ডিপোজিট রিকোয়েস্টটি রিজেক্ট করতে চান?")) return;
+
+            try {
+                await updateDoc(doc(db, "deposits", depId), { status: "Rejected" });
+                alert("ডিপোজিট রিকোয়েস্ট রিজেক্ট করা হয়েছে।");
+                renderAdminDeposits();
+            } catch(err) {
+                console.error(err);
+                alert("Error rejecting deposit: " + err.message);
+            }
+        }
+
+        async function renderAdminOrders() {
+            let container = document.getElementById('adminOrderListContainer');
+            container.innerHTML = "<p class='text-center text-muted small'>Loading orders...</p>";
+
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                container.innerHTML = "";
+                let allOrders = [];
+                let currentTime = Date.now();
+
+                snapshot.forEach(docSnap => {
+                    let user = docSnap.data();
+                    if (user.deliveries && user.deliveries.length > 0) {
+                        user.deliveries.forEach((order, idx) => {
+                            let orderTime = order.createdAt || 0;
+                            if (currentTime - orderTime <= TWENTY_FOUR_HOURS) {
+                                allOrders.push({
+                                    userEmail: user.email,
+                                    username: user.username,
+                                    orderIndex: idx,
+                                    order: order,
+                                    orderTime: orderTime
+                                });
+                            }
+                        });
+                    }
+                });
+
+                allOrders.sort((a, b) => b.orderTime - a.orderTime);
+
+                allOrders.forEach(item => {
+                    let order = item.order;
+                    let isProcessing = order.status.includes("Processing");
+                    let badgeColor = isProcessing ? "bg-warning text-dark" : (order.status.includes("Expired") ? "bg-danger" : "bg-success");
+
+                    container.innerHTML += `
+                        <div class="bg-dark p-3 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <small class="text-warning">User: <b>${item.username}</b> (${item.userEmail})</small>
+                                <h6 class="mb-1 fw-bold text-info">${order.product} (Qty: ${order.quantity})</h6>
+                                <small class="text-white">Price: $${Number(order.totalPrice).toFixed(2)} USDT</small><br>
+                                <span class="badge ${badgeColor}">${order.status}</span><br>
+                                <div class="small text-light mt-1"><b>Details:</b> ${order.details ? (order.details.length > 30 ? order.details.substring(0,30)+'...' : order.details) : 'None'}</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                ${isProcessing ? `
+                                    <button class="btn btn-success btn-sm px-3 fw-bold py-1" onclick="openApproveModal('${item.userEmail}', ${item.orderIndex}, '${order.product.replace(/'/g, "\\'")}')">Accept & Send</button>
+                                    <button class="btn btn-danger btn-sm px-3 fw-bold py-1" onclick="rejectOrder('${item.userEmail}',${item.orderIndex})">Reject</button>
+                                ` : `<span class="small text-muted fw-bold">${order.status.includes("Expired") ? "Timed Out / Refunded" : "Processed"}</span>`}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (allOrders.length === 0) {
+                    container.innerHTML = `<p class="text-center text-muted small">গত ২৪ ঘণ্টায় কোনো অর্ডার পাওয়া যায়নি।</p>`;
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Error loading orders.");
+            }
+        }
+
+        window.openApproveModal = function(userEmail, orderIndex, productName) {
+            document.getElementById('targetUserEmail').value = userEmail;
+            document.getElementById('targetOrderIndex').value = orderIndex;
+            document.getElementById('adminProductDetails').value = "";
+            
+            let labelEl = document.getElementById('adminModalLabel');
+            let prodLower = productName.toLowerCase();
+            
+            if (prodLower.includes("vpn")) {
+                labelEl.innerText = "VPN এর জন্য Email ও Password লিখুন (প্রথম লাইনে Email, দ্বিতীয় লাইনে Password):";
+                document.getElementById('adminProductDetails').placeholder = "email@gmail.com\npassword123";
+            } else if (prodLower.includes("proxy")) {
+                labelEl.innerText = "Proxy এর জন্য CD Key লিখুন:";
+                document.getElementById('adminProductDetails').placeholder = "XXXX-XXXX-XXXX-XXXX";
+            } else {
+                labelEl.innerText = "অ্যাকাউন্ট ডিটেইলস লিখুন:";
+                document.getElementById('adminProductDetails').placeholder = "এখানে তথ্য লিখুন...";
+            }
+
+            let modal = new bootstrap.Modal(document.getElementById('adminApproveModal'));
+            modal.show();
+        }
+
+        document.getElementById('adminApproveForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let userEmail = document.getElementById('targetUserEmail').value;
+            let orderIndex = parseInt(document.getElementById('targetOrderIndex').value);
+            let productDetails = document.getElementById('adminProductDetails').value.trim();
+
+            if (!productDetails) {
+                alert("দয়া করে তথ্য লিখুন!");
+                return;
+            }
+
+            try {
+                const userRef = doc(db, "users", userEmail);
+                let userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    let user = userSnap.data();
+                    if (user.deliveries && user.deliveries[orderIndex]) {
+                        user.deliveries[orderIndex].status = "Completed ✅";
+                        user.deliveries[orderIndex].details = productDetails;
+
+                        await updateDoc(userRef, { deliveries: user.deliveries });
+                        alert('সফলভাবে পাঠানো হয়েছে!');
+                        
+                        let modalEl = document.getElementById('adminApproveModal');
+                        bootstrap.Modal.getInstance(modalEl).hide();
+                        renderAdminOrders();
+                    } else {
+                        alert("Error: Order index not found.");
+                    }
+                } else {
+                    alert("Error: User not found.");
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Error updating order: " + err.message);
+            }
+        });
+
+        window.rejectOrder = async function(userEmail, orderIndex) {
+            if(!confirm("আপনি কি অর্ডারটি রিজেক্ট করতে চান এবং ইউজারের ব্যালেন্স রিফান্ড করতে চান?")) return;
+
+            try {
+                const userRef = doc(db, "users", userEmail);
+                let userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    let user = userSnap.data();
+                    if (user.deliveries && user.deliveries[orderIndex]) {
+                        let order = user.deliveries[orderIndex];
+                        
+                        if(order.totalPrice) {
+                            user.funds = parseFloat(((user.funds || 0) + order.totalPrice).toFixed(2));
+                        }
+
+                        order.status = "Rejected (Refunded ❌)";
+                        order.details = "Admin rejected this order.";
+
+                        await updateDoc(userRef, { 
+                            funds: user.funds,
+                            deliveries: user.deliveries 
+                        });
+
+                        alert('অর্ডার রিজেক্ট করা হয়েছে এবং ব্যালেন্স রিফান্ড করা হয়েছে।');
+                        renderAdminOrders();
+                    } else {
+                        alert("Error: Order index not found.");
+                    }
+                } else {
+                    alert("Error: User not found.");
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Error rejecting order: " + err.message);
+            }
+        }
+
+        window.refreshBalance = async function() {
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            let snap = await getDoc(doc(db, "users", savedUser.email));
+            if (snap.exists()) {
+                localStorage.setItem('vaultUser', JSON.stringify(snap.data()));
+                document.getElementById('userFundsDisplay').innerText = (snap.data().funds || 0).toFixed(2) + " USDT";
+                alert("Balance refreshed!");
+            }
+        }
+
+        window.closeOffcanvas = function() {
+            let el = document.getElementById('contactCanvas');
+            let bsOffcanvas = bootstrap.Offcanvas.getInstance(el);
+            if (bsOffcanvas) bsOffcanvas.hide();
+        }
+
+        window.onload = function() {
+            loadSavedCredentials();
+            checkLoginState();
+        };
+    </script>
+</body>
+</html>
