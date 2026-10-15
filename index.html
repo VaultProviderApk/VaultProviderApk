@@ -556,13 +556,21 @@
                 <i class="fa-solid fa-house"></i>
                 <span class="nav-text">Home</span>
             </a>
+            <a class="nav-item-custom" onclick="switchSection('noticeSection')" title="Notice">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <span class="nav-text">Notice</span>
+            </a>
+            <a class="nav-item-custom" onclick="switchSection('deliveriesSection')" title="Deliveries">
+                <i class="fa-solid fa-box-open"></i>
+                <span class="nav-text">Deliveries</span>
+            </a>
+            <a class="nav-item-custom" onclick="openDepositRecordModal()" title="Deposit Record">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span class="nav-text">Deposit History</span>
+            </a>
             <a class="nav-item-custom" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings">
                 <i class="fa-solid fa-gear"></i>
                 <span class="nav-text">Settings</span>
-            </a>
-            <a class="nav-item-custom" onclick="switchSection('servicesMenuSection')" title="Services">
-                <i class="fa-solid fa-square-check"></i>
-                <span class="nav-text">Services</span>
             </a>
             <a class="nav-item-custom" data-bs-toggle="offcanvas" data-bs-target="#contactCanvas" title="Contact">
                 <i class="fa-solid fa-address-book"></i>
@@ -599,7 +607,51 @@
 
             <!-- Home Section -->
             <div id="homeSection" class="section-view active">
-                <!-- MAIL / NOTICE BOX (READ ONLY FOR USERS) -->
+                <div class="text-center mb-3">
+                    <h5 class="fw-bold text-success">Welcome to VaultProvider!</h5>
+                    <p class="small text-info mb-2">আপনার প্রয়োজনীয় অপশনটি সিলেক্ট করুন:</p>
+                    <span class="badge bg-dark border border-secondary px-3 py-2 rounded-pill fw-bold text-info shadow-sm" style="font-size: 13px;"><b>👤 Shop Accounts & Services</b></span>
+                </div>
+
+                <!-- 1. VPN Services -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🌐 VPN SERVICES</span>
+                        <span></span>
+                    </div>
+                    <div class="row g-2" id="vpnServicesContainer"></div>
+                </div>
+
+                <!-- 2. Proxy Services -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">⚡ PROXY SERVICES</span>
+                        <span></span>
+                    </div>
+                    <div class="row g-2" id="proxyServicesContainer"></div>
+                </div>
+
+                <!-- 3. Apple Gift Card -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🍎 APPLE GIFT CARD</span>
+                        <span></span>
+                    </div>
+                    <div class="row g-2" id="appleServicesContainer"></div>
+                </div>
+
+                <!-- 4. AI Tools & Subscriptions -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🤖 AI TOOLS & SUBSCRIPTIONS</span>
+                        <span></span>
+                    </div>
+                    <div class="row g-2" id="aiServicesContainer"></div>
+                </div>
+            </div>
+
+            <!-- Notice Section (Dedicated Page) -->
+            <div id="noticeSection" class="section-view">
                 <div class="mail-box-wrapper mb-3 shadow">
                     <div class="mail-header-bar">
                         <h6><i class="fa-solid fa-envelope-open-text text-info me-1"></i> মেইল (নোটিশ বক্স)</h6>
@@ -653,73 +705,14 @@
                         <div class="p-2 text-white small" id="detNoticeContent" style="white-space: pre-line; line-height: 1.6;"></div>
                     </div>
                 </div>
-
-                <div class="text-center mb-3">
-                    <h5 class="fw-bold text-success">Welcome to VaultProvider!</h5>
-                    <p class="small text-muted">আপনার প্রয়োজনীয় অপশনটি সিলেক্ট করুন:</p>
-                </div>
-                <div class="flex-column gap-2 mb-3 d-flex">
-                    <button class="btn btn-warning py-2 fw-bold rounded-pill text-dark shadow-sm" onclick="toggleDeliveriesList()">
-                        📦 My Deliveries / Orders (সকল অর্ডার দেখুন)
-                    </button>
-                    <button class="btn btn-info py-2 fw-bold rounded-pill text-dark shadow-sm" onclick="openDepositRecordModal()">
-                        💰 Deposit Record (ডিপোজিট হিস্টরি দেখুন)
-                    </button>
-                </div>
-                <div id="deliveryListContainer" style="display: none;"></div>
             </div>
 
-            <!-- Services Main Menu Section -->
-            <div id="servicesMenuSection" class="section-view">
-                <div class="mb-3 text-center">
-                    <span class="badge bg-dark border border-secondary px-3 py-2 rounded-pill fw-bold text-info" style="font-size: 14px;">👤 Shop Accounts & Services</span>
+            <!-- Deliveries Section (Dedicated Page) -->
+            <div id="deliveriesSection" class="section-view">
+                <div class="mb-3">
+                    <h6 class="fw-bold text-info"><i class="fa-solid fa-box-open me-1"></i> My Deliveries / Orders (সকল অর্ডার দেখুন)</h6>
                 </div>
-                <div class="row g-2">
-                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('vpnSection')">🌐 VPN Services</button></div>
-                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('proxySection')">⚡ Proxy Services</button></div>
-                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('appleSection')">🍎 Apple Gift Card</button></div>
-                    <div class="col-12"><button class="btn btn-outline-primary w-100 py-2 fw-bold text-start px-3 rounded-3" onclick="switchSection('aiSection')">🤖 AI Tools & Subscriptions</button></div>
-                </div>
-            </div>
-
-            <!-- VPN Section -->
-            <div id="vpnSection" class="section-view">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
-                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">VPN SERVICES</span>
-                    <span></span>
-                </div>
-                <div class="row g-2" id="vpnServicesContainer"></div>
-            </div>
-
-            <!-- Proxy Section -->
-            <div id="proxySection" class="section-view">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
-                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">PROXY SERVICES</span>
-                    <span></span>
-                </div>
-                <div class="row g-2" id="proxyServicesContainer"></div>
-            </div>
-
-            <!-- Apple Gift Card Section -->
-            <div id="appleSection" class="section-view">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
-                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">APPLE GIFT CARD</span>
-                    <span></span>
-                </div>
-                <div class="row g-2" id="appleServicesContainer"></div>
-            </div>
-
-            <!-- AI Tools Section -->
-            <div id="aiSection" class="section-view">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="switchSection('servicesMenuSection')">⬅ Back</button>
-                    <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill">AI TOOLS & SUBSCRIPTIONS</span>
-                    <span></span>
-                </div>
-                <div class="row g-2" id="aiServicesContainer"></div>
+                <div id="deliveryListContainer"></div>
             </div>
         </div>
     </div>
@@ -998,7 +991,15 @@
                             <input type="number" id="quantity" class="form-control bg-dark text-white border-secondary form-control-sm" min="1" value="1" required>
                             <small id="productPriceHint" class="text-warning mt-1 d-block"></small>
                         </div>
-                        <button type="submit" class="btn btn-custom w-100 btn-sm py-2 mt-2">Confirm Buy</button>
+                        <!-- Insufficient Balance & Deposit Option Alert -->
+                        <div id="insufficientBalanceAlert" class="alert alert-danger py-2 px-3 mb-2 small d-none" style="font-size: 12px;">
+                            ❌ <b>Insufficient Balance!</b> আপনার পর্যাপ্ত ব্যালেন্স নেই। <br>
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
+                                <span class="fw-bold" style="color: #000000;">1$ = 130 Taka</span>
+                                <button type="button" class="btn btn-sm btn-warning fw-bold py-0 px-2" onclick="openDepositModalFromBuy()">Deposit Now 💰</button>
+                            </div>
+                        </div>
+                        <button type="submit" id="confirmBuyBtn" class="btn btn-custom w-100 btn-sm py-2 mt-2">Confirm Buy</button>
                     </form>
                 </div>
             </div>
@@ -2083,15 +2084,8 @@
         window.switchSection = function(sectionId) {
             document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-        }
-
-        window.toggleDeliveriesList = function() {
-            let container = document.getElementById('deliveryListContainer');
-            if (container.style.display === "none" || container.style.display === "") {
-                container.style.display = "block";
+            if (sectionId === 'deliveriesSection') {
                 renderDeliveries();
-            } else {
-                container.style.display = "none";
             }
         }
 
@@ -2150,7 +2144,27 @@
             selectedProductName = name; selectedProductPrice = price; unitType = type;
             document.getElementById('buyModalTitle').innerText = "Buy " + name;
             document.getElementById('quantity').value = 1;
-            document.getElementById('productPriceHint').innerText = `Price: $${price.toFixed(2)} per ${type} | Total: $${price.toFixed(2)} USDT`;
+            
+            let total = price;
+            document.getElementById('productPriceHint').innerText = `Price: $${price.toFixed(2)} per ${type} | Total: $${total.toFixed(2)} USDT`;
+            
+            // Check User Balance
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
+            let userFunds = savedUser.funds || 0;
+
+            let alertBox = document.getElementById('insufficientBalanceAlert');
+            let confirmBtn = document.getElementById('confirmBuyBtn');
+
+            if (userFunds < total) {
+                alertBox.classList.remove('d-none');
+                confirmBtn.disabled = true;
+                confirmBtn.style.opacity = "0.5";
+            } else {
+                alertBox.classList.add('d-none');
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = "1";
+            }
+
             new bootstrap.Modal(document.getElementById('buyModal')).show();
         }
 
@@ -2158,7 +2172,33 @@
             let val = parseInt(this.value) || 1;
             let total = (val * selectedProductPrice).toFixed(2);
             document.getElementById('productPriceHint').innerText = `Price: $${selectedProductPrice.toFixed(2)} per ${unitType} | Total: $${total} USDT`;
+
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
+            let userFunds = savedUser.funds || 0;
+
+            let alertBox = document.getElementById('insufficientBalanceAlert');
+            let confirmBtn = document.getElementById('confirmBuyBtn');
+
+            if (userFunds < parseFloat(total)) {
+                alertBox.classList.remove('d-none');
+                confirmBtn.disabled = true;
+                confirmBtn.style.opacity = "0.5";
+            } else {
+                alertBox.classList.add('d-none');
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = "1";
+            }
         });
+
+        window.openDepositModalFromBuy = function() {
+            let buyModalEl = document.getElementById('buyModal');
+            let buyModalInstance = bootstrap.Modal.getInstance(buyModalEl);
+            if (buyModalInstance) {
+                buyModalInstance.hide();
+            }
+            let depositModal = new bootstrap.Modal(document.getElementById('depositModal'));
+            depositModal.show();
+        }
 
         window.togglePaymentBox = function() {
             let method = document.getElementById('paymentMethod').value;
@@ -2191,7 +2231,7 @@
                 amountLabel.innerText = "USDT / ডলারের পরিমাণ ($)";
                 amountInput.placeholder = "যেমন: 10 (USDT)";
                 trxLabel.innerText = "Your Order_Id / TxID";
-                trxInput.placeholder = "আপনার Order ID বা TxID দিন";
+                trxInput.placeholder = "আপনার অর্ডার ID বা TxID দিন";
 
                 document.getElementById('selectedCryptoMethod').value = "";
                 let notice = document.getElementById('cryptoSelectedNotice');
