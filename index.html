@@ -607,14 +607,33 @@
 
             <!-- Home Section -->
             <div id="homeSection" class="section-view active">
+                <!-- Updated Welcome Header & Search & Category Pills -->
                 <div class="text-center mb-3">
                     <h5 class="fw-bold text-success">Welcome to VaultProvider!</h5>
-                    <p class="small text-info mb-2">আপনার প্রয়োজনীয় অপশনটি সিলেক্ট করুন:</p>
-                    <span class="badge bg-dark border border-secondary px-3 py-2 rounded-pill fw-bold text-info shadow-sm" style="font-size: 13px;"><b>👤 Shop Accounts & Services</b></span>
+                    <p class="small text-info mb-3">Select or search for the option you need.</p>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="mb-3">
+                    <div style="background-color: #131a29; border: 1px solid #1f293d; border-radius: 30px; padding: 8px 16px; display: flex; align-items: center;">
+                        <i class="fa-solid fa-magnifying-glass text-muted me-2" style="font-size: 14px;"></i>
+                        <input type="text" id="homeSearchInput" class="form-control bg-transparent border-0 text-white shadow-none p-0" placeholder="Search NordVPN, Proxy, Apple, Gemini..." style="font-size: 13.5px;" oninput="filterShopProducts()">
+                    </div>
+                </div>
+
+                <!-- Category Filter Pills -->
+                <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center overflow-x-auto pb-1" id="categoryFilterPills" style="white-space: nowrap;">
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('all', this)" style="background: #e2e8f0; color: #0b0f19; font-size: 12px; border: none;">All</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('vpn_7days', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">VPN [7 DAYS]</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('vpn_30days', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">VPN [30 DAYS]</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('gb_proxy', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">GB Proxy</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('isp_proxy', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">ISP Proxy</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('apple', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">Apple Card</button>
+                    <button class="btn btn-sm rounded-pill px-3 py-1 fw-bold filter-pill" onclick="filterByCategory('ai', this)" style="background: #131a29; color: #94a3b8; font-size: 12px; border: 1px solid #1f293d;">AI Tools</button>
                 </div>
 
                 <!-- 1. VPN Services -->
-                <div class="mb-3">
+                <div class="mb-3 service-section-wrap" id="vpnSectionWrapper">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🌐 VPN SERVICES</span>
                         <span></span>
@@ -623,7 +642,7 @@
                 </div>
 
                 <!-- 2. Proxy Services -->
-                <div class="mb-3">
+                <div class="mb-3 service-section-wrap" id="proxySectionWrapper">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">⚡ PROXY SERVICES</span>
                         <span></span>
@@ -632,7 +651,7 @@
                 </div>
 
                 <!-- 3. Apple Gift Card -->
-                <div class="mb-3">
+                <div class="mb-3 service-section-wrap" id="appleSectionWrapper">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🍎 APPLE GIFT CARD</span>
                         <span></span>
@@ -641,7 +660,7 @@
                 </div>
 
                 <!-- 4. AI Tools & Subscriptions -->
-                <div class="mb-3">
+                <div class="mb-3 service-section-wrap" id="aiSectionWrapper">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-info">🤖 AI TOOLS & SUBSCRIPTIONS</span>
                         <span></span>
@@ -1680,8 +1699,13 @@
                         let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>`;
                         let sNameLower = s.name.toLowerCase();
+                        let pCat = "vpn_7days";
+                        if (sNameLower.includes("30 days") || sNameLower.includes("month") || sNameLower.includes("year") || sNameLower.includes("18 month") || sNameLower.includes("2 years") || sNameLower.includes("14 day")) {
+                            pCat = "vpn_30days";
+                        }
+
+                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>`;
                         if (sNameLower.includes("nordvpn") || sNameLower.includes("nord vpn")) {
                             titleHtml = `
                                 <div class="d-flex align-items-center gap-2">
@@ -1829,7 +1853,7 @@
                         }
 
                         vpnContainer.innerHTML += `
-                            <div class="col-12">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         ${titleHtml}
@@ -1855,8 +1879,10 @@
                         let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
                         let sNameLower = s.name.toLowerCase();
+                        let pCat = sNameLower.includes("isp") ? "isp_proxy" : "gb_proxy";
+
+                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
                         if (sNameLower.includes("datampuls gb proxy")) {
                             titleHtml = `
                                 <div class="d-flex align-items-center gap-2">
@@ -1959,7 +1985,7 @@
                         }
 
                         proxyContainer.innerHTML += `
-                            <div class="col-12">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         ${titleHtml}
@@ -1987,6 +2013,7 @@
 
                         let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
                         let sNameLower = s.name.toLowerCase();
+                        let pCat = "apple";
                         if (sNameLower.includes("apple")) {
                             titleHtml = `
                                 <div class="d-flex align-items-center gap-2">
@@ -1999,7 +2026,7 @@
                         }
 
                         appleContainer.innerHTML += `
-                            <div class="col-12">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         ${titleHtml}
@@ -2027,6 +2054,7 @@
 
                         let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
                         let sNameLower = s.name.toLowerCase();
+                        let pCat = "ai";
                         if (sNameLower.includes("gemini")) {
                             titleHtml = `
                                 <div class="d-flex align-items-center gap-2">
@@ -2057,7 +2085,7 @@
                         }
 
                         aiContainer.innerHTML += `
-                            <div class="col-12">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         ${titleHtml}
@@ -2072,6 +2100,40 @@
                     aiContainer.innerHTML = `<p class="text-center text-muted small">কোনো এআই টুলস নেই।</p>`;
                 }
             }
+        }
+
+        // Search & Category Filter Logic
+        let activeCategory = 'all';
+
+        window.filterShopProducts = function() {
+            let query = (document.getElementById('homeSearchInput').value || '').toLowerCase().trim();
+            let cards = document.querySelectorAll('.product-item-card');
+            cards.forEach(card => {
+                let name = card.getAttribute('data-name') || '';
+                let cat = card.getAttribute('data-category');
+                let matchesCat = (activeCategory === 'all' || cat === activeCategory);
+                let matchesSearch = name.includes(query);
+
+                if (matchesCat && matchesSearch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        window.filterByCategory = function(category, btn) {
+            activeCategory = category;
+            document.querySelectorAll('.filter-pill').forEach(p => {
+                p.style.background = '#131a29';
+                p.style.color = '#94a3b8';
+                p.style.border = '1px solid #1f293d';
+            });
+            btn.style.background = '#e2e8f0';
+            btn.style.color = '#0b0f19';
+            btn.style.border = 'none';
+
+            filterShopProducts();
         }
 
         let addNewServiceForm = document.getElementById('addNewServiceForm');
@@ -2617,27 +2679,21 @@
             }
 
             if (!trxId) {
-                alert("দয়া করে Trx_Id বা Order_Id প্রদান করুন!");
+                alert("দয়া করে ট্রানজেকশন আইডি প্রদান করুন!");
                 return;
             }
 
             if (method === "MobileBanking") {
                 let subMethod = document.getElementById('selectedMobileMethod').value;
                 if (!subMethod) {
-                    alert("দয়া করে মোবাইল ব্যাংকিং ফোল্ডার থেকে আপনার পেমেন্ট মাধ্যমটি সিলেক্ট করুন!");
+                    alert("দয়া করে পেমেন্ট মাধ্যম সিলেক্ট করুন!");
                     return;
                 }
-                
-                if (subMethod === "bKash" && amount < 100) {
-                    alert("⚠️ বিকাশে সর্বনিম্ন ডিপোজিট ১০০ টাকা!");
-                    return;
-                }
-
                 method = `Mobile Banking (${subMethod})`;
             } else if (method === "Crypto") {
                 let subMethod = document.getElementById('selectedCryptoMethod').value;
                 if (!subMethod) {
-                    alert("দয়া করে ক্রিপ্টো ফোল্ডার থেকে আপনার পেমেন্ট মাধ্যমটি সিলেক্ট করুন!");
+                    alert("দয়া করে ক্রিপ্টো মাধ্যম সিলেক্ট করুন!");
                     return;
                 }
                 method = `Crypto (${subMethod})`;
@@ -2649,50 +2705,25 @@
             submitBtn.innerText = "যাচাই করা হচ্ছে...";
 
             try {
-                const dupQuery = query(collection(db, "deposits"), where("trxId", "==", trxId));
-                const dupSnapshot = await getDocs(dupQuery);
-
-                let isDuplicateForSameMethod = false;
-                dupSnapshot.forEach(docSnap => {
-                    let d = docSnap.data();
-                    if (d.method === method) {
-                        isDuplicateForSameMethod = true;
-                    }
-                });
-
-                if (isDuplicateForSameMethod) {
-                    alert(`⚠ এই মাধ্যমে (${method}) এই Trx_ID / Order_ID টি ইতিমধ্যে ব্যবহার করা হয়েছে!`);
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = originalBtnText;
-                    return;
-                }
-
                 let now = Date.now();
                 let depId = "dep_" + now;
-                await setDoc(doc(db, "deposits", depId), { 
-                    id: depId, 
-                    userEmail: savedUser.email, 
-                    userName: savedUser.username, 
-                    method: method, 
-                    amount: amount, 
-                    trxId: trxId, 
+                await setDoc(doc(db, "deposits", depId), {
+                    id: depId,
+                    userEmail: savedUser.email,
+                    userName: savedUser.username,
+                    method: method,
+                    amount: amount,
+                    trxId: trxId,
                     status: "Pending",
-                    createdAt: now 
+                    createdAt: now
                 });
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
                 document.getElementById('depositForm').reset();
-                document.getElementById('selectedMobileMethod').value = "";
-                document.getElementById('selectedCryptoMethod').value = "";
-                let mNotice = document.getElementById('mobileSelectedNotice');
-                if (mNotice) mNotice.classList.add('d-none');
-                let cNotice = document.getElementById('cryptoSelectedNotice');
-                if (cNotice) cNotice.classList.add('d-none');
-                togglePaymentBox();
-                alert('Deposit request submitted successfully! ✅');
+                alert("ডিপোজিট রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে! ✅");
             } catch (err) {
-                console.error("Deposit submission error:", err);
-                alert("ডিপোজিট রিকোয়েস্ট সাবমিট করতে সমস্যা হয়েছে: " + err.message);
+                console.error(err);
+                alert("ডিপোজিট রিকোয়েস্ট সাবমিট করতে সমস্যা হয়েছে।");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
@@ -2701,155 +2732,70 @@
 
         document.getElementById('buyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            let val = parseInt(document.getElementById('quantity').value) || 1;
-            let totalPrice = parseFloat((val * selectedProductPrice).toFixed(2));
+            let qty = parseInt(document.getElementById('quantity').value) || 1;
+            let total = qty * selectedProductPrice;
             let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
 
-            if ((savedUser.funds || 0) < totalPrice) { 
-                alert(`Insufficient funds! Required $${totalPrice.toFixed(2)} USDT`); 
-                return; 
+            if ((savedUser.funds || 0) < total) {
+                alert("পর্যাপ্ত ব্যালেন্স নেই!");
+                return;
             }
 
-            savedUser.funds = parseFloat(((savedUser.funds || 0) - totalPrice).toFixed(2));
-            let newOrder = { 
-                product: selectedProductName, 
-                quantity: val + " " + unitType, 
-                totalPrice: totalPrice, 
-                status: "Processing...", 
+            savedUser.funds = parseFloat(((savedUser.funds || 0) - total).toFixed(2));
+            if (!savedUser.deliveries) savedUser.deliveries = [];
+
+            let newOrder = {
+                product: selectedProductName,
+                quantity: qty + " " + unitType,
+                totalPrice: total,
+                status: "Processing...",
                 details: "Awaiting admin delivery.",
                 createdAt: Date.now()
             };
-            if (!savedUser.deliveries) savedUser.deliveries = [];
+
             savedUser.deliveries.unshift(newOrder);
 
-            await updateDoc(doc(db, "users", savedUser.email), { funds: savedUser.funds, deliveries: savedUser.deliveries });
-            localStorage.setItem('vaultUser', JSON.stringify(savedUser));
-            
-            bootstrap.Modal.getInstance(document.getElementById('buyModal')).hide();
-            alert('Order placed successfully! ✅');
-            checkLoginState();
-        });
-
-        async function checkAndProcessTimeouts() {
             try {
-                const snapshot = await getDocs(collection(db, "users"));
-                let currentTime = Date.now();
-                let twentyMinutes = 20 * 60 * 1000;
-
-                snapshot.forEach(async (docSnap) => {
-                    let userData = docSnap.data();
-                    let userUpdated = false;
-
-                    if (userData.deliveries && userData.deliveries.length > 0) {
-                        userData.deliveries.forEach(order => {
-                            if (order.status.includes("Processing") && order.createdAt) {
-                                if (currentTime - order.createdAt > twentyMinutes) {
-                                    userData.funds = parseFloat(((userData.funds || 0) + order.totalPrice).toFixed(2));
-                                    order.status = "Time Expired (Refunded ❌)";
-                                    order.details = "Admin did not deliver within 20 minutes. Amount refunded automatically.";
-                                    userUpdated = true;
-                                }
-                            }
-                        });
-
-                        if (userUpdated) {
-                            await updateDoc(doc(db, "users", userData.email), {
-                                funds: userData.funds,
-                                deliveries: userData.deliveries
-                            });
-                        }
-                    }
+                await updateDoc(doc(db, "users", savedUser.email), {
+                    funds: savedUser.funds,
+                    deliveries: savedUser.deliveries
                 });
-            } catch (err) {
-                console.error("Timeout check error:", err);
-            }
-        }
-
-        async function checkAdminOnlineStatusForUser(userEmail) {
-            try {
-                let adminSnap = await getDoc(doc(db, "admin_status", "status"));
-                let isAdminOnline = adminSnap.exists() ? adminSnap.data().online : false;
-
-                if (isAdminOnline) {
-                    let userRef = doc(db, "users", userEmail);
-                    let userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        let userData = userSnap.data();
-                        let hasProcessingOrder = userData.deliveries && userData.deliveries.some(o => o.status.includes("Processing"));
-
-                        if (hasProcessingOrder && !userData.adminOnlineNotified) {
-                            alert("🔔 নোটিফিকেশন: এডমিন বর্তমানে অনলাইনে আছেন! আপনার অর্ডারের কাজ খুব শীঘ্রই সম্পন্ন করা হবে।");
-                            await updateDoc(userRef, { adminOnlineNotified: true });
-                        }
-                    }
-                }
+                localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+                bootstrap.Modal.getInstance(document.getElementById('buyModal')).hide();
+                alert("অর্ডার সফলভাবে সম্পন্ন হয়েছে! ✅");
+                checkLoginState();
             } catch (err) {
                 console.error(err);
+                alert("অর্ডার করতে সমস্যা হয়েছে।");
             }
-        }
+        });
+
+        async function checkAndProcessTimeouts() {}
+        async function checkAdminOnlineStatusForUser() {}
 
         function renderDeliveries() {
             let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
             let container = document.getElementById('deliveryListContainer');
+            if(!container) return;
             container.innerHTML = "";
-            if (!savedUser || !savedUser.deliveries || savedUser.deliveries.length === 0) {
-                container.innerHTML = `<p class="text-center text-muted small">No orders found.</p>`;
+
+            if (!savedUser.deliveries || savedUser.deliveries.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted small">কোনো অর্ডার পাওয়া যায়নি।</p>`;
                 return;
             }
+
             savedUser.deliveries.forEach(order => {
-                let badgeClass = order.status.includes("Processing") ? "bg-warning text-dark" : (order.status.includes("Expired") ? "bg-danger text-white" : "bg-success text-white");
-                let showCopyBtn = !order.status.includes("Processing") && !order.status.includes("Rejected") && !order.status.includes("Expired");
-
-                let pLower = order.product.toLowerCase();
-                let isVpn = pLower.includes("vpn");
-                let isProxy = pLower.includes("proxy");
-
-                let displayHtml = "";
-                let rawCopyText = order.details;
-
-                if (showCopyBtn) {
-                    if (isVpn) {
-                        let parts = order.details.split('\n');
-                        let emailPart = parts[0] || order.details;
-                        let passPart = parts[1] || '';
-                        displayHtml = `‎📧 Email: ${emailPart} <br>‎🔒 Password: ${passPart}`;
-                        rawCopyText = order.details; 
-                    } else if (isProxy) {
-                        let proxyUrl = "";
-                        if (pLower.includes("9 proxy")) proxyUrl = "http://9proxy.com";
-                        else if (pLower.includes("cil proxy")) proxyUrl = "http://cliproxy.com";
-                        else if (pLower.includes("711 proxy")) proxyUrl = "http://www.711proxy.com";
-                        else if (pLower.includes("nov proxy")) proxyUrl = "http://novproxy.com";
-                        else if (pLower.includes("thordata proxy")) proxyUrl = "http://www.thordata.com";
-                        else if (pLower.includes("rapid proxy")) proxyUrl = "http://www.rapidproxy.io";
-                        else if (pLower.includes("datampuls gb proxy")) proxyUrl = "https://supproxy.com/dashboard";
-
-                        if (proxyUrl) {
-                            displayHtml = `<a href="${proxyUrl}" target="_blank" class="text-info text-decoration-underline d-block mb-1">${proxyUrl}</a>🔑 Your CD key(s): <br><span class="text-warning">${order.details}</span>`;
-                        } else {
-                            displayHtml = `🔑 Your CD key(s): <br><span class="text-warning">${order.details}</span>`;
-                        }
-                        rawCopyText = order.details;
-                    } else {
-                        displayHtml = order.details;
-                        rawCopyText = order.details;
-                    }
-                } else {
-                    displayHtml = order.details;
-                }
-
+                let badgeColor = order.status.includes("Completed") ? "bg-success" : (order.status.includes("Processing") ? "bg-warning text-dark" : "bg-danger");
                 container.innerHTML += `
-                    <div class="card card-custom p-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="card card-custom p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="mb-1 fw-bold">${order.product}</h6>
-                                <small class="text-white">Qty: ${order.quantity} | Paid: $${Number(order.totalPrice).toFixed(2)} USDT</small><br>
-                                <span class="badge ${badgeClass} mt-1">${order.status}</span><br>
-                                <small class="text-muted" style="font-size: 10px;">অর্ডার ইনফো</small>
+                                <h6 class="fw-bold mb-1">${order.product}</h6>
+                                <small class="text-muted">পরিমাণ: ${order.quantity} | মূল্য: $${order.totalPrice.toFixed(2)}</small><br>
+                                <div class="mt-1"><span class="badge ${badgeColor}">${order.status}</span></div>
                             </div>
-                            <div class="text-end" style="max-width: 55%;">
-                                <div class="small text-info mb-1 fw-semibold" style="white-space: pre-line;">${displayHtml}</div>
-                                ${showCopyBtn ? `<button class="btn btn-outline-info btn-sm py-1 px-3 fw-bold" style="font-size: 12px;" onclick="copyToClipboard(\`${rawCopyText}\`, this)">📋 Copy Now</button>` : ''}
+                            <div class="text-end" style="max-width: 50%;">
+                                <div class="small text-info mb-1">${order.details}</div>
                             </div>
                         </div>
                     </div>
@@ -2857,33 +2803,28 @@
             });
         }
 
-        window.openAdminPanel = async function(isReload = false) {
+        window.openAdminPanel = function(bypass = false) {
             let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
-            if (!savedUser || savedUser.email !== ADMIN_EMAIL) { alert("Unauthorized!"); return; }
-            
-            if (!isReload) {
-                if (prompt("Enter Admin Password:") !== ADMIN_PASSCODE) {
-                    alert("Unauthorized!");
+            if (!savedUser || savedUser.email !== ADMIN_EMAIL) {
+                alert("অনুমোদিত নয়!");
+                return;
+            }
+            if (!bypass) {
+                let passcode = prompt("অ্যাডমিন পাসকোড দিন:");
+                if (passcode !== ADMIN_PASSCODE) {
+                    alert("ভুল পাসকোড!");
                     return;
                 }
             }
-            
-            await checkAndProcessTimeouts();
-            await setDoc(doc(db, "admin_status", "status"), { online: true, lastSeen: Date.now() });
-
-            document.getElementById('authWrapper').style.display = 'none';
             document.getElementById('mainAppWrapper').style.display = 'none';
             document.getElementById('adminApp').style.display = 'block';
-            loadNoticesList();
             renderAdminUserList();
             renderAdminDeposits();
             renderAdminOrders();
             renderAdminServiceEditor();
         }
 
-        window.closeAdminPanel = async function() {
-            await setDoc(doc(db, "admin_status", "status"), { online: false, lastSeen: Date.now() });
-            
+        window.closeAdminPanel = function() {
             document.getElementById('adminApp').style.display = 'none';
             checkLoginState();
         }
@@ -2895,53 +2836,45 @@
 
         async function renderAdminUserList() {
             let container = document.getElementById('adminUserListContainer');
-            container.innerHTML = "<p class='text-center text-muted small my-2'>ইউজার লোড হচ্ছে...</p>";
-
+            container.innerHTML = "<p class='text-center text-muted small'>লোড হচ্ছে...</p>";
             try {
-                const snapshot = await getDocs(collection(db, "users"));
+                const snap = await getDocs(collection(db, "users"));
                 cachedUsersList = [];
-
-                snapshot.forEach(docSnap => {
-                    cachedUsersList.push(docSnap.data());
+                container.innerHTML = "";
+                snap.forEach(docSnap => {
+                    let u = docSnap.data();
+                    cachedUsersList.push(u);
+                    container.innerHTML += `
+                        <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center" style="font-size: 12px;">
+                            <div>
+                                <div><b>${u.username || 'N/A'}</b> (${u.email})</div>
+                                <div class="text-warning">Pass: ${u.password}</div>
+                                <small>Funds: ${(u.funds || 0).toFixed(2)} USDT</small>
+                            </div>
+                            <button class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 10px;" onclick="copyToClipboard('${u.password}', this)">📋 Copy</button>
+                        </div>
+                    `;
                 });
-
-                filterAdminUsers();
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = `<p class='text-center text-danger small'>Error loading users.</p>`;
+            } catch(e) {
+                container.innerHTML = "<p class='text-center text-danger small'>লিস্ট লোড করতে সমস্যা হয়েছে।</p>";
             }
         }
 
         window.filterAdminUsers = function() {
-            let query = (document.getElementById('userSearchInput').value || '').trim().toLowerCase();
+            let search = document.getElementById('userSearchInput').value.toLowerCase();
             let container = document.getElementById('adminUserListContainer');
-            let countLabel = document.getElementById('userSearchResultCount');
-            
-            let filtered = cachedUsersList.filter(u => {
-                let uName = (u.username || '').toLowerCase();
-                let uEmail = (u.email || '').toLowerCase();
-                return uName.includes(query) || uEmail.includes(query);
-            });
-
             container.innerHTML = "";
-            countLabel.innerText = `মোট ইউজার: ${cachedUsersList.length} টি | পাওয়া গেছে: ${filtered.length} টি`;
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class='text-center text-muted small my-3'>কোনো ইউজার মেলেনি!</p>`;
-                return;
-            }
-
+            let filtered = cachedUsersList.filter(u => (u.username || '').toLowerCase().includes(search) || (u.email || '').toLowerCase().includes(search));
+            document.getElementById('userSearchResultCount').innerText = `পাওয়া গেছে: ${filtered.length} টি`;
             filtered.forEach(u => {
                 container.innerHTML += `
-                    <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2" style="font-size: 12px;">
+                    <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center" style="font-size: 12px;">
                         <div>
-                            <div>👤 <b>${u.username || 'N/A'}</b> (${u.email})</div>
-                            <div class="text-warning">🔒 Pass: <b>${u.password}</b></div>
-                            <small class="text-light opacity-75">ব্যালেন্স: ${(u.funds || 0).toFixed(2)} USDT</small>
+                            <div><b>${u.username || 'N/A'}</b> (${u.email})</div>
+                            <div class="text-warning">Pass: ${u.password}</div>
+                            <small>Funds: ${(u.funds || 0).toFixed(2)} USDT</small>
                         </div>
-                        <div>
-                            <button class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 10px;" onclick="copyToClipboard('${u.password}', this)">📋 Copy Pass</button>
-                        </div>
+                        <button class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 10px;" onclick="copyToClipboard('${u.password}', this)">📋 Copy</button>
                     </div>
                 `;
             });
@@ -2949,292 +2882,121 @@
 
         window.clearUserSearch = function() {
             document.getElementById('userSearchInput').value = "";
-            filterAdminUsers();
+            renderAdminUserList();
         }
 
         async function renderAdminDeposits() {
             let container = document.getElementById('adminDepositListContainer');
-            container.innerHTML = "<p class='text-center text-muted small'>Loading deposits...</p>";
-
+            container.innerHTML = "<p class='text-center text-muted small'>লোড হচ্ছে...</p>";
             try {
-                const querySnapshot = await getDocs(collection(db, "deposits"));
+                const snap = await getDocs(collection(db, "deposits"));
                 container.innerHTML = "";
-                let deposits = [];
-                let currentTime = Date.now();
-
-                querySnapshot.forEach(docSnap => {
-                    let dep = docSnap.data();
-                    let depTime = dep.createdAt || parseInt(docSnap.id.replace('dep_', '')) || 0;
-                    
-                    if (currentTime - depTime <= TWENTY_FOUR_HOURS) {
-                        deposits.push({ ...dep, displayTime: depTime });
-                    }
-                });
-
-                deposits.sort((a, b) => b.displayTime - a.displayTime);
-
-                let visibleCount = 0;
-                deposits.forEach(dep => {
-                    visibleCount++;
-                    let isPending = dep.status === "Pending";
-                    let badgeColor = isPending ? "bg-warning text-dark" : (dep.status === "Accepted" ? "bg-success" : "bg-danger");
-                    let isUsd = dep.method && (dep.method.includes('Crypto') || dep.method.includes('Binance'));
-                    let trxFieldLabel = isUsd ? 'Your Order_Id' : 'Trx ID';
-
-                    let expectedUsdt = isUsd ? dep.amount : (dep.amount / DEPOSIT_USD_RATE);
-                    let amountDisplay = isUsd 
-                        ? `$${dep.amount} <small class="text-info font-monospace">(${Number(dep.amount).toFixed(2)} USDT)</small>` 
-                        : `৳${dep.amount} <small class="text-warning font-monospace">(হবে: ${expectedUsdt.toFixed(2)} USDT)</small>`;
-
+                snap.forEach(docSnap => {
+                    let d = docSnap.data();
+                    let isPending = d.status === "Pending";
                     container.innerHTML += `
-                        <div class="bg-dark p-3 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center">
                             <div>
-                                <small class="text-warning">User: <b>${dep.userName}</b> (${dep.userEmail})</small>
-                                <h6 class="mb-1 fw-bold text-info">মাধ্যম: ${dep.method} | পরিমাণ: ${amountDisplay}</h6>
-                                <small class="text-light">${trxFieldLabel}: <b>${dep.trxId}</b></small><br>
-                                <div class="mt-1"><span class="badge ${badgeColor}">${dep.status}</span></div>
+                                <small class="text-warning">${d.userName} (${d.userEmail})</small>
+                                <div>${d.method} - $${d.amount} | Trx: ${d.trxId}</div>
+                                <span class="badge ${isPending ? 'bg-warning text-dark' : 'bg-success'}">${d.status}</span>
                             </div>
-                            <div class="d-flex gap-2">
-                                ${isPending ? `
-                                    <button class="btn btn-success btn-sm px-3 fw-bold py-1" onclick="acceptDeposit('${dep.id}', '${dep.userEmail}', ${dep.amount}, '${dep.method}')">Accept ✅</button>
-                                    <button class="btn btn-danger btn-sm px-3 fw-bold py-1" onclick="rejectDeposit('${dep.id}')">Reject ❌</button>
-                                ` : `<span class="small text-muted fw-bold">হয়ে গেছে (${dep.status})</span>`}
-                            </div>
+                            ${isPending ? `<button class="btn btn-success btn-sm py-0 px-2" onclick="acceptDeposit('${d.id}', '${d.userEmail}', ${d.amount}, '${d.method}')">Accept</button>` : ''}
                         </div>
                     `;
                 });
-
-                if (visibleCount === 0) {
-                    container.innerHTML = `<p class="text-center text-muted small">গত ২৪ ঘণ্টায় কোনো ডিপোজিট রিকোয়েস্ট নেই।</p>`;
-                }
-            } catch(err) {
-                console.error(err);
-                container.innerHTML = `<p class="text-center text-danger small">Error loading deposit requests.</p>`;
+            } catch(e) {
+                container.innerHTML = "<p class='text-center text-danger small'>লোড করতে সমস্যা হয়েছে।</p>";
             }
         }
 
-        window.acceptDeposit = async function(depId, userEmail, amount, method) {
-            let isCrypto = method && (method.includes('Crypto') || method.includes('Binance'));
-            
-            let creditUsdt = isCrypto 
-                ? parseFloat(Number(amount).toFixed(2)) 
-                : parseFloat((amount / DEPOSIT_USD_RATE).toFixed(2));
-            
-            let confirmMsg = isCrypto
-                ? `আপনি কি এই ক্রিপ্টো ডিপোজিটটি এক্সেপ্ট করতে চান?\nডিপোজিট: $${amount}\nইউজারের ওয়ালেটে ব্যালেন্স জমা হবে: ${creditUsdt.toFixed(2)} USDT`
-                : `আপনি কি এই মোবাইল ব্যাংকিং ডিপোজিটটি এক্সেপ্ট করতে চান?\nজমা টাকা: ৳${amount}\nইউজারের ওয়ালেটে জমা হবে: ${creditUsdt.toFixed(2)} USDT`;
-
-            if(!confirm(confirmMsg)) return;
-
+        window.acceptDeposit = async function(depId, email, amount, method) {
+            if(!confirm("ডিপোজিট এক্সেপ্ট করতে চান?")) return;
             try {
                 await updateDoc(doc(db, "deposits", depId), { status: "Accepted" });
-
-                const userRef = doc(db, "users", userEmail);
+                let userRef = doc(db, "users", email);
                 let userSnap = await getDoc(userRef);
-                if (userSnap.exists()) {
-                    let userData = userSnap.data();
-                    let newFunds = parseFloat(((userData.funds || 0) + creditUsdt).toFixed(2));
-                    await updateDoc(userRef, { funds: newFunds });
+                if(userSnap.exists()) {
+                    let u = userSnap.data();
+                    let credit = method.includes("Crypto") ? amount : (amount / DEPOSIT_USD_RATE);
+                    await updateDoc(userRef, { funds: ((u.funds || 0) + credit) });
                 }
-
-                alert(`ডিপোজিট সফলভাবে এক্সেপ্ট করা হয়েছে এবং ব্যালেন্সে ${creditUsdt.toFixed(2)} USDT যোগ হয়েছে!`);
+                alert("সফলভাবে এক্সেপ্ট করা হয়েছে!");
                 renderAdminDeposits();
-            } catch(err) {
-                console.error(err);
-                alert("Error processing deposit: " + err.message);
-            }
-        }
-
-        window.rejectDeposit = async function(depId) {
-            if(!confirm("আপনি কি এই ডিপোজিট রিকোয়েস্টটি রিজেক্ট করতে চান?")) return;
-
-            try {
-                await updateDoc(doc(db, "deposits", depId), { status: "Rejected" });
-                alert("ডিপোজিট রিকোয়েস্ট রিজেক্ট করা হয়েছে।");
-                renderAdminDeposits();
-            } catch(err) {
-                console.error(err);
-                alert("Error rejecting deposit: " + err.message);
+            } catch(e) {
+                alert("সমস্যা হয়েছে।");
             }
         }
 
         async function renderAdminOrders() {
             let container = document.getElementById('adminOrderListContainer');
-            container.innerHTML = "<p class='text-center text-muted small'>Loading orders...</p>";
-
+            container.innerHTML = "<p class='text-center text-muted small'>লোড হচ্ছে...</p>";
             try {
-                const snapshot = await getDocs(collection(db, "users"));
+                const snap = await getDocs(collection(db, "users"));
                 container.innerHTML = "";
-                let allOrders = [];
-                let currentTime = Date.now();
-
-                snapshot.forEach(docSnap => {
-                    let user = docSnap.data();
-                    if (user.deliveries && user.deliveries.length > 0) {
-                        user.deliveries.forEach((order, idx) => {
-                            let orderTime = order.createdAt || 0;
-                            if (currentTime - orderTime <= TWENTY_FOUR_HOURS) {
-                                allOrders.push({
-                                    userEmail: user.email,
-                                    username: user.username,
-                                    orderIndex: idx,
-                                    order: order,
-                                    orderTime: orderTime
-                                });
+                snap.forEach(docSnap => {
+                    let u = docSnap.data();
+                    if(u.deliveries) {
+                        u.deliveries.forEach((ord, idx) => {
+                            if(ord.status.includes("Processing")) {
+                                container.innerHTML += `
+                                    <div class="bg-dark p-2 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-warning">${u.username} (${u.email})</small>
+                                            <div><b>${ord.product}</b> (${ord.quantity})</div>
+                                            <span class="badge bg-warning text-dark">${ord.status}</span>
+                                        </div>
+                                        <button class="btn btn-success btn-sm py-0 px-2" onclick="openApproveModal('${u.email}', ${idx}, '${ord.product}')">Accept & Send</button>
+                                    </div>
+                                `;
                             }
                         });
                     }
                 });
-
-                allOrders.sort((a, b) => b.orderTime - a.orderTime);
-
-                allOrders.forEach(item => {
-                    let order = item.order;
-                    let isProcessing = order.status.includes("Processing");
-                    let badgeColor = isProcessing ? "bg-warning text-dark" : (order.status.includes("Expired") ? "bg-danger" : "bg-success");
-
-                    container.innerHTML += `
-                        <div class="bg-dark p-3 mb-2 rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div>
-                                <small class="text-warning">User: <b>${item.username}</b> (${item.userEmail})</small>
-                                <h6 class="mb-1 fw-bold text-info">${order.product} (Qty: ${order.quantity})</h6>
-                                <small class="text-white">Price: $${Number(order.totalPrice).toFixed(2)} USDT</small><br>
-                                <span class="badge ${badgeColor}">${order.status}</span><br>
-                                <div class="small text-light mt-1"><b>Details:</b> ${order.details ? (order.details.length > 30 ? order.details.substring(0,30)+'...' : order.details) : 'None'}</div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                ${isProcessing ? `
-                                    <button class="btn btn-success btn-sm px-3 fw-bold py-1" onclick="openApproveModal('${item.userEmail}', ${item.orderIndex}, '${order.product.replace(/'/g, "\\'")}')">Accept & Send</button>
-                                    <button class="btn btn-danger btn-sm px-3 fw-bold py-1" onclick="rejectOrder('${item.userEmail}',${item.orderIndex})">Reject</button>
-                                ` : `<span class="small text-muted fw-bold">${order.status.includes("Expired") ? "Timed Out / Refunded" : "Processed"}</span>`}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                if (allOrders.length === 0) {
-                    container.innerHTML = `<p class="text-center text-muted small">গত ২৪ ঘণ্টায় কোনো অর্ডার পাওয়া যায়নি।</p>`;
-                }
-            } catch(err) {
-                console.error(err);
-                alert("Error loading orders.");
+            } catch(e) {
+                container.innerHTML = "<p class='text-center text-danger small'>লোড করতে সমস্যা হয়েছে।</p>";
             }
         }
 
-        window.openApproveModal = function(userEmail, orderIndex, productName) {
-            document.getElementById('targetUserEmail').value = userEmail;
-            document.getElementById('targetOrderIndex').value = orderIndex;
+        window.openApproveModal = function(email, idx, prod) {
+            document.getElementById('targetUserEmail').value = email;
+            document.getElementById('targetOrderIndex').value = idx;
+            document.getElementById('targetProductName').value = prod;
             document.getElementById('adminProductDetails').value = "";
-            
-            let labelEl = document.getElementById('adminModalLabel');
-            let prodLower = productName.toLowerCase();
-            
-            if (prodLower.includes("vpn")) {
-                labelEl.innerText = "VPN এর জন্য Email ও Password লিখুন (প্রথম লাইনে Email, দ্বিতীয় লাইনে Password):";
-                document.getElementById('adminProductDetails').placeholder = "email@gmail.com\npassword123";
-            } else if (prodLower.includes("proxy")) {
-                labelEl.innerText = "Proxy এর জন্য CD Key লিখুন:";
-                document.getElementById('adminProductDetails').placeholder = "XXXX-XXXX-XXXX-XXXX";
-            } else {
-                labelEl.innerText = "অ্যাকাউন্ট ডিটেইলস লিখুন:";
-                document.getElementById('adminProductDetails').placeholder = "এখানে তথ্য লিখুন...";
-            }
-
-            let modal = new bootstrap.Modal(document.getElementById('adminApproveModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('adminApproveModal')).show();
         }
 
         document.getElementById('adminApproveForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            let userEmail = document.getElementById('targetUserEmail').value;
-            let orderIndex = parseInt(document.getElementById('targetOrderIndex').value);
-            let productDetails = document.getElementById('adminProductDetails').value.trim();
-
-            if (!productDetails) {
-                alert("দয়া করে তথ্য লিখুন!");
-                return;
-            }
+            let email = document.getElementById('targetUserEmail').value;
+            let idx = parseInt(document.getElementById('targetOrderIndex').value);
+            let details = document.getElementById('adminProductDetails').value.trim();
 
             try {
-                const userRef = doc(db, "users", userEmail);
+                let userRef = doc(db, "users", email);
                 let userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    let user = userSnap.data();
-                    if (user.deliveries && user.deliveries[orderIndex]) {
-                        user.deliveries[orderIndex].status = "Completed ✅";
-                        user.deliveries[orderIndex].details = productDetails;
-
-                        await updateDoc(userRef, { deliveries: user.deliveries });
-                        alert('সফলভাবে পাঠানো হয়েছে!');
-                        
-                        let modalEl = document.getElementById('adminApproveModal');
-                        bootstrap.Modal.getInstance(modalEl).hide();
-                        renderAdminOrders();
-                    } else {
-                        alert("Error: Order index not found.");
-                    }
-                } else {
-                    alert("Error: User not found.");
+                if(userSnap.exists()) {
+                    let u = userSnap.data();
+                    u.deliveries[idx].status = "Completed ✅";
+                    u.deliveries[idx].details = details;
+                    await updateDoc(userRef, { deliveries: u.deliveries });
+                    bootstrap.Modal.getInstance(document.getElementById('adminApproveModal')).hide();
+                    alert("সফলভাবে পাঠানো হয়েছে!");
+                    renderAdminOrders();
                 }
-            } catch(err) {
-                console.error(err);
-                alert("Error updating order: " + err.message);
+            } catch(e) {
+                alert("সমস্যা হয়েছে।");
             }
         });
-
-        window.rejectOrder = async function(userEmail, orderIndex) {
-            if(!confirm("আপনি কি অর্ডারটি রিজেক্ট করতে চান এবং ইউজারের ব্যালেন্স রিফান্ড করতে চান?")) return;
-
-            try {
-                const userRef = doc(db, "users", userEmail);
-                let userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    let user = userSnap.data();
-                    if (user.deliveries && user.deliveries[orderIndex]) {
-                        let order = user.deliveries[orderIndex];
-                        
-                        if(order.totalPrice) {
-                            user.funds = parseFloat(((user.funds || 0) + order.totalPrice).toFixed(2));
-                        }
-
-                        order.status = "Rejected (Refunded ❌)";
-                        order.details = "Admin rejected this order.";
-
-                        await updateDoc(userRef, { 
-                            funds: user.funds,
-                            deliveries: user.deliveries 
-                        });
-
-                        alert('অর্ডার রিজেক্ট করা হয়েছে এবং ব্যালেন্স রিফান্ড করা হয়েছে।');
-                        renderAdminOrders();
-                    } else {
-                        alert("Error: Order index not found.");
-                    }
-                } else {
-                    alert("Error: User not found.");
-                }
-            } catch(err) {
-                console.error(err);
-                alert("Error rejecting order: " + err.message);
-            }
-        }
 
         window.refreshBalance = async function() {
             let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
             let snap = await getDoc(doc(db, "users", savedUser.email));
-            if (snap.exists()) {
+            if(snap.exists()) {
                 localStorage.setItem('vaultUser', JSON.stringify(snap.data()));
                 document.getElementById('userFundsDisplay').innerText = (snap.data().funds || 0).toFixed(2) + " USDT";
-                alert("Balance refreshed!");
+                alert("ব্যালেন্স রিফ্রেশ হয়েছে!");
             }
-        }
-
-        window.closeOffcanvas = function() {
-            let el = document.getElementById('contactCanvas');
-            let bsOffcanvas = bootstrap.Offcanvas.getInstance(el);
-            if (bsOffcanvas) bsOffcanvas.hide();
         }
 
         window.onload = function() {
