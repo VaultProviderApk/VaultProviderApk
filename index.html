@@ -1976,6 +1976,10 @@
                 logoImg.src = "https://i.ibb.co/mZQVRdC/nordvpn.png";
                 logoImg.style.display = "block";
                 iconEl.style.display = "none";
+            } else if (nameLower.includes('chape')) {
+                logoImg.src = "https://i.ibb.co/4wKdC6SR/1000017891.jpg";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
             } else if (nameLower.includes('express')) {
                 logoImg.src = "https://i.ibb.co/hx55VdLt/express.png";
                 logoImg.style.display = "block";
@@ -2244,6 +2248,8 @@
                         let iconHtml = `<i class="fa-solid fa-shield-halved text-info fs-4"></i>`;
                         if (sNameLower.includes('nord')) {
                             iconHtml = `<img src="https://i.ibb.co/mZQVRdC/nordvpn.png" alt="NordVPN" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('chape')) {
+                            iconHtml = `<img src="https://i.ibb.co/4wKdC6SR/1000017891.jpg" alt="Chape VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
                         } else if (sNameLower.includes('express')) {
                             iconHtml = `<img src="https://i.ibb.co/hx55VdLt/express.png" alt="ExpressVPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
                         } else if (sNameLower.includes('avast')) {
