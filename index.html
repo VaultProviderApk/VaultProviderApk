@@ -253,6 +253,21 @@
             color: white;
         }
 
+        .btn-view-plans {
+            background-color: #f3c653;
+            color: #111827;
+            border-radius: 30px;
+            font-weight: bold;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            transition: 0.2s;
+        }
+        .btn-view-plans:hover {
+            background-color: #e5b43f;
+            color: #111827;
+        }
+
         .modal-content, .offcanvas {
             background-color: #131a29;
             color: white;
@@ -375,10 +390,6 @@
         .sub-folder-btn.active-folder {
             border-color: #10b981;
             background-color: #162438;
-        }
-
-        .card-cart-dropdown {
-            transition: all 0.3s ease;
         }
 
         /* Golden Cart Badge Style */
@@ -781,7 +792,55 @@
                 </div>
             </div>
 
-            <!-- Cart Section (Dedicated Page like Video) -->
+            <!-- ================= PRODUCT DETAIL VIEW SECTION ================= -->
+            <div id="productDetailSection" class="section-view">
+                <div class="mb-3">
+                    <button class="btn btn-outline-info btn-sm py-1 px-3 rounded-pill" onclick="switchSection('homeSection')">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to all products
+                    </button>
+                </div>
+                <div class="card card-custom p-3 mb-3">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="detailProductLogoWrapper" class="bg-black p-2 rounded-3 border border-secondary d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                            <img id="detailModalLogoImg" src="" alt="Logo" style="width: 46px; height: 46px; object-fit: contain; display: none;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
+                            <i class="fa-solid fa-robot text-warning fs-2" id="detailModalIcon"></i>
+                        </div>
+                        <div>
+                            <span id="detailProductCategoryBadge" class="badge bg-warning text-dark mb-1" style="font-size: 10px;">AI</span>
+                            <h5 id="detailProductName" class="fw-bold mb-0 text-white">Product Name</h5>
+                            <small id="detailProductSubtitle" class="text-muted" style="font-size: 11px;">Premium subscription</small>
+                        </div>
+                    </div>
+
+                    <!-- Features List with Checkmarks -->
+                    <div class="bg-black p-3 rounded-3 border border-secondary mb-3" id="detailFeaturesContainer">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <!-- Choose Your Plan Box -->
+                    <div class="card bg-dark border border-secondary p-3 rounded-3 mb-3">
+                        <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Choose your plan</h6>
+                        <small class="text-muted d-block mb-3" style="font-size: 11px;">Select a duration and add to cart securely</small>
+                        
+                        <div class="p-3 rounded-3 mb-3 border border-warning" style="background: rgba(243, 198, 83, 0.05);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span id="detailPlanDuration" class="fw-bold text-warning d-block" style="font-size: 13px;">PLAN</span>
+                                    <span id="detailPlanPrice" class="fw-bold text-white fs-4">$0.00</span>
+                                </div>
+                                <i class="fa-solid fa-circle-check text-warning fs-5"></i>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-custom w-100 py-2.5 fw-bold mb-2" id="detailAddToCartBtn">
+                            <i class="fa-solid fa-cart-plus me-1"></i> Add to Cart
+                        </button>
+                        <small class="text-center text-muted d-block mt-2" style="font-size: 10px;">We reply and deliver fast • 24/7 Support</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Section (Dedicated Page) -->
             <div id="cartSection" class="section-view">
                 <div class="mb-3 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-cart-shopping me-1"></i> Your Cart</h5>
@@ -1529,15 +1588,15 @@
                 { id: "vpn_9", name: "Bitdefendar Vpn (30 Days)", price: 0.77, quality: true, available: true },
                 { id: "vpn_10", name: "Hama Vpn (7 Days)", price: 0.23, quality: true, available: true },
                 { id: "vpn_11", name: "Hama Vpn (30 Days)", price: 0.77, quality: true, available: true },
-                { id: "vpn_12", name: "Atlast Vpn (7 Days)", price: 0.23, quality: false, available: true },
-                { id: "vpn_13", name: "BetterNet Vpn (7 Days)", price: 0.31, quality: false, available: true },
-                { id: "vpn_14", name: "Browsec Vpn (7 Days)", price: 0.31, quality: false, available: true },
-                { id: "vpn_15", name: "CyberGhost Vpn (7 Days)", price: 0.23, quality: false, available: true },
-                { id: "vpn_16", name: "Surfshark Vpn (7 Days)", price: 0.23, quality: false, available: true },
-                { id: "vpn_17", name: "Hotspot Shield Vpn (7 Days)", price: 0.23, quality: false, available: true },
-                { id: "vpn_18", name: "Ip Vanish Vpn (7 Days)", price: 0.23, quality: false, available: true },
-                { id: "vpn_19", name: "Norton Vpn (7 Days)", price: 0.31, quality: false, available: true },
-                { id: "vpn_20", name: "Proton Vpn (14 Day)", price: 0.54, quality: false, available: true },
+                { id: "vpn_12", name: "Proton Vpn (14 Day)", price: 0.54, quality: false, available: true },
+                { id: "vpn_13", name: "Atlast Vpn (7 Days)", price: 0.23, quality: false, available: true },
+                { id: "vpn_14", name: "BetterNet Vpn (7 Days)", price: 0.31, quality: false, available: true },
+                { id: "vpn_15", name: "Browsec Vpn (7 Days)", price: 0.31, quality: false, available: true },
+                { id: "vpn_16", name: "CyberGhost Vpn (7 Days)", price: 0.23, quality: false, available: true },
+                { id: "vpn_17", name: "Surfshark Vpn (7 Days)", price: 0.23, quality: false, available: true },
+                { id: "vpn_18", name: "Hotspot Shield Vpn (7 Days)", price: 0.23, quality: false, available: true },
+                { id: "vpn_19", name: "Ip Vanish Vpn (7 Days)", price: 0.23, quality: false, available: true },
+                { id: "vpn_20", name: "Norton Vpn (7 Days)", price: 0.31, quality: false, available: true },
                 { id: "vpn_21", name: "X Vpn (7 Days)", price: 0.23, quality: false, available: true }
             ],
             proxy: [
@@ -1578,7 +1637,7 @@
             ai: [
                 { id: "ai_1", name: "Gemini Plus (18 Month)", price: 1.54, available: true },
                 { id: "ai_2", name: "Figma Pro Edu (2 Years)", price: 10.00, available: true },
-                { id: "ai_3", name: "YouTube Subscription (1 Month)", price: 2.00, available: false }
+                { id: "ai_3", name: "YouTube Subscription (1 Month)", price: 2.00, available: true }
             ]
         };
 
@@ -1892,23 +1951,90 @@
             }
         }
 
-        window.toggleCardCart = function(btn) {
-            let cardCard = btn.closest('.card-custom');
-            let dropdown = cardCard.querySelector('.card-cart-dropdown');
-            if (dropdown) {
-                if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                    document.querySelectorAll('.card-cart-dropdown').forEach(d => d.style.display = 'none');
-                    document.querySelectorAll('.cart-toggle-btn').forEach(b => {
-                        b.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Cart';
-                    });
+        // Open Product Detail Page with larger customized logos & dynamic duration
+        window.openProductDetail = function(name, price, category) {
+            document.getElementById('detailProductName').innerText = name;
+            document.getElementById('detailProductSubtitle').innerText = category.toUpperCase() + " • Premium Subscription";
+            
+            let iconEl = document.getElementById('detailModalIcon');
+            let logoImg = document.getElementById('detailModalLogoImg');
+            let nameLower = name.toLowerCase();
 
-                    dropdown.style.display = 'block';
-                    btn.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Close Cart';
+            if (nameLower.includes('gemini')) {
+                logoImg.src = "https://i.ibb.co/BVN4tcpy/gemini.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('figma')) {
+                logoImg.src = "https://i.ibb.co/VWjxf5zk/figma.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('youtube')) {
+                logoImg.src = "https://i.ibb.co/spYJZj2t/youtub.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('nord')) {
+                logoImg.src = "https://i.ibb.co/mZQVRdC/nordvpn.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('express')) {
+                logoImg.src = "https://i.ibb.co/hx55VdLt/express.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('avast')) {
+                logoImg.src = "https://i.ibb.co/hFdp940q/avast.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('bitdefendar') || nameLower.includes('bitdefender')) {
+                logoImg.src = "https://i.ibb.co/7JfjrfFb/bitdefender.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('hama') || nameLower.includes('hma')) {
+                logoImg.src = "https://i.ibb.co/PvHDgrmb/hma.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else if (nameLower.includes('proton')) {
+                logoImg.src = "https://i.ibb.co/jZZ0bT4M/proton.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
+            } else {
+                logoImg.style.display = "none";
+                iconEl.style.display = "block";
+                if (category === 'ai') {
+                    iconEl.className = "fa-solid fa-robot text-warning fs-2";
+                } else if (category === 'vpn') {
+                    iconEl.className = "fa-solid fa-shield-halved text-info fs-2";
+                } else if (category === 'proxy') {
+                    iconEl.className = "fa-solid fa-bolt text-success fs-2";
                 } else {
-                    dropdown.style.display = 'none';
-                    btn.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Cart';
+                    iconEl.className = "fa-solid fa-apple-whole text-danger fs-2";
                 }
             }
+
+            // Extract duration from product name automatically
+            let match = name.match(/\(([^)]+)\)/);
+            let durationText = match ? match[1].toUpperCase() : "STANDARD PLAN";
+            
+            document.getElementById('detailPlanDuration').innerText = durationText;
+            document.getElementById('detailPlanPrice').innerText = "$" + Number(price).toFixed(2);
+            document.getElementById('detailProductCategoryBadge').innerText = category.toUpperCase();
+
+            // Features list with checkmarks
+            let featuresContainer = document.getElementById('detailFeaturesContainer');
+            featuresContainer.innerHTML = `
+                <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-check text-warning"></i><span class="text-white small">High-Speed Server & Instant delivery</span></div>
+                <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-check text-warning"></i><span class="text-white small">Faster responses & reliable access</span></div>
+                <div class="d-flex align-items-center gap-2 mb-2"><i class="fa-solid fa-check text-warning"></i><span class="text-white small">Priority access & 24/7 support</span></div>
+                <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-check text-warning"></i><span class="text-white small">Advanced features included</span></div>
+            `;
+
+            // Setup Add to Cart button
+            let addCartBtn = document.getElementById('detailAddToCartBtn');
+            addCartBtn.onclick = function() {
+                let unitType = durationText.includes("GB") ? "GB" : (durationText.includes("CARD") ? "Card" : "Pcs");
+                addToCart(name, price, unitType);
+            };
+
+            switchSection('productDetailSection');
         }
 
         // Add to Cart Logic
@@ -2108,8 +2234,6 @@
                     data.vpn.forEach(s => {
                         let qualityBadge = s.quality ? `<span class="text-quality-blue">(Quality)</span>` : "";
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
-                        let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
                         let sNameLower = s.name.toLowerCase();
                         let pCat = "vpn_7days";
@@ -2117,28 +2241,39 @@
                             pCat = "vpn_30days";
                         }
 
+                        let iconHtml = `<i class="fa-solid fa-shield-halved text-info fs-4"></i>`;
+                        if (sNameLower.includes('nord')) {
+                            iconHtml = `<img src="https://i.ibb.co/mZQVRdC/nordvpn.png" alt="NordVPN" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('express')) {
+                            iconHtml = `<img src="https://i.ibb.co/hx55VdLt/express.png" alt="ExpressVPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
+                        } else if (sNameLower.includes('avast')) {
+                            iconHtml = `<img src="https://i.ibb.co/hFdp940q/avast.png" alt="Avast VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('bitdefendar') || sNameLower.includes('bitdefender')) {
+                            iconHtml = `<img src="https://i.ibb.co/7JfjrfFb/bitdefender.png" alt="Bitdefender VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('hama') || sNameLower.includes('hma')) {
+                            iconHtml = `<img src="https://i.ibb.co/PvHDgrmb/hma.png" alt="HMA VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
+                        } else if (sNameLower.includes('proton')) {
+                            iconHtml = `<img src="https://i.ibb.co/jZZ0bT4M/proton.png" alt="Proton VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
+                        }
+
                         vpnContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
-                                <div class="card card-custom p-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                        ${availBadge}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
-                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
-                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
-                                        </button>
-                                    </div>
-                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
-                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                <div class="card card-custom p-3">
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            ${iconHtml}
                                         </div>
-                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Pcs')">
-                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
-                                        </button>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
+                                                ${availBadge}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
+                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'vpn')">
+                                        View plans →
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -2153,34 +2288,27 @@
                 if (data.proxy && data.proxy.length > 0) {
                     data.proxy.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
-                        let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
-
                         let sNameLower = s.name.toLowerCase();
                         let pCat = sNameLower.includes("isp") ? "isp_proxy" : "gb_proxy";
 
                         proxyContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
-                                <div class="card card-custom p-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                        ${availBadge}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
-                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
-                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
-                                        </button>
-                                    </div>
-                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
-                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                <div class="card card-custom p-3">
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            <i class="fa-solid fa-bolt text-success fs-4"></i>
                                         </div>
-                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, '${s.name.toLowerCase().includes('pc') ? 'Pcs' : 'GB'}')">
-                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
-                                        </button>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
+                                                ${availBadge}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
+                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'proxy')">
+                                        View plans →
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -2195,31 +2323,25 @@
                 if (data.apple && data.apple.length > 0) {
                     data.apple.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
-                        let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
                         appleContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="apple">
-                                <div class="card card-custom p-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                        ${availBadge}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
-                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
-                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
-                                        </button>
-                                    </div>
-                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
-                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                <div class="card card-custom p-3">
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            <i class="fa-solid fa-apple-whole text-danger fs-4"></i>
                                         </div>
-                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Card')">
-                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
-                                        </button>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
+                                                ${availBadge}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
+                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'apple')">
+                                        View plans →
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -2234,31 +2356,36 @@
                 if (data.ai && data.ai.length > 0) {
                     data.ai.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
-                        let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
+
+                        let sNameLower = s.name.toLowerCase();
+                        let iconHtml = `<i class="fa-solid fa-robot text-warning fs-4"></i>`;
+
+                        if (sNameLower.includes('gemini')) {
+                            iconHtml = `<img src="https://i.ibb.co/BVN4tcpy/gemini.png" alt="Gemini" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('figma')) {
+                            iconHtml = `<img src="https://i.ibb.co/VWjxf5zk/figma.png" alt="Figma" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        } else if (sNameLower.includes('youtube')) {
+                            iconHtml = `<img src="https://i.ibb.co/spYJZj2t/youtub.png" alt="YouTube" style="width: 36px; height: 36px; object-fit: contain;">`;
+                        }
 
                         aiContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="ai">
-                                <div class="card card-custom p-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                        ${availBadge}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
-                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
-                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
-                                        </button>
-                                    </div>
-                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
-                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                <div class="card card-custom p-3">
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                            ${iconHtml}
                                         </div>
-                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Pcs')">
-                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
-                                        </button>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
+                                                ${availBadge}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
+                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'ai')">
+                                        View plans →
+                                    </button>
                                 </div>
                             </div>
                         `;
