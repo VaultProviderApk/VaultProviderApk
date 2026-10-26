@@ -27,7 +27,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Light Mode Styling Classes */
+        /* Light Mode Styling Classes (Optimized for Readability) */
         body.light-mode {
             background-color: #f1f5f9 !important;
             color: #0b0f19 !important;
@@ -38,23 +38,76 @@
         body.light-mode .content-area {
             background-color: #f8fafc !important;
         }
-        body.light-mode .card-custom {
+        body.light-mode .card-custom, 
+        body.light-mode .card.bg-dark {
             background-color: #ffffff !important;
             color: #0b0f19 !important;
             border-color: #cbd5e1 !important;
         }
-        body.light-mode .modal-content, body.light-mode .offcanvas {
+        body.light-mode .modal-content, 
+        body.light-mode .offcanvas {
             background-color: #ffffff !important;
             color: #0b0f19 !important;
             border-color: #cbd5e1 !important;
         }
-        body.light-mode .form-control, body.light-mode .form-select {
+        body.light-mode .form-control, 
+        body.light-mode .form-select {
             background-color: #f1f5f9 !important;
             color: #0b0f19 !important;
             border-color: #cbd5e1 !important;
         }
         body.light-mode .form-control::placeholder {
             color: #64748b !important;
+        }
+        body.light-mode .text-white, 
+        body.light-mode .text-light {
+            color: #0b0f19 !important;
+        }
+        body.light-mode .text-muted,
+        body.light-mode small {
+            color: #475569 !important;
+        }
+        body.light-mode .bg-black {
+            background-color: #f1f5f9 !important;
+            color: #0b0f19 !important;
+        }
+        body.light-mode .sub-folder-btn {
+            background-color: #e2e8f0 !important;
+            color: #0b0f19 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .mail-box-wrapper {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .mail-header-bar {
+            background-color: #f1f5f9 !important;
+            border-bottom-color: #cbd5e1 !important;
+        }
+        body.light-mode .mail-nav-tabs {
+            background-color: #e2e8f0 !important;
+            border-bottom-color: #cbd5e1 !important;
+        }
+        body.light-mode .mail-toolbar {
+            background-color: #f8fafc !important;
+            color: #0b0f19 !important;
+            border-bottom-color: #cbd5e1 !important;
+        }
+        body.light-mode .mail-item-row {
+            border-bottom-color: #e2e8f0 !important;
+        }
+        body.light-mode .mail-item-row:hover {
+            background-color: #f1f5f9 !important;
+        }
+        body.light-mode .mail-item-title {
+            color: #0b0f19 !important;
+        }
+        body.light-mode .mail-detail-container {
+            background-color: #f8fafc !important;
+        }
+        body.light-mode .mail-detail-meta {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
         }
 
         .main-container {
@@ -622,7 +675,7 @@
 
                 <!-- Search Bar -->
                 <div class="mb-3">
-                    <div style="background-color: #131a29; border: 1px solid #1f293d; border-radius: 30px; padding: 8px 16px; display: flex; align-items: center;">
+                    <div style="background-color: #131a29; border: 1px solid #1f293d; border-radius: 30px; padding: 8px 16px; display: flex; align-items: center;" class="search-bar-wrap">
                         <i class="fa-solid fa-magnifying-glass text-muted me-2" style="font-size: 14px;"></i>
                         <input type="text" id="homeSearchInput" class="form-control bg-transparent border-0 text-white shadow-none p-0" placeholder="Search NordVPN, Proxy, Apple, Gemini..." style="font-size: 13.5px;" oninput="filterShopProducts()">
                     </div>
@@ -893,6 +946,38 @@
         </div>
     </div>
 
+    <!-- ================= INSUFFICIENT BALANCE MODAL ================= -->
+    <div class="modal fade" id="insufficientBalanceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3" style="background-color: #131a29; border: 1px solid #1f293d;">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold text-danger">⚠️ Balance Alert</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <div class="p-3 rounded-4 mb-3" style="background-color: #fce8e6; color: #1a1f2c;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-4">❌</span>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-danger" style="font-size: 15px;">Insufficient Balance!</h6>
+                                <small class="text-dark fw-semibold" style="font-size: 12px;">আপনার পর্যাপ্ত ব্যালেন্স নেই।</small>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-danger border-opacity-25">
+                            <span class="fw-bold font-monospace text-dark" style="font-size: 13px;">1$ = 130 Taka</span>
+                            <button class="btn btn-warning fw-bold px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 13px; background-color: #ffc107; color: #000;" onclick="goToDepositFromInsufficient()">
+                                Deposit Now 💰
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-light w-100 py-2 rounded-pill fw-bold" data-bs-dismiss="modal" style="border-color: #2a374e; color: #94a3b8;">
+                        Confirm Buy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar Offcanvas Menu (Contact) -->
     <div class="offcanvas border-secondary offcanvas-end text-bg-dark" tabindex="-1" id="contactCanvas">
         <div class="offcanvas-header border-bottom border-secondary">
@@ -913,7 +998,6 @@
 
     <!-- Floating Live Support Popup Widget (WhatsApp & Telegram) -->
     <div id="supportPopupContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-        <!-- Popup Chat Box (Initially Hidden) -->
         <div id="supportChatBox" style="display: none; width: 300px; background: #0c121e; border: 1px solid #1f2a3d; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); overflow: hidden; margin-bottom: 12px;">
             <div style="background: #25d366; padding: 14px; color: white; display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -939,14 +1023,11 @@
                 </a>
             </div>
         </div>
-
-        <!-- Floating Toggle Button -->
         <button onclick="toggleSupportChat()" style="background-color: #25d366; color: white; width: 55px; height: 55px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-left: auto;">
             <i class="fa-solid fa-comments"></i>
         </button>
     </div>
 
-    <!-- Script for Toggling Chat Popup & Dark Mode -->
     <script>
         function toggleSupportChat() {
             let chatBox = document.getElementById('supportChatBox');
@@ -1480,7 +1561,6 @@
                 { id: "proxy_18", name: "Hub Proxy (2 GB)", price: 2.15, available: true },
                 { id: "proxy_19", name: "Miya Proxy (1 GB)", price: 1.08, available: true },
                 { id: "proxy_20", name: "Miya Proxy (2 GB)", price: 2.15, available: true },
-                // Added ISP Proxy Items
                 { id: "proxy_isp_1", name: "9 Proxy ISP (5 Pc)", price: 0.50, available: true },
                 { id: "proxy_isp_2", name: "9 Proxy ISP (50 Pc)", price: 1.31, available: true },
                 { id: "proxy_isp_3", name: "9 Proxy ISP (100 Pc)", price: 2.62, available: true },
@@ -1921,6 +2001,13 @@
             if (totalPriceDisplay) totalPriceDisplay.innerText = `$${totalPrice.toFixed(2)}`;
         }
 
+        window.goToDepositFromInsufficient = function() {
+            let modalEl = document.getElementById('insufficientBalanceModal');
+            let modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if(modalInstance) modalInstance.hide();
+            requireAuth('depositModal');
+        };
+
         window.checkoutCart = async function() {
             let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             if (!isLoggedIn) {
@@ -1933,8 +2020,7 @@
             let totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
             if ((savedUser.funds || 0) < totalPrice) {
-                alert("পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ডিপোজিট করুন।");
-                requireAuth('depositModal');
+                new bootstrap.Modal(document.getElementById('insufficientBalanceModal')).show();
                 return;
             }
 
@@ -1966,6 +2052,38 @@
                 console.error(err);
                 alert("অর্ডার সম্পন্ন করতে সমস্যা হয়েছে।");
             }
+        }
+
+        // ================= 30 MINUTES AUTO CANCEL & REFUND LOGIC =================
+        async function checkAndCancelExpiredOrders(user) {
+            if (!user || !user.deliveries) return false;
+            let thirtyMinutes = 30 * 60 * 1000;
+            let now = Date.now();
+            let updated = false;
+            let refundAmount = 0;
+
+            user.deliveries.forEach(order => {
+                if (order.status && order.status.includes("Processing") && (now - (order.createdAt || now)) > thirtyMinutes) {
+                    order.status = "Cancelled (Auto) ❌";
+                    order.details = "৩০ মিনিটের মধ্যে ডেলিভারি না দেওয়ায় অর্ডারটি স্বয়ংক্রিয়ভাবে বাতিল হয়েছে এবং ব্যালেন্স রিফান্ড করা হয়েছে।";
+                    refundAmount += order.totalPrice;
+                    updated = true;
+                }
+            });
+
+            if (updated) {
+                user.funds = parseFloat(((user.funds || 0) + refundAmount).toFixed(2));
+                try {
+                    await updateDoc(doc(db, "users", user.email), {
+                        funds: user.funds,
+                        deliveries: user.deliveries
+                    });
+                    localStorage.setItem('vaultUser', JSON.stringify(user));
+                } catch (e) {
+                    console.error("Auto-cancel update error:", e);
+                }
+            }
+            return updated;
         }
 
         async function renderShopServices() {
@@ -2517,6 +2635,7 @@
                     let updatedSnap = await getDoc(doc(db, "users", savedUser.email));
                     if(updatedSnap.exists()) {
                         savedUser = updatedSnap.data();
+                        await checkAndCancelExpiredOrders(savedUser);
                         localStorage.setItem('vaultUser', JSON.stringify(savedUser));
                     }
                 } catch(e) {}
@@ -2744,8 +2863,12 @@
             }
         });
 
-        function renderDeliveries() {
+        async function renderDeliveries() {
             let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
+            if (!savedUser.email) return;
+
+            await checkAndCancelExpiredOrders(savedUser);
+
             let container = document.getElementById('deliveryListContainer');
             if(!container) return;
             container.innerHTML = "";
@@ -2758,7 +2881,7 @@
             savedUser.deliveries.forEach(order => {
                 let badgeColor = order.status.includes("Completed") ? "bg-success" : (order.status.includes("Processing") ? "bg-warning text-dark" : "bg-danger");
                 let copyBtn = "";
-                if (order.details && order.details !== "Awaiting admin delivery.") {
+                if (order.details && order.details !== "Awaiting admin delivery." && !order.status.includes("Cancelled")) {
                     copyBtn = `<button class="btn btn-outline-info btn-sm py-0 px-2 mt-1" style="font-size: 11px;" data-details="${order.details}" onclick="copyDeliveryDetails(this)">📋 কপি করুন</button>`;
                 }
                 container.innerHTML += `
