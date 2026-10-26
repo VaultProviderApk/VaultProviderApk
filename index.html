@@ -26,16 +26,6 @@
             overflow: hidden;
         }
 
-        #authWrapper {
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            overflow-y: auto;
-        }
-
         .main-container {
             display: flex;
             width: 100vw;
@@ -49,10 +39,11 @@
             border: none;
         }
 
-        /* Sidebar Styling */
+        /* ================= PREMIUM SIDEBAR STYLING ================= */
         .sidebar {
-            width: 140px; 
-            background-color: #007bff;
+            width: 160px; 
+            background: linear-gradient(180deg, #121824 0%, #0a0f18 100%);
+            border-right: 1px solid #1f293d;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
@@ -61,61 +52,69 @@
             overflow-y: auto;
             white-space: nowrap;
             height: 100%;
+            padding: 10px 8px;
         }
 
         .sidebar.collapsed {
-            width: 55px;
+            width: 60px;
         }
 
         @media (max-width: 576px) {
             .sidebar {
-                width: 130px;
+                width: 145px;
             }
             .sidebar.collapsed {
-                width: 50px;
+                width: 55px;
             }
         }
 
         .sidebar-toggle-btn {
-            background: rgba(0, 0, 0, 0.15);
-            border: none;
-            color: white;
-            padding: 10px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            padding: 9px;
             text-align: center;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.3s;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
             flex-shrink: 0;
         }
         .sidebar-toggle-btn:hover {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .nav-item-custom {
             display: flex;
             align-items: center;
-            padding: 14px 15px;
-            color: #ffffff;
+            padding: 11px 12px;
+            color: #94a3b8;
             text-decoration: none;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background 0.3s;
+            font-size: 12.5px;
+            font-weight: 500;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            border-bottom: none;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .nav-item-custom:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background-color: rgba(16, 185, 129, 0.12);
+            color: #10b981;
         }
 
         .nav-item-custom i {
-            font-size: 16px;
-            min-width: 20px;
+            font-size: 15px;
+            min-width: 22px;
             text-align: center;
         }
 
         .nav-text {
-            margin-left: 12px;
+            margin-left: 10px;
             transition: opacity 0.2s ease;
         }
 
@@ -247,11 +246,8 @@
             color: #fff;
         }
 
-        #mainAppWrapper, #adminApp {
-            display: none;
-        }
-
         #adminApp {
+            display: none;
             height: 100vh;
             overflow-y: auto;
             padding: 15px;
@@ -472,80 +468,7 @@
 </head>
 <body>
 
-    <!-- ================= AUTHENTICATION AREA ================= -->
-    <div id="authWrapper" class="container text-center">
-        <!-- 1. Login Form -->
-        <div id="loginView" class="auth-container text-start">
-            <div class="text-center mb-4">
-                <img src="https://i.ibb.co/SX76YvzN/1000017025.png" alt="Vault Provider Logo" class="auth-brand-logo">
-                <h3 class="fw-bold text-white mt-1 d-flex align-items-center justify-content-center gap-2" style="font-size: 24px;">
-                    <i class="fa-solid fa-right-to-bracket text-info"></i> Login
-                </h3>
-            </div>
-            <form id="loginForm">
-                <div class="mb-3">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">👤</span>
-                        <input type="text" id="loginUsername" class="form-control text-white" placeholder="Username or Email" autocomplete="username" required>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">🔒</span>
-                        <input type="password" id="loginPassword" class="form-control text-white" placeholder="Password" autocomplete="current-password" required>
-                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('loginPassword', this)">👁</button>
-                    </div>
-                </div>
-                <div class="text-end mb-3">
-                    <a href="#" onclick="forgotPassword()" class="small text-info text-decoration-none">Forgot Password?</a>
-                </div>
-                <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Login</button>
-                <p class="text-center small text-muted">No account yet? <a href="#" onclick="switchAuth('registerView')" class="text-success text-decoration-none fw-bold ms-1">Register</a></p>
-            </form>
-        </div>
-
-        <!-- 2. Register Form -->
-        <div id="registerView" class="auth-container text-start" style="display: none;">
-            <div class="text-center mb-4">
-                <img src="https://i.ibb.co/SX76YvzN/1000017025.png" alt="Vault Provider Logo" class="auth-brand-logo">
-                <h3 class="fw-bold text-white mt-1 d-flex align-items-center justify-content-center gap-2" style="font-size: 24px;">
-                    <i class="fa-solid fa-user-plus text-success"></i> Register
-                </h3>
-            </div>
-            <form id="registerForm">
-                <div class="mb-3">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">👤</span>
-                        <input type="text" id="regUsername" class="form-control text-white" placeholder="Username" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">📧</span>
-                        <input type="email" id="regEmail" class="form-control text-white" placeholder="Email Address" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">🔒</span>
-                        <input type="password" id="regPassword" class="form-control text-white" placeholder="Password" required>
-                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('regPassword', this)">👁</button>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="input-group-custom">
-                        <span class="me-2 text-white">🔒</span>
-                        <input type="password" id="regConfirmPassword" class="form-control text-white" placeholder="Confirm password" required>
-                        <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('regConfirmPassword', this)">👁</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Register</button>
-                <p class="text-center small text-muted">Already have an account? <a href="#" onclick="switchAuth('loginView')" class="text-white text-decoration-none fw-bold ms-1">Login</a></p>
-            </form>
-        </div>
-    </div>
-
-    <!-- ================= MAIN DASHBOARD AREA WITH TOGGLE SIDEBAR ================= -->
+    <!-- ================= MAIN DASHBOARD AREA ================= -->
     <div id="mainAppWrapper" class="main-container">
         <!-- Sidebar Menu -->
         <div class="sidebar" id="sidebarMenuPanel">
@@ -560,15 +483,15 @@
                 <i class="fa-solid fa-envelope-open-text"></i>
                 <span class="nav-text">Notice</span>
             </a>
-            <a class="nav-item-custom" onclick="switchSection('deliveriesSection')" title="Deliveries">
+            <a class="nav-item-custom" onclick="requireAuth('deliveriesSection')" title="Deliveries">
                 <i class="fa-solid fa-box-open"></i>
                 <span class="nav-text">Deliveries</span>
             </a>
-            <a class="nav-item-custom" onclick="openDepositRecordModal()" title="Deposit Record">
+            <a class="nav-item-custom" onclick="requireAuth('depositRecord')" title="Deposit Record">
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <span class="nav-text">Deposit History</span>
             </a>
-            <a class="nav-item-custom" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings">
+            <a class="nav-item-custom" onclick="requireAuth('settingsModal')" title="Settings">
                 <i class="fa-solid fa-gear"></i>
                 <span class="nav-text">Settings</span>
             </a>
@@ -576,13 +499,13 @@
                 <i class="fa-solid fa-address-book"></i>
                 <span class="nav-text">Contact</span>
             </a>
-            <a class="nav-item-custom" data-bs-toggle="modal" data-bs-target="#depositModal" title="Deposit">
+            <a class="nav-item-custom" onclick="requireAuth('depositModal')" title="Deposit">
                 <i class="fa-solid fa-wallet"></i>
                 <span class="nav-text">Deposit</span>
             </a>
-            <a class="nav-item-custom text-warning" onclick="logout()" title="Logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span class="nav-text">Logout</span>
+            <a class="nav-item-custom text-warning" id="sidebarAuthBtn" onclick="handleAuthNav()" title="Login / Register">
+                <i class="fa-solid fa-right-to-bracket" id="authNavIcon"></i>
+                <span class="nav-text" id="authNavText">Login</span>
             </a>
         </div>
 
@@ -593,13 +516,13 @@
                     <img src="https://i.ibb.co/SX76YvzN/1000017025.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
                     <div>
                         <h6 class="fw-bold mb-0 text-info" style="font-size: 13px; line-height: 1.1;">VaultProvider</h6>
-                        <small id="sidebarUserName" class="text-warning fw-semibold" style="font-size: 11px;">User Name</small>
+                        <small id="sidebarUserName" class="text-warning fw-semibold" style="font-size: 11px;">Guest User</small>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <div class="balance-badge-top py-1 px-2">
-                        <span id="userFundsDisplay">0.00 USDT</span>
-                        <button class="btn btn-success btn-sm rounded-circle p-0" style="width: 18px; height: 18px; font-size: 10px;" onclick="refreshBalance()">↻</button>
+                    <div class="balance-badge-top py-1 px-2" id="topFundsContainer">
+                        <span id="userFundsDisplay">Login Required</span>
+                        <button class="btn btn-success btn-sm rounded-circle p-0 d-none" id="refreshBalanceBtn" style="width: 18px; height: 18px; font-size: 10px;" onclick="refreshBalance()">↻</button>
                     </div>
                     <button id="navAdminBtn" class="btn btn-outline-danger btn-sm rounded-pill px-2" style="display: none; font-size: 10px;" onclick="openAdminPanel()">⚙ Admin</button>
                 </div>
@@ -607,10 +530,32 @@
 
             <!-- Home Section -->
             <div id="homeSection" class="section-view active">
-                <!-- Updated Welcome Header & Search & Category Pills -->
+                <!-- Welcome Header -->
                 <div class="text-center mb-3">
                     <h5 class="fw-bold text-success">Welcome to VaultProvider!</h5>
                     <p class="small text-info mb-3">Select or search for the option you need.</p>
+                </div>
+
+                <!-- Feature 3 Cards Row -->
+                <div class="row g-2 mb-3">
+                    <div class="col-4">
+                        <div class="card card-custom p-2 text-center h-100 d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold text-warning mb-1" id="totalProductsCountDisplay" style="font-size: 17px;">0+</h5>
+                            <div class="text-light" style="font-size: 10px;">Products available</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card card-custom p-2 text-center h-100 d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold text-warning mb-1" style="font-size: 17px;">Fast</h5>
+                            <div class="text-light" style="font-size: 10px;">Instant delivery</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card card-custom p-2 text-center h-100 d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold text-warning mb-1" style="font-size: 17px;">24/7</h5>
+                            <div class="text-light" style="font-size: 10px;">WhatsApp support</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Search Bar -->
@@ -668,19 +613,41 @@
                     <div class="row g-2" id="aiServicesContainer"></div>
                 </div>
 
+                <!-- How to Order Section -->
+                <div class="card card-custom p-3 mt-4 mb-3">
+                    <div class="mb-2">
+                        <span class="badge bg-dark border border-secondary px-3 py-1 rounded-pill text-warning" style="font-size: 11px;">Simple process</span>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2" style="font-size: 18px;">How to order</h5>
+                    <p class="small text-white mb-3" style="font-size: 12.5px; line-height: 1.5; opacity: 0.9;">Buying from VAULT PROVIDER takes under 2 minutes from start to delivery.</p>
+
+                    <!-- Step 1 Card -->
+                    <div class="card bg-dark border border-secondary p-3 mb-2 rounded-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark fw-bold rounded-2 mb-2 shadow-sm" style="width: 36px; height: 36px; font-size: 16px;">1</div>
+                        <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Pick a product</h6>
+                        <p class="text-white small mb-0" style="font-size: 12px; line-height: 1.5; opacity: 0.9;">Browse all 47+ products. Use the search or category filter to find what you need.</p>
+                    </div>
+
+                    <!-- Step 2 Card -->
+                    <div class="card bg-dark border border-secondary p-3 mb-2 rounded-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark fw-bold rounded-2 mb-2 shadow-sm" style="width: 36px; height: 36px; font-size: 16px;">2</div>
+                        <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Make payment</h6>
+                        <p class="text-white small mb-0" style="font-size: 12px; line-height: 1.5; opacity: 0.9;">Deposit balance securely using bKash, Nagad, Rocket, or Crypto to complete your purchase.</p>
+                    </div>
+
+                    <!-- Step 3 Card -->
+                    <div class="card bg-dark border border-secondary p-3 mb-0 rounded-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark fw-bold rounded-2 mb-2 shadow-sm" style="width: 36px; height: 36px; font-size: 16px;">3</div>
+                        <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Instant delivery</h6>
+                        <p class="text-white small mb-0" style="font-size: 12px; line-height: 1.5; opacity: 0.9;">Receive your product details instantly in your deliveries section with 24/7 support.</p>
+                    </div>
+                </div>
+
                 <!-- Footer Information Section -->
                 <div class="card card-custom p-3 mt-4 text-center border-secondary">
                     <img src="https://i.ibb.co/SX76YvzN/1000017025.png" alt="Vault Provider Logo" style="height: 50px; width: auto; object-fit: contain;" class="mx-auto mb-2">
                     <h6 class="fw-bold text-info mb-2">Vault Provider</h6>
                     <p class="small text-primary fw-bold mb-2">Proxy & VPN Services & Network Solutions</p>
-                    <hr class="border-secondary my-2">
-                    <div class="small text-start px-2 mb-2">
-                        <div class="mb-1"><i class="fa-solid fa-location-dot text-danger me-2"></i><b>Address:</b> Khulna, Bangladesh</div>
-                        <div class="mb-1"><i class="fa-brands fa-whatsapp text-success me-2"></i><b>Whatsapp:</b> <a href="https://wa.me/8801620967823" class="text-success text-decoration-none">01620967823</a></div>
-                        <div class="mb-1"><i class="fa-brands fa-telegram text-info me-2"></i><b>Telegram:</b> <a href="https://t.me/proxyvpnservice17" onclick="window.open(this.href, '_blank'); return false;" class="text-info text-decoration-none">https://t.me/proxyvpnservice17</a></div>
-                        <div class="mb-1"><i class="fa-brands fa-telegram text-info me-2"></i><b>Channel:</b> <a href="https://t.me/allipvpnservice24" onclick="window.open(this.href, '_blank'); return false;" class="text-info text-decoration-none">https://t.me/allipvpnservice24</a></div>
-                        <div class="mb-1"><i class="fa-solid fa-robot text-info me-2"></i><b>Bot:</b> <a href="https://t.me/Proxyvpnservics_bot" onclick="window.open(this.href, '_blank'); return false;" class="text-info text-decoration-none">https://t.me/Proxyvpnservics_bot</a></div>
-                    </div>
                     
                     <!-- QR Code & Android Download Link Section -->
                     <div class="mt-3 text-center bg-black p-3 rounded-3 border border-secondary mx-auto" style="max-width: 220px;">
@@ -762,6 +729,77 @@
                     <h6 class="fw-bold text-info"><i class="fa-solid fa-box-open me-1"></i> My Deliveries / Orders (সকল অর্ডার দেখুন)</h6>
                 </div>
                 <div id="deliveryListContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= AUTH MODAL (LOGIN / REGISTER) ================= -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-bottom border-secondary pb-2">
+                    <h5 class="modal-title fw-bold text-info" id="authModalTitle">🔐 Login to VaultProvider</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <!-- 1. Login Form Inside Modal -->
+                    <div id="modalLoginView">
+                        <form id="modalLoginForm">
+                            <div class="mb-3">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">👤</span>
+                                    <input type="text" id="modalLoginUsername" class="form-control text-white" placeholder="Username or Email" autocomplete="username" required>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">🔒</span>
+                                    <input type="password" id="modalLoginPassword" class="form-control text-white" placeholder="Password" autocomplete="current-password" required>
+                                    <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('modalLoginPassword', this)">👁</button>
+                                </div>
+                            </div>
+                            <div class="text-end mb-3">
+                                <a href="#" onclick="forgotPassword()" class="small text-info text-decoration-none">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Login</button>
+                            <p class="text-center small text-muted">No account yet? <a href="#" onclick="switchModalAuth('register')" class="text-success text-decoration-none fw-bold ms-1">Register</a></p>
+                        </form>
+                    </div>
+
+                    <!-- 2. Register Form Inside Modal -->
+                    <div id="modalRegisterView" style="display: none;">
+                        <form id="modalRegisterForm">
+                            <div class="mb-3">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">👤</span>
+                                    <input type="text" id="modalRegUsername" class="form-control text-white" placeholder="Username" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">📧</span>
+                                    <input type="email" id="modalRegEmail" class="form-control text-white" placeholder="Email Address" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">🔒</span>
+                                    <input type="password" id="modalRegPassword" class="form-control text-white" placeholder="Password" required>
+                                    <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('modalRegPassword', this)">👁</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group-custom">
+                                    <span class="me-2 text-white">🔒</span>
+                                    <input type="password" id="modalRegConfirmPassword" class="form-control text-white" placeholder="Confirm password" required>
+                                    <button type="button" class="btn btn-sm text-white border-0 bg-transparent" onclick="togglePassword('modalRegConfirmPassword', this)">👁</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-custom w-100 py-2.5 fw-bold mb-3">Register</button>
+                            <p class="text-center small text-muted">Already have an account? <a href="#" onclick="switchModalAuth('login')" class="text-white text-decoration-none fw-bold ms-1">Login</a></p>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1382,19 +1420,6 @@
             ]
         };
 
-        function loadSavedCredentials() {
-            let savedId = localStorage.getItem('savedLoginIdentifier');
-            let savedPass = localStorage.getItem('savedLoginPassword');
-            if (savedId) {
-                let userInp = document.getElementById('loginUsername');
-                if (userInp) userInp.value = savedId;
-            }
-            if (savedPass) {
-                let passInp = document.getElementById('loginPassword');
-                if (passInp) passInp.value = savedPass;
-            }
-        }
-
         window.toggleServiceFolderIcon = function(btn) {
             let icon = document.getElementById('servicesFolderIcon');
             setTimeout(() => {
@@ -1498,6 +1523,11 @@
             });
         }
 
+        window.copyDeliveryDetails = function(btn) {
+            let text = btn.getAttribute('data-details');
+            copyToClipboard(text, btn);
+        }
+
         window.toggleSidebar = function() {
             let panel = document.getElementById('sidebarMenuPanel');
             let icon = document.getElementById('toggleIcon');
@@ -1557,21 +1587,24 @@
             }
         }
 
-        window.switchAuth = function(viewId) {
-            document.getElementById('loginView').style.display = 'none';
-            document.getElementById('registerView').style.display = 'none';
-            document.getElementById(viewId).style.display = 'block';
-            if (viewId === 'loginView') {
-                loadSavedCredentials();
+        window.switchModalAuth = function(viewType) {
+            if (viewType === 'login') {
+                document.getElementById('modalLoginView').style.display = 'block';
+                document.getElementById('modalRegisterView').style.display = 'none';
+                document.getElementById('authModalTitle').innerText = "🔐 Login to VaultProvider";
+            } else {
+                document.getElementById('modalLoginView').style.display = 'none';
+                document.getElementById('modalRegisterView').style.display = 'block';
+                document.getElementById('authModalTitle').innerText = "📝 Register to VaultProvider";
             }
         }
 
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        document.getElementById('modalRegisterForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            let username = document.getElementById('regUsername').value.trim();
-            let email = document.getElementById('regEmail').value.trim();
-            let password = document.getElementById('regPassword').value;
-            let confirmPass = document.getElementById('regConfirmPassword').value;
+            let username = document.getElementById('modalRegUsername').value.trim();
+            let email = document.getElementById('modalRegEmail').value.trim();
+            let password = document.getElementById('modalRegPassword').value;
+            let confirmPass = document.getElementById('modalRegConfirmPassword').value;
 
             if (password !== confirmPass) { alert("Passwords do not match!"); return; }
 
@@ -1588,14 +1621,20 @@
 
                 localStorage.setItem('vaultUser', JSON.stringify(newUser));
                 localStorage.setItem('isLoggedIn', 'true');
+                
+                let modalEl = document.getElementById('authModal');
+                let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if(modalInstance) modalInstance.hide();
+
+                alert("সফলভাবে রেজিস্টার ও লগইন হয়েছে! ✅");
                 checkLoginState();
             } catch (err) { alert("Registration failed."); }
         });
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('modalLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            let identifier = document.getElementById('loginUsername').value.trim();
-            let pass = document.getElementById('loginPassword').value;
+            let identifier = document.getElementById('modalLoginUsername').value.trim();
+            let pass = document.getElementById('modalLoginPassword').value;
 
             try {
                 const usersRef = collection(db, "users");
@@ -1614,6 +1653,12 @@
 
                     localStorage.setItem('vaultUser', JSON.stringify(foundUser));
                     localStorage.setItem('isLoggedIn', 'true');
+                    
+                    let modalEl = document.getElementById('authModal');
+                    let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if(modalInstance) modalInstance.hide();
+
+                    alert("সফলভাবে লগইন হয়েছে! ✅");
                     checkLoginState();
                 } else { alert('Incorrect credentials!'); }
             } catch (err) { alert("Login failed."); }
@@ -1687,6 +1732,18 @@
 
         async function renderShopServices() {
             let data = await fetchServicesData();
+            
+            // Calculate total products count dynamically
+            let totalProducts = 0;
+            if (data.vpn) totalProducts += data.vpn.length;
+            if (data.proxy) totalProducts += data.proxy.length;
+            if (data.apple) totalProducts += data.apple.length;
+            if (data.ai) totalProducts += data.ai.length;
+
+            let countDisplayEl = document.getElementById('totalProductsCountDisplay');
+            if (countDisplayEl) {
+                countDisplayEl.innerText = totalProducts + "+";
+            }
             
             // 1. VPN Section
             let vpnContainer = document.getElementById('vpnServicesContainer');
@@ -2443,7 +2500,7 @@
         };
 
         async function checkLoginState() {
-            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
 
             if (window.innerWidth <= 600) {
@@ -2455,57 +2512,84 @@
                 }
             }
 
-            if (isLoggedIn === 'true' && savedUser) {
-                await checkAndProcessTimeouts();
-                await checkAdminOnlineStatusForUser(savedUser.email);
-                await loadNoticesList();
-                await renderShopServices();
+            await loadNoticesList();
+            await renderShopServices();
 
-                let updatedSnap = await getDoc(doc(db, "users", savedUser.email));
-                if(updatedSnap.exists()) {
-                    savedUser = updatedSnap.data();
-                    localStorage.setItem('vaultUser', JSON.stringify(savedUser));
-                }
+            let sidebarUserEl = document.getElementById('sidebarUserName');
+            let userFundsEl = document.getElementById('userFundsDisplay');
+            let refreshBtn = document.getElementById('refreshBalanceBtn');
+            let authNavText = document.getElementById('authNavText');
+            let authNavIcon = document.getElementById('authNavIcon');
 
-                if (sessionStorage.getItem('reopenAdminPanel') === 'true' && savedUser.email === ADMIN_EMAIL) {
-                    sessionStorage.removeItem('reopenAdminPanel');
-                    openAdminPanel(true);
-                    return;
-                }
+            if (isLoggedIn && savedUser) {
+                try {
+                    let updatedSnap = await getDoc(doc(db, "users", savedUser.email));
+                    if(updatedSnap.exists()) {
+                        savedUser = updatedSnap.data();
+                        localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+                    }
+                } catch(e) {}
 
-                document.getElementById('authWrapper').style.display = 'none';
-                document.getElementById('adminApp').style.display = 'none';
-                document.getElementById('mainAppWrapper').style.display = 'flex';
-
-                let currentName = savedUser.username || "User";
-                let sidebarUserEl = document.getElementById('sidebarUserName');
-                if (sidebarUserEl) sidebarUserEl.innerText = currentName;
-
-                document.getElementById('userFundsDisplay').innerText = (savedUser.funds || 0).toFixed(2) + " USDT";
+                if (sidebarUserEl) sidebarUserEl.innerText = savedUser.username || "User";
+                if (userFundsEl) userFundsEl.innerText = (savedUser.funds || 0).toFixed(2) + " USDT";
+                if (refreshBtn) refreshBtn.classList.remove('d-none');
                 
-                document.getElementById('setFullName').value = savedUser.fullName || "";
-                document.getElementById('setEmail').value = savedUser.email || "";
-                document.getElementById('setUsername').value = savedUser.username || "";
-                document.getElementById('setPhone').value = savedUser.phone || "";
+                if (authNavText) authNavText.innerText = "Logout";
+                if (authNavIcon) authNavIcon.className = "fa-solid fa-right-from-bracket";
 
                 if (savedUser.email === ADMIN_EMAIL) {
                     document.getElementById('navAdminBtn').style.display = 'inline-block';
                 } else {
                     document.getElementById('navAdminBtn').style.display = 'none';
                 }
-                renderDeliveries();
             } else {
-                document.getElementById('authWrapper').style.display = 'flex';
-                document.getElementById('mainAppWrapper').style.display = 'none';
-                document.getElementById('adminApp').style.display = 'none';
-                switchAuth('loginView');
-                loadSavedCredentials();
+                if (sidebarUserEl) sidebarUserEl.innerText = "Guest User";
+                if (userFundsEl) userFundsEl.innerText = "Login Required";
+                if (refreshBtn) refreshBtn.classList.add('d-none');
+                
+                if (authNavText) authNavText.innerText = "Login";
+                if (authNavIcon) authNavIcon.className = "fa-solid fa-right-to-bracket";
+
+                document.getElementById('navAdminBtn').style.display = 'none';
             }
         }
 
-        window.logout = function() {
-            localStorage.removeItem('isLoggedIn');
-            checkLoginState();
+        window.handleAuthNav = function() {
+            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                if (confirm("আপনি কি লগআউট করতে চান?")) {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('vaultUser');
+                    checkLoginState();
+                    alert("সফলভাবে লগআউট করা হয়েছে!");
+                }
+            } else {
+                new bootstrap.Modal(document.getElementById('authModal')).show();
+            }
+        }
+
+        window.requireAuth = function(actionType) {
+            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                alert("এই ফিচারটি ব্যবহার করতে প্রথমে লগইন বা রেজিস্টার করুন!");
+                new bootstrap.Modal(document.getElementById('authModal')).show();
+                return;
+            }
+
+            if (actionType === 'deliveriesSection') {
+                switchSection('deliveriesSection');
+            } else if (actionType === 'depositRecord') {
+                openDepositRecordModal();
+            } else if (actionType === 'settingsModal') {
+                let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
+                document.getElementById('setFullName').value = savedUser.fullName || "";
+                document.getElementById('setEmail').value = savedUser.email || "";
+                document.getElementById('setUsername').value = savedUser.username || "";
+                document.getElementById('setPhone').value = savedUser.phone || "";
+                new bootstrap.Modal(document.getElementById('settingsModal')).show();
+            } else if (actionType === 'depositModal') {
+                new bootstrap.Modal(document.getElementById('depositModal')).show();
+            }
         }
 
         window.switchSection = function(sectionId) {
@@ -2568,6 +2652,13 @@
 
         let selectedProductName = "", selectedProductPrice = 0, unitType = "Pcs";
         window.openModal = function(name, price, type) {
+            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                alert("প্রডাক্ট কিনতে প্রথমে লগইন বা রেজিস্টার করুন!");
+                new bootstrap.Modal(document.getElementById('authModal')).show();
+                return;
+            }
+
             selectedProductName = name; selectedProductPrice = price; unitType = type;
             document.getElementById('buyModalTitle').innerText = "Buy " + name;
             document.getElementById('quantity').value = 1;
@@ -2575,7 +2666,6 @@
             let total = price;
             document.getElementById('productPriceHint').innerText = `Price: $${price.toFixed(2)} per ${type} | Total: $${total.toFixed(2)} USDT`;
             
-            // Check User Balance
             let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
             let userFunds = savedUser.funds || 0;
 
@@ -2774,7 +2864,7 @@
         async function checkAdminOnlineStatusForUser() {}
 
         function renderDeliveries() {
-            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
             let container = document.getElementById('deliveryListContainer');
             if(!container) return;
             container.innerHTML = "";
@@ -2786,6 +2876,10 @@
 
             savedUser.deliveries.forEach(order => {
                 let badgeColor = order.status.includes("Completed") ? "bg-success" : (order.status.includes("Processing") ? "bg-warning text-dark" : "bg-danger");
+                let copyBtn = "";
+                if (order.details && order.details !== "Awaiting admin delivery.") {
+                    copyBtn = `<button class="btn btn-outline-info btn-sm py-0 px-2 mt-1" style="font-size: 11px;" data-details="${order.details}" onclick="copyDeliveryDetails(this)">📋 কপি করুন</button>`;
+                }
                 container.innerHTML += `
                     <div class="card card-custom p-3 mb-2">
                         <div class="d-flex justify-content-between align-items-center">
@@ -2795,7 +2889,8 @@
                                 <div class="mt-1"><span class="badge ${badgeColor}">${order.status}</span></div>
                             </div>
                             <div class="text-end" style="max-width: 50%;">
-                                <div class="small text-info mb-1">${order.details}</div>
+                                <div class="small text-info mb-1" style="white-space: pre-line;">${order.details}</div>
+                                ${copyBtn}
                             </div>
                         </div>
                     </div>
@@ -3000,7 +3095,6 @@
         }
 
         window.onload = function() {
-            loadSavedCredentials();
             checkLoginState();
         };
     </script>
