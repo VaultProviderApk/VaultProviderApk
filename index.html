@@ -234,14 +234,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.6);
         }
 
-        .auth-brand-logo {
-            max-height: 65px;
-            width: auto;
-            display: block;
-            margin: 0 auto 10px auto;
-            object-fit: contain;
-        }
-
         .input-group-custom {
             background-color: #131a29;
             border: 1px solid #2d3748;
@@ -330,6 +322,34 @@
         .sub-folder-btn.active-folder {
             border-color: #10b981;
             background-color: #162438;
+        }
+
+        .card-cart-dropdown {
+            transition: all 0.3s ease;
+        }
+
+        /* Golden Cart Badge Style */
+        .cart-icon-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-badge-circle {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: #e3af34;
+            color: #ffffff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
 
         /* ================= MAIL / NOTICE BOX STYLES ================= */
@@ -522,9 +542,12 @@
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <span class="nav-text">Deposit History</span>
             </a>
-            <a class="nav-item-custom" onclick="window.scrollTo({top: 400, behavior: 'smooth'})" title="Cart">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="nav-text">Cart</span>
+            <a class="nav-item-custom" onclick="switchSection('cartSection')" title="Cart">
+                <div class="cart-icon-wrapper">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="sidebarCartCount" class="cart-badge-circle" style="display: none;">0</span>
+                </div>
+                <span class="nav-text ms-2">Cart</span>
             </a>
             <a class="nav-item-custom" onclick="toggleDarkMode()" title="Dark/Light Mode">
                 <i class="fa-solid fa-moon" id="sidebarDarkModeIcon"></i>
@@ -664,7 +687,7 @@
                     <div class="card bg-dark border border-secondary p-3 mb-2 rounded-3">
                         <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark fw-bold rounded-2 mb-2 shadow-sm" style="width: 36px; height: 36px; font-size: 16px;">1</div>
                         <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Pick a product</h6>
-                        <p class="text-white small mb-0" style="font-size: 12px; line-height: 1.5; opacity: 0.9;">Browse all 47+ products. Use the search or category filter to find what you need.</p>
+                        <p class="text-white small mb-0" style="font-size: 12px; line-height: 1.5; opacity: 0.9;">Browse all products. Use the search or category filter to find what you need.</p>
                     </div>
 
                     <!-- Step 2 Card -->
@@ -702,6 +725,33 @@
                     <div class="text-success fw-bold small">
                         Secure | Fast | Reliable Connections
                     </div>
+                </div>
+            </div>
+
+            <!-- Cart Section (Dedicated Page like Video) -->
+            <div id="cartSection" class="section-view">
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-cart-shopping me-1"></i> Your Cart</h5>
+                    <button class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 11px;" onclick="switchSection('homeSection')">← Back to products</button>
+                </div>
+                
+                <div id="cartItemsListContainer" class="mb-3">
+                    <!-- Cart items rendered dynamically -->
+                </div>
+
+                <div id="cartSummaryContainer" class="card card-custom p-3 d-none">
+                    <h6 class="fw-bold text-info border-bottom border-secondary pb-2 mb-2">Order Summary</h6>
+                    <div id="cartSummaryDetails" class="small mb-3"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold fs-6">Total</span>
+                        <span class="fw-bold fs-5 text-warning" id="cartTotalPriceDisplay">$0.00</span>
+                    </div>
+                    <button class="btn btn-custom w-100 py-2 fw-bold mb-2" onclick="checkoutCart()">
+                        <i class="fa-solid fa-lock me-1"></i> Checkout / Place Order
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm w-100 py-1" onclick="clearCart()">
+                        <i class="fa-solid fa-trash me-1"></i> Clear cart
+                    </button>
                 </div>
             </div>
 
@@ -1169,36 +1219,6 @@
         </div>
     </div>
 
-    <!-- Buy Modal -->
-    <div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-3">
-                <div class="modal-header border-bottom border-secondary pb-2">
-                    <h5 class="modal-title fw-bold fs-5" id="buyModalTitle">Buy Product</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body py-2">
-                    <form id="buyForm">
-                        <div class="mb-2">
-                            <label class="form-label small text-white fw-bold">Quantity:</label>
-                            <input type="number" id="quantity" class="form-control bg-dark text-white border-secondary form-control-sm" min="1" value="1" required>
-                            <small id="productPriceHint" class="text-warning mt-1 d-block"></small>
-                        </div>
-                        <!-- Insufficient Balance & Deposit Option Alert -->
-                        <div id="insufficientBalanceAlert" class="alert alert-danger py-2 px-3 mb-2 small d-none" style="font-size: 12px;">
-                            ❌ <b>Insufficient Balance!</b> আপনার পর্যাপ্ত ব্যালেন্স নেই। <br>
-                            <div class="mt-2 d-flex justify-content-between align-items-center">
-                                <span class="fw-bold" style="color: #000000;">1$ = 130 Taka</span>
-                                <button type="button" class="btn btn-sm btn-warning fw-bold py-0 px-2" onclick="openDepositModalFromBuy()">Deposit Now 💰</button>
-                            </div>
-                        </div>
-                        <button type="submit" id="confirmBuyBtn" class="btn btn-custom w-100 btn-sm py-2 mt-2">Confirm Buy</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1413,6 +1433,7 @@
 
         let cachedUsersList = [];
         let allNoticesList = [];
+        let cartItems = []; // Shopping Cart State
 
         let defaultServicesData = {
             vpn: [
@@ -1458,7 +1479,16 @@
                 { id: "proxy_17", name: "Hub Proxy (1 GB)", price: 1.08, available: true },
                 { id: "proxy_18", name: "Hub Proxy (2 GB)", price: 2.15, available: true },
                 { id: "proxy_19", name: "Miya Proxy (1 GB)", price: 1.08, available: true },
-                { id: "proxy_20", name: "Miya Proxy (2 GB)", price: 2.15, available: true }
+                { id: "proxy_20", name: "Miya Proxy (2 GB)", price: 2.15, available: true },
+                // Added ISP Proxy Items
+                { id: "proxy_isp_1", name: "9 Proxy ISP (5 Pc)", price: 0.50, available: true },
+                { id: "proxy_isp_2", name: "9 Proxy ISP (50 Pc)", price: 1.31, available: true },
+                { id: "proxy_isp_3", name: "9 Proxy ISP (100 Pc)", price: 2.62, available: true },
+                { id: "proxy_isp_4", name: "9 Proxy ISP (200 Pc)", price: 5.25, available: true },
+                { id: "proxy_isp_5", name: "Cli Proxy ISP (50 Pc)", price: 3.10, available: true },
+                { id: "proxy_isp_6", name: "711 Proxy ISP (50 Pc)", price: 3.10, available: true },
+                { id: "proxy_isp_7", name: "711 Proxy ISP (100 Pc)", price: 6.20, available: true },
+                { id: "proxy_isp_8", name: "711 Proxy ISP (200 Pc)", price: 12.31, available: true }
             ],
             apple: [
                 { id: "apple_1", name: "Apple Gift Card (2 Dollars)", price: 2.31, available: true },
@@ -1765,7 +1795,7 @@
             }
         });
 
-        // ================= SERVICES DYNAMIC LOAD & ADMIN EDIT/ADD LOGIC =================
+        // ================= SERVICES DYNAMIC LOAD & CART SYSTEM =================
         async function fetchServicesData() {
             try {
                 const docRef = doc(db, "app_data", "services");
@@ -1782,10 +1812,165 @@
             }
         }
 
+        window.toggleCardCart = function(btn) {
+            let cardCard = btn.closest('.card-custom');
+            let dropdown = cardCard.querySelector('.card-cart-dropdown');
+            if (dropdown) {
+                if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                    document.querySelectorAll('.card-cart-dropdown').forEach(d => d.style.display = 'none');
+                    document.querySelectorAll('.cart-toggle-btn').forEach(b => {
+                        b.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Cart';
+                    });
+
+                    dropdown.style.display = 'block';
+                    btn.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Close Cart';
+                } else {
+                    dropdown.style.display = 'none';
+                    btn.innerHTML = '<i class="fa-solid fa-cart-shopping me-1"></i> Cart';
+                }
+            }
+        }
+
+        // Add to Cart Logic
+        window.addToCart = function(name, price, type) {
+            let existing = cartItems.find(item => item.name === name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cartItems.push({ name, price, type, quantity: 1 });
+            }
+            updateCartUI();
+            alert(`${name} cart-এ যুক্ত করা হয়েছে! 🛒`);
+        }
+
+        window.updateCartQuantity = function(index, change) {
+            cartItems[index].quantity += change;
+            if (cartItems[index].quantity <= 0) {
+                cartItems.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        window.removeFromCart = function(index) {
+            cartItems.splice(index, 1);
+            updateCartUI();
+        }
+
+        window.clearCart = function() {
+            cartItems = [];
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            let badgeEl = document.getElementById('sidebarCartCount');
+            
+            if (badgeEl) {
+                if (totalCount > 0) {
+                    badgeEl.innerText = totalCount;
+                    badgeEl.style.display = 'flex';
+                } else {
+                    badgeEl.style.display = 'none';
+                }
+            }
+
+            let container = document.getElementById('cartItemsListContainer');
+            let summaryContainer = document.getElementById('cartSummaryContainer');
+            let summaryDetails = document.getElementById('cartSummaryDetails');
+            let totalPriceDisplay = document.getElementById('cartTotalPriceDisplay');
+
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (cartItems.length === 0) {
+                container.innerHTML = `<div class="card card-custom p-4 text-center"><p class="text-muted small mb-0">Your cart is empty.</p></div>`;
+                if (summaryContainer) summaryContainer.classList.add('d-none');
+                return;
+            }
+
+            if (summaryContainer) summaryContainer.classList.remove('d-none');
+            let totalPrice = 0;
+            let summaryHtml = "";
+
+            cartItems.forEach((item, index) => {
+                let itemTotal = item.price * item.quantity;
+                totalPrice += itemTotal;
+
+                summaryHtml += `<div class="d-flex justify-content-between mb-1"><span>${item.name} x ${item.quantity}</span><span>$${itemTotal.toFixed(2)}</span></div>`;
+
+                container.innerHTML += `
+                    <div class="card card-custom p-2 mb-2 d-flex flex-row justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold mb-1 fs-6">${item.name}</h6>
+                            <small class="text-warning">$${item.price.toFixed(2)} per ${item.type}</small>
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="updateCartQuantity(${index}, -1)">-</button>
+                                <span class="fw-bold px-2">${item.quantity}</span>
+                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="updateCartQuantity(${index}, 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-success d-block mb-2">$${itemTotal.toFixed(2)}</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-1" onclick="removeFromCart(${index})"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (summaryDetails) summaryDetails.innerHTML = summaryHtml;
+            if (totalPriceDisplay) totalPriceDisplay.innerText = `$${totalPrice.toFixed(2)}`;
+        }
+
+        window.checkoutCart = async function() {
+            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                alert("অর্ডার করতে প্রথমে লগইন বা রেজিস্টার করুন!");
+                new bootstrap.Modal(document.getElementById('authModal')).show();
+                return;
+            }
+
+            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
+            let totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            if ((savedUser.funds || 0) < totalPrice) {
+                alert("পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ডিপোজিট করুন।");
+                requireAuth('depositModal');
+                return;
+            }
+
+            savedUser.funds = parseFloat(((savedUser.funds || 0) - totalPrice).toFixed(2));
+            if (!savedUser.deliveries) savedUser.deliveries = [];
+
+            cartItems.forEach(item => {
+                savedUser.deliveries.unshift({
+                    product: item.name,
+                    quantity: item.quantity + " " + item.type,
+                    totalPrice: item.price * item.quantity,
+                    status: "Processing...",
+                    details: "Awaiting admin delivery.",
+                    createdAt: Date.now()
+                });
+            });
+
+            try {
+                await updateDoc(doc(db, "users", savedUser.email), {
+                    funds: savedUser.funds,
+                    deliveries: savedUser.deliveries
+                });
+                localStorage.setItem('vaultUser', JSON.stringify(savedUser));
+                clearCart();
+                alert("সকল প্রডাক্ট সফলভাবে অর্ডার করা হয়েছে! ✅");
+                switchSection('deliveriesSection');
+                checkLoginState();
+            } catch (err) {
+                console.error(err);
+                alert("অর্ডার সম্পন্ন করতে সমস্যা হয়েছে।");
+            }
+        }
+
         async function renderShopServices() {
             let data = await fetchServicesData();
             
-            // Calculate total products count dynamically
             let totalProducts = 0;
             if (data.vpn) totalProducts += data.vpn.length;
             if (data.proxy) totalProducts += data.proxy.length;
@@ -1797,7 +1982,7 @@
                 countDisplayEl.innerText = totalProducts + "+";
             }
             
-            // 1. VPN Section
+            // 1. VPN Services
             let vpnContainer = document.getElementById('vpnServicesContainer');
             if (vpnContainer) {
                 vpnContainer.innerHTML = "";
@@ -1805,7 +1990,7 @@
                     data.vpn.forEach(s => {
                         let qualityBadge = s.quality ? `<span class="text-quality-blue">(Quality)</span>` : "";
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
+                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
                         let sNameLower = s.name.toLowerCase();
@@ -1814,299 +1999,74 @@
                             pCat = "vpn_30days";
                         }
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>`;
-                        if (sNameLower.includes("nordvpn") || sNameLower.includes("nord vpn")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/mrvSCM68/1000017758.jpg" alt="NordVPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("express vpn") || sNameLower.includes("expressvpn")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/hx55VdLt/1000017760.jpg" alt="ExpressVPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("chape vpn") || sNameLower.includes("chape")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/1GVQwHsn/1000017770.jpg" alt="Chape VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("avast vpn") || sNameLower.includes("avast")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/vxkQTV9z/1000017772.jpg" alt="Avast VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("hama vpn") || sNameLower.includes("hma")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/4Rrtn0B5/1000017774.jpg" alt="HMA VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("bitdefendar vpn") || sNameLower.includes("bitdefender")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/fYGstZ81/1000017776.jpg" alt="Bitdefender VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("atlast vpn") || sNameLower.includes("atlas vpn") || sNameLower.includes("atlast") || sNameLower.includes("atlas")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/qLY5kR18/1000017778.jpg" alt="Atlas VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("betternet vpn") || sNameLower.includes("betternet")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/rKmytnmV/1000017780.jpg" alt="BetterNet VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("browsec vpn") || sNameLower.includes("browsec")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/jv2TR7f2/1000017782.jpg" alt="Browsec VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("cyberghost vpn") || sNameLower.includes("cyberghost")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/rGVzqr2f/1000017784.jpg" alt="CyberGhost VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("surfshark vpn") || sNameLower.includes("surfshark")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/Ndc9p728/1000017786.jpg" alt="Surfshark VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("hotspot shield vpn") || sNameLower.includes("hotspot shield")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/Jj6NBvLM/1000017788.jpg" alt="Hotspot Shield VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("ip vanish vpn") || sNameLower.includes("ipvanish")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/HZbN4jn/1000017790.jpg" alt="IPVanish VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("norton vpn") || sNameLower.includes("norton")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/4RQsbjjb/1000017792.jpg" alt="Norton VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("proton vpn") || sNameLower.includes("proton")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/GfSZSGbP/1000017794.jpg" alt="Proton VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("x vpn") || sNameLower.includes("xvpn")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/xqdRvZD0/1000017796.jpg" alt="X VPN" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                </div>
-                            `;
-                        }
-
                         vpnContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        ${titleHtml}
+                                        <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
                                         ${availBadge}
                                     </div>
-                                    <button class="btn ${btnClass} btn-sm w-100 py-1" ${disabledAttr} onclick="openModal('${s.name}', ${s.price}, 'Pcs')">${s.available ? `Buy Now ($${Number(s.price).toFixed(2)})` : 'Not Available'}</button>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
+                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
+                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
+                                        </button>
+                                    </div>
+                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
+                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                        </div>
+                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Pcs')">
+                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     });
-                } else {
-                    vpnContainer.innerHTML = `<p class="text-center text-muted small">কোনো VPN সার্ভিস নেই।</p>`;
                 }
             }
 
-            // 2. Proxy Section
+            // 2. Proxy Services
             let proxyContainer = document.getElementById('proxyServicesContainer');
             if (proxyContainer) {
                 proxyContainer.innerHTML = "";
                 if (data.proxy && data.proxy.length > 0) {
                     data.proxy.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
+                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
                         let sNameLower = s.name.toLowerCase();
                         let pCat = sNameLower.includes("isp") ? "isp_proxy" : "gb_proxy";
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
-                        if (sNameLower.includes("datampuls gb proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/Pv9fTmVj/1000017722.jpg" alt="DataImpulse" style="width: 100%; height: 100%; object-fit: contain;">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("cil proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/FbK5fC36/1000017725.jpg" alt="CliProxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/FbK5fC36/1000017725.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("9 proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/sdNdyYLc/1000017726.jpg" alt="9Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/sdNdyYLc/1000017726.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("abc proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/13v8tCR/1000017730.jpg" alt="ABC Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/13v8tCR/1000017730.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("711 proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/1Gbvrk3T/1000017729.jpg" alt="711 Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/1Gbvrk3T/1000017729.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("thordata proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/5x8rTRPt/1000017742.jpg" alt="Thordata Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/5x8rTRPt/1000017742.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("ip rocket proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/Q3D2zmrK/1000017748.jpg" alt="Ip Rocket Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("hub proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/XkGfbwyt/1000017744.jpg" alt="Hub Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("bunny proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/xq3vvfJ4/1000017747.jpg" alt="Bunny Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("b2 proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/qFyLtkZ1/1000017734.jpg" alt="B2 Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/qFyLtkZ1/1000017734.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("miya proxy") || sNameLower.includes("miyaip proxy")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/93397hmh/1000017738.jpg" alt="MiyaIp Proxy" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/93397hmh/1000017738.jpg';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        }
-
                         proxyContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        ${titleHtml}
+                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
                                         ${availBadge}
                                     </div>
-                                    <button class="btn ${btnClass} btn-sm w-100 py-1" ${disabledAttr} onclick="openModal('${s.name}', ${s.price}, 'GB')">${s.available ? `Buy Now ($${Number(s.price).toFixed(2)})` : 'Not Available'}</button>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
+                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
+                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
+                                        </button>
+                                    </div>
+                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
+                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                        </div>
+                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, '${s.name.toLowerCase().includes('pc') ? 'Pcs' : 'GB'}')">
+                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     });
-                } else {
-                    proxyContainer.innerHTML = `<p class="text-center text-muted small">কোনো প্রক্সি সার্ভিস নেই।</p>`;
                 }
             }
 
@@ -2117,37 +2077,35 @@
                 if (data.apple && data.apple.length > 0) {
                     data.apple.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
+                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
-                        let sNameLower = s.name.toLowerCase();
-                        let pCat = "apple";
-                        if (sNameLower.includes("apple")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/fdFqt2pq/1000017750.jpg" alt="Apple Gift Card" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        }
-
                         appleContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="apple">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        ${titleHtml}
+                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
                                         ${availBadge}
                                     </div>
-                                    <button class="btn ${btnClass} btn-sm w-100 py-1" ${disabledAttr} onclick="openModal('${s.name}', ${s.price}, 'Card')">${s.available ? `Buy Now ($${Number(s.price).toFixed(2)})` : 'Not Available'}</button>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
+                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
+                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
+                                        </button>
+                                    </div>
+                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
+                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                        </div>
+                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Card')">
+                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     });
-                } else {
-                    appleContainer.innerHTML = `<p class="text-center text-muted small">কোনো অ্যাপল গিফট কার্ড নেই।</p>`;
                 }
             }
 
@@ -2158,55 +2116,35 @@
                 if (data.ai && data.ai.length > 0) {
                     data.ai.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let btnClass = s.available ? "btn-outline-primary" : "btn-outline-secondary";
+                        let addBtnClass = s.available ? "btn-custom" : "btn-secondary";
                         let disabledAttr = s.available ? "" : "disabled style='cursor: not-allowed; opacity: 0.6;'";
 
-                        let titleHtml = `<h6 class="mb-0 fw-bold fs-6">${s.name}</h6>`;
-                        let sNameLower = s.name.toLowerCase();
-                        let pCat = "ai";
-                        if (sNameLower.includes("gemini")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/4wg8cZ81/1000017754.jpg" alt="Gemini" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("figma")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/4nkr1gh3/1000017755.jpg" alt="Figma Pro Edu" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        } else if (sNameLower.includes("youtube")) {
-                            titleHtml = `
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; padding: 2px;">
-                                        <img src="https://i.ibb.co/7xXTx9SS/1000017756.jpg" alt="YouTube" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">
-                                    </div>
-                                    <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                </div>
-                            `;
-                        }
-
                         aiContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
+                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="ai">
                                 <div class="card card-custom p-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        ${titleHtml}
+                                        <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
                                         ${availBadge}
                                     </div>
-                                    <button class="btn ${btnClass} btn-sm w-100 py-1" ${disabledAttr} onclick="openModal('${s.name}', ${s.price}, 'Pcs')">${s.available ? `Buy Now ($${Number(s.price).toFixed(2)})` : 'Not Available'}</button>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-warning fw-bold" style="font-size: 13px;">$${Number(s.price).toFixed(2)}</span>
+                                        <button class="btn btn-outline-warning btn-sm py-1 px-3 cart-toggle-btn" style="font-size: 12px;" onclick="toggleCardCart(this)">
+                                            <i class="fa-solid fa-cart-shopping me-1"></i> Cart
+                                        </button>
+                                    </div>
+                                    <div class="card-cart-dropdown mt-2 p-2 rounded bg-black bg-opacity-25 border border-secondary" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted" style="font-size: 11px;">Add to shopping cart:</small>
+                                            <small class="text-success fw-bold" style="font-size: 11px;">Rate: $${Number(s.price).toFixed(2)}</small>
+                                        </div>
+                                        <button class="btn ${addBtnClass} btn-sm w-100 py-1 fw-bold" ${disabledAttr} onclick="addToCart('${s.name}', ${s.price}, 'Pcs')">
+                                            ${s.available ? `<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart ($${Number(s.price).toFixed(2)})` : 'Not Available'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     });
-                } else {
-                    aiContainer.innerHTML = `<p class="text-center text-muted small">কোনো এআই টুলস নেই।</p>`;
                 }
             }
         }
@@ -2566,6 +2504,7 @@
 
             await loadNoticesList();
             await renderShopServices();
+            updateCartUI();
 
             let sidebarUserEl = document.getElementById('sidebarUserName');
             let userFundsEl = document.getElementById('userFundsDisplay');
@@ -2702,73 +2641,6 @@
             }
         }
 
-        let selectedProductName = "", selectedProductPrice = 0, unitType = "Pcs";
-        window.openModal = function(name, price, type) {
-            let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (!isLoggedIn) {
-                alert("প্রডাক্ট কিনতে প্রথমে লগইন বা রেজিস্টার করুন!");
-                new bootstrap.Modal(document.getElementById('authModal')).show();
-                return;
-            }
-
-            selectedProductName = name; selectedProductPrice = price; unitType = type;
-            document.getElementById('buyModalTitle').innerText = "Buy " + name;
-            document.getElementById('quantity').value = 1;
-            
-            let total = price;
-            document.getElementById('productPriceHint').innerText = `Price: $${price.toFixed(2)} per ${type} | Total: $${total.toFixed(2)} USDT`;
-            
-            let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
-            let userFunds = savedUser.funds || 0;
-
-            let alertBox = document.getElementById('insufficientBalanceAlert');
-            let confirmBtn = document.getElementById('confirmBuyBtn');
-
-            if (userFunds < total) {
-                alertBox.classList.remove('d-none');
-                confirmBtn.disabled = true;
-                confirmBtn.style.opacity = "0.5";
-            } else {
-                alertBox.classList.add('d-none');
-                confirmBtn.disabled = false;
-                confirmBtn.style.opacity = "1";
-            }
-
-            new bootstrap.Modal(document.getElementById('buyModal')).show();
-        }
-
-        document.getElementById('quantity').addEventListener('input', function() {
-            let val = parseInt(this.value) || 1;
-            let total = (val * selectedProductPrice).toFixed(2);
-            document.getElementById('productPriceHint').innerText = `Price: $${selectedProductPrice.toFixed(2)} per ${unitType} | Total: $${total} USDT`;
-
-            let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
-            let userFunds = savedUser.funds || 0;
-
-            let alertBox = document.getElementById('insufficientBalanceAlert');
-            let confirmBtn = document.getElementById('confirmBuyBtn');
-
-            if (userFunds < parseFloat(total)) {
-                alertBox.classList.remove('d-none');
-                confirmBtn.disabled = true;
-                confirmBtn.style.opacity = "0.5";
-            } else {
-                alertBox.classList.add('d-none');
-                confirmBtn.disabled = false;
-                confirmBtn.style.opacity = "1";
-            }
-        });
-
-        window.openDepositModalFromBuy = function() {
-            let buyModalEl = document.getElementById('buyModal');
-            let buyModalInstance = bootstrap.Modal.getInstance(buyModalEl);
-            if (buyModalInstance) {
-                buyModalInstance.hide();
-            }
-            let depositModal = new bootstrap.Modal(document.getElementById('depositModal'));
-            depositModal.show();
-        }
-
         window.togglePaymentBox = function() {
             let method = document.getElementById('paymentMethod').value;
             ['mobileBankingBox', 'cryptoBox'].forEach(id => {
@@ -2871,49 +2743,6 @@
                 submitBtn.innerText = originalBtnText;
             }
         });
-
-        document.getElementById('buyForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            let qty = parseInt(document.getElementById('quantity').value) || 1;
-            let total = qty * selectedProductPrice;
-            let savedUser = JSON.parse(localStorage.getItem('vaultUser'));
-
-            if ((savedUser.funds || 0) < total) {
-                alert("পর্যাপ্ত ব্যালেন্স নেই!");
-                return;
-            }
-
-            savedUser.funds = parseFloat(((savedUser.funds || 0) - total).toFixed(2));
-            if (!savedUser.deliveries) savedUser.deliveries = [];
-
-            let newOrder = {
-                product: selectedProductName,
-                quantity: qty + " " + unitType,
-                totalPrice: total,
-                status: "Processing...",
-                details: "Awaiting admin delivery.",
-                createdAt: Date.now()
-            };
-
-            savedUser.deliveries.unshift(newOrder);
-
-            try {
-                await updateDoc(doc(db, "users", savedUser.email), {
-                    funds: savedUser.funds,
-                    deliveries: savedUser.deliveries
-                });
-                localStorage.setItem('vaultUser', JSON.stringify(savedUser));
-                bootstrap.Modal.getInstance(document.getElementById('buyModal')).hide();
-                alert("অর্ডার সফলভাবে সম্পন্ন হয়েছে! ✅");
-                checkLoginState();
-            } catch (err) {
-                console.error(err);
-                alert("অর্ডার করতে সমস্যা হয়েছে।");
-            }
-        });
-
-        async function checkAndProcessTimeouts() {}
-        async function checkAdminOnlineStatusForUser() {}
 
         function renderDeliveries() {
             let savedUser = JSON.parse(localStorage.getItem('vaultUser')) || {};
