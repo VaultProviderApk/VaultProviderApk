@@ -24,6 +24,37 @@
             background-color: #0b0f19;
             color: #ffffff;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Light Mode Styling Classes */
+        body.light-mode {
+            background-color: #f1f5f9 !important;
+            color: #0b0f19 !important;
+        }
+        body.light-mode .main-container {
+            background-color: #ffffff !important;
+        }
+        body.light-mode .content-area {
+            background-color: #f8fafc !important;
+        }
+        body.light-mode .card-custom {
+            background-color: #ffffff !important;
+            color: #0b0f19 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .modal-content, body.light-mode .offcanvas {
+            background-color: #ffffff !important;
+            color: #0b0f19 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .form-control, body.light-mode .form-select {
+            background-color: #f1f5f9 !important;
+            color: #0b0f19 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .form-control::placeholder {
+            color: #64748b !important;
         }
 
         .main-container {
@@ -491,6 +522,14 @@
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <span class="nav-text">Deposit History</span>
             </a>
+            <a class="nav-item-custom" onclick="window.scrollTo({top: 400, behavior: 'smooth'})" title="Cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="nav-text">Cart</span>
+            </a>
+            <a class="nav-item-custom" onclick="toggleDarkMode()" title="Dark/Light Mode">
+                <i class="fa-solid fa-moon" id="sidebarDarkModeIcon"></i>
+                <span class="nav-text" id="sidebarDarkModeText">Theme</span>
+            </a>
             <a class="nav-item-custom" onclick="requireAuth('settingsModal')" title="Settings">
                 <i class="fa-solid fa-gear"></i>
                 <span class="nav-text">Settings</span>
@@ -521,7 +560,7 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <div class="balance-badge-top py-1 px-2" id="topFundsContainer">
-                        <span id="userFundsDisplay">Login Required</span>
+                        <span id="userFundsDisplay">0.00 USDT</span>
                         <button class="btn btn-success btn-sm rounded-circle p-0 d-none" id="refreshBalanceBtn" style="width: 18px; height: 18px; font-size: 10px;" onclick="refreshBalance()">↻</button>
                     </div>
                     <button id="navAdminBtn" class="btn btn-outline-danger btn-sm rounded-pill px-2" style="display: none; font-size: 10px;" onclick="openAdminPanel()">⚙ Admin</button>
@@ -857,7 +896,7 @@
         </button>
     </div>
 
-    <!-- Script for Toggling Chat Popup -->
+    <!-- Script for Toggling Chat Popup & Dark Mode -->
     <script>
         function toggleSupportChat() {
             let chatBox = document.getElementById('supportChatBox');
@@ -865,6 +904,19 @@
                 chatBox.style.display = 'block';
             } else {
                 chatBox.style.display = 'none';
+            }
+        }
+
+        window.toggleDarkMode = function() {
+            document.body.classList.toggle('light-mode');
+            let icon = document.getElementById('sidebarDarkModeIcon');
+            let text = document.getElementById('sidebarDarkModeText');
+            if (document.body.classList.contains('light-mode')) {
+                icon.className = "fa-solid fa-sun text-warning";
+                if(text) text.innerText = "Light Mode";
+            } else {
+                icon.className = "fa-solid fa-moon text-warning";
+                if(text) text.innerText = "Dark Mode";
             }
         }
     </script>
@@ -2544,7 +2596,7 @@
                 }
             } else {
                 if (sidebarUserEl) sidebarUserEl.innerText = "Guest User";
-                if (userFundsEl) userFundsEl.innerText = "Login Required";
+                if (userFundsEl) userFundsEl.innerText = "0.00 USDT";
                 if (refreshBtn) refreshBtn.classList.add('d-none');
                 
                 if (authNavText) authNavText.innerText = "Login";
