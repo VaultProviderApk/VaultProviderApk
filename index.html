@@ -1972,6 +1972,10 @@
                 logoImg.src = "https://i.ibb.co/spYJZj2t/youtub.png";
                 logoImg.style.display = "block";
                 iconEl.style.display = "none";
+            } else if (nameLower.includes('apple') || nameLower.includes('gift card')) {
+                logoImg.src = "https://i.ibb.co/7txWGN4N/apple.png";
+                logoImg.style.display = "block";
+                iconEl.style.display = "none";
             } else if (nameLower.includes('nord')) {
                 logoImg.src = "https://i.ibb.co/mZQVRdC/nordvpn.png";
                 logoImg.style.display = "block";
@@ -2330,12 +2334,14 @@
                     data.apple.forEach(s => {
                         let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
 
+                        let iconHtml = `<img src="https://i.ibb.co/7txWGN4N/apple.png" alt="Apple Gift Card" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
+
                         appleContainer.innerHTML += `
                             <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="apple">
                                 <div class="card card-custom p-3">
                                     <div class="d-flex align-items-center gap-3 mb-2">
                                         <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                            <i class="fa-solid fa-apple-whole text-danger fs-4"></i>
+                                            ${iconHtml}
                                         </div>
                                         <div class="flex-grow-1">
                                             <div class="d-flex justify-content-between align-items-center">
