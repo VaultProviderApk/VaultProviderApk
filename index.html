@@ -291,17 +291,6 @@
             display: block;
         }
 
-        .auth-container {
-            max-width: 440px;
-            width: 100%;
-            margin: auto;
-            background-color: #0d1322;
-            border: 1px solid #1f293d;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-        }
-
         .input-group-custom {
             background-color: #131a29;
             border: 1px solid #2d3748;
@@ -688,7 +677,7 @@
                 <div class="mb-3">
                     <div style="background-color: #131a29; border: 1px solid #1f293d; border-radius: 30px; padding: 8px 16px; display: flex; align-items: center;" class="search-bar-wrap">
                         <i class="fa-solid fa-magnifying-glass text-muted me-2" style="font-size: 14px;"></i>
-                        <input type="text" id="homeSearchInput" class="form-control bg-transparent border-0 text-white shadow-none p-0" placeholder="Search NordVPN, Proxy, Apple, Gemini..." style="font-size: 13.5px;" oninput="filterShopProducts()">
+                        <input type="text" id="homeSearchInput" class="form-control bg-transparent border-0 text-white shadow-none p-0" placeholder="Search NordVPN, KAFKA Gb Proxy, Apple, Gemini..." style="font-size: 13.5px;" oninput="filterShopProducts()">
                     </div>
                 </div>
 
@@ -792,7 +781,7 @@
                 </div>
             </div>
 
-            <!-- ================= PRODUCT DETAIL VIEW SECTION ================= -->
+            <!-- ================= PRODUCT DETAIL VIEW SECTION (WITH CHECKMARK PLAN SELECTION) ================= -->
             <div id="productDetailSection" class="section-view">
                 <div class="mb-3">
                     <button class="btn btn-outline-info btn-sm py-1 px-3 rounded-pill" onclick="switchSection('homeSection')">
@@ -817,19 +806,13 @@
                         <!-- Rendered dynamically -->
                     </div>
 
-                    <!-- Choose Your Plan Box -->
+                    <!-- Choose Your Plan / Variant Box with Checkmark Selection -->
                     <div class="card bg-dark border border-secondary p-3 rounded-3 mb-3">
                         <h6 class="fw-bold text-white mb-1" style="font-size: 15px;">Choose your plan</h6>
-                        <small class="text-muted d-block mb-3" style="font-size: 11px;">Select a duration and add to cart securely</small>
+                        <small class="text-muted d-block mb-3" style="font-size: 11px;">Select a package and add to cart securely</small>
                         
-                        <div class="p-3 rounded-3 mb-3 border border-warning" style="background: rgba(243, 198, 83, 0.05);">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span id="detailPlanDuration" class="fw-bold text-warning d-block" style="font-size: 13px;">PLAN</span>
-                                    <span id="detailPlanPrice" class="fw-bold text-white fs-4">$0.00</span>
-                                </div>
-                                <i class="fa-solid fa-circle-check text-warning fs-5"></i>
-                            </div>
+                        <div id="detailPlanSelectionContainer" class="d-flex flex-column gap-2 mb-3">
+                            <!-- Variant options with checkmark rendered dynamically -->
                         </div>
 
                         <button class="btn btn-custom w-100 py-2.5 fw-bold mb-2" id="detailAddToCartBtn">
@@ -1440,12 +1423,12 @@
                 </div>
                 <div class="mb-2">
                     <label class="small text-info fw-bold">প্রডাক্টের নাম:</label>
-                    <input type="text" id="newServiceName" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: ⚡ Express Vpn (15 Days)" required>
+                    <input type="text" id="newServiceName" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: ⚡ 9 Proxy ISP (5 Pc)" required>
                 </div>
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="small text-info fw-bold">মূল্য ($ USD):</label>
-                        <input type="number" step="any" id="newServicePrice" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: 1.50" required>
+                        <input type="number" step="any" id="newServicePrice" class="form-control bg-dark text-white border-secondary form-control-sm" placeholder="যেমন: 0.50" required>
                     </div>
                     <div class="col-6" id="vpnQualityCheckDiv">
                         <label class="small text-info fw-bold d-block">কোয়ালিটি ট্যাগ:</label>
@@ -1951,151 +1934,67 @@
             }
         }
 
-        // Open Product Detail Page with customized logos & dynamic duration
-        window.openProductDetail = function(name, price, category) {
-            document.getElementById('detailProductName').innerText = name;
-            document.getElementById('detailProductSubtitle').innerText = category.toUpperCase() + " • Premium Subscription";
+        // Helper for Product Logos / Icons
+        function getProductIconHtml(nameLower, categoryType) {
+            if (nameLower.includes('gemini')) return `<img src="https://i.ibb.co/BVN4tcpy/gemini.png" alt="Gemini" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('figma')) return `<img src="https://i.ibb.co/VWjxf5zk/figma.png" alt="Figma" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('youtube')) return `<img src="https://i.ibb.co/spYJZj2t/youtub.png" alt="YouTube" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('apple') || nameLower.includes('gift card')) return `<img src="https://i.ibb.co/7txWGN4N/apple.png" alt="Apple" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('datampuls')) return `<img src="https://i.ibb.co/397Xy254/datampuls.png" alt="Datampuls" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('9 proxy')) return `<img src="https://i.ibb.co/WvQ3g6hL/9proxy.png" alt="9 Proxy" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('cil')) return `<img src="https://i.ibb.co/9mzkMtrr/cil.png" alt="Cil" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('711')) return `<img src="https://i.ibb.co/LXrPxJV9/711.png" alt="711" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('thordata')) return `<img src="https://i.ibb.co/cXNLzzy7/thordata.png" alt="Thordata" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('ip rocket')) return `<img src="https://i.ibb.co/twHPBgDf/iprocket.png" alt="IP Rocket" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('bunny')) return `<img src="https://i.ibb.co/nMKwTDz7/bunny.png" alt="Bunny" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('hub')) return `<img src="https://i.ibb.co/d4fwRMSB/hub.png" alt="Hub" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('miya')) return `<img src="https://i.ibb.co/PGWsJTQq/miya.png" alt="Miya" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('nord')) return `<img src="https://i.ibb.co/mZQVRdC/nordvpn.png" alt="Nord" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('chape')) return `<img src="https://i.ibb.co/4wKdC6SR/1000017891.jpg" alt="Chape" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('express')) return `<img src="https://i.ibb.co/hx55VdLt/express.png" alt="Express" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('avast')) return `<img src="https://i.ibb.co/hFdp940q/avast.png" alt="Avast" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('bitdefendar') || nameLower.includes('bitdefender')) return `<img src="https://i.ibb.co/7JfjrfFb/bitdefender.png" alt="Bitdefender" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('hama') || nameLower.includes('hma')) return `<img src="https://i.ibb.co/PvHDgrmb/hma.png" alt="HMA" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('proton')) return `<img src="https://i.ibb.co/jZZ0bT4M/proton.png" alt="Proton" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('atlast')) return `<img src="https://i.ibb.co/2YFnVJ5g/atlast.png" alt="Atlast" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('betternet')) return `<img src="https://i.ibb.co/vv1jYZ3V/betternet.png" alt="Betternet" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('browsec')) return `<img src="https://i.ibb.co/jv2tR7f2/browsec.png" alt="Browsec" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('cyberghost')) return `<img src="https://i.ibb.co/5gs1t2kN/cyberghost.png" alt="CyberGhost" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('surfshark')) return `<img src="https://i.ibb.co/WpjMmVSN/surfshark.png" alt="Surfshark" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('hotspot')) return `<img src="https://i.ibb.co/mC6WmjBX/hotspot.png" alt="Hotspot" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('ip vanish') || nameLower.includes('ipvanish')) return `<img src="https://i.ibb.co/8nnc9dK4/ipvanish.png" alt="IPVanish" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('norton')) return `<img src="https://i.ibb.co/6cgKvzwR/norton.png" alt="Norton" style="width: 36px; height: 36px; object-fit: contain;">`;
+            if (nameLower.includes('x vpn') || nameLower.includes('xvpn')) return `<img src="https://i.ibb.co/xqdRvZD0/xvpn.png" alt="X VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
+
+            if (categoryType === 'ai') return `<i class="fa-solid fa-robot text-warning fs-4"></i>`;
+            if (categoryType === 'vpn') return `<i class="fa-solid fa-shield-halved text-info fs-4"></i>`;
+            if (categoryType === 'proxy') return `<i class="fa-solid fa-bolt text-success fs-4"></i>`;
+            return `<i class="fa-solid fa-apple-whole text-danger fs-4"></i>`;
+        }
+
+        // Open Group Product Detail Page with Checkmark Plan Selection
+        window.openGroupProductDetail = function(baseName, variants, category) {
+            document.getElementById('detailProductName').innerText = baseName;
+            document.getElementById('detailProductSubtitle').innerText = category.toUpperCase() + " • Select Plan";
             
             let iconEl = document.getElementById('detailModalIcon');
             let logoImg = document.getElementById('detailModalLogoImg');
-            let nameLower = name.toLowerCase();
+            let nameLower = baseName.toLowerCase();
+            let iconHtmlStr = getProductIconHtml(nameLower, category);
 
-            if (nameLower.includes('gemini')) {
-                logoImg.src = "https://i.ibb.co/BVN4tcpy/gemini.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('figma')) {
-                logoImg.src = "https://i.ibb.co/VWjxf5zk/figma.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('youtube')) {
-                logoImg.src = "https://i.ibb.co/spYJZj2t/youtub.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('apple') || nameLower.includes('gift card')) {
-                logoImg.src = "https://i.ibb.co/7txWGN4N/apple.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('datampuls')) {
-                logoImg.src = "https://i.ibb.co/397Xy254/datampuls.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('9 proxy')) {
-                logoImg.src = "https://i.ibb.co/WvQ3g6hL/9proxy.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('cil')) {
-                logoImg.src = "https://i.ibb.co/9mzkMtrr/cil.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('711')) {
-                logoImg.src = "https://i.ibb.co/LXrPxJV9/711.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('thordata')) {
-                logoImg.src = "https://i.ibb.co/cXNLzzy7/thordata.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('ip rocket')) {
-                logoImg.src = "https://i.ibb.co/twHPBgDf/iprocket.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('bunny')) {
-                logoImg.src = "https://i.ibb.co/nMKwTDz7/bunny.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('hub')) {
-                logoImg.src = "https://i.ibb.co/d4fwRMSB/hub.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('miya')) {
-                logoImg.src = "https://i.ibb.co/PGWsJTQq/miya.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('nord')) {
-                logoImg.src = "https://i.ibb.co/mZQVRdC/nordvpn.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('chape')) {
-                logoImg.src = "https://i.ibb.co/4wKdC6SR/1000017891.jpg";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('express')) {
-                logoImg.src = "https://i.ibb.co/hx55VdLt/express.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('avast')) {
-                logoImg.src = "https://i.ibb.co/hFdp940q/avast.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('bitdefendar') || nameLower.includes('bitdefender')) {
-                logoImg.src = "https://i.ibb.co/7JfjrfFb/bitdefender.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('hama') || nameLower.includes('hma')) {
-                logoImg.src = "https://i.ibb.co/PvHDgrmb/hma.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('proton')) {
-                logoImg.src = "https://i.ibb.co/jZZ0bT4M/proton.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('atlast')) {
-                logoImg.src = "https://i.ibb.co/2YFnVJ5g/atlast.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('betternet')) {
-                logoImg.src = "https://i.ibb.co/vv1jYZ3V/betternet.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('browsec')) {
-                logoImg.src = "https://i.ibb.co/jv2tR7f2/browsec.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('cyberghost')) {
-                logoImg.src = "https://i.ibb.co/5gs1t2kN/cyberghost.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('surfshark')) {
-                logoImg.src = "https://i.ibb.co/WpjMmVSN/surfshark.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('hotspot')) {
-                logoImg.src = "https://i.ibb.co/mC6WmjBX/hotspot.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('ip vanish') || nameLower.includes('ipvanish')) {
-                logoImg.src = "https://i.ibb.co/8nnc9dK4/ipvanish.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('norton')) {
-                logoImg.src = "https://i.ibb.co/6cgKvzwR/norton.png";
-                logoImg.style.display = "block";
-                iconEl.style.display = "none";
-            } else if (nameLower.includes('x vpn') || nameLower.includes('xvpn')) {
-                logoImg.src = "https://i.ibb.co/xqdRvZD0/xvpn.png";
+            if (iconHtmlStr.includes('<img')) {
+                let tempDiv = document.createElement('div');
+                tempDiv.innerHTML = iconHtmlStr;
+                let imgEl = tempDiv.querySelector('img');
+                logoImg.src = imgEl.src;
                 logoImg.style.display = "block";
                 iconEl.style.display = "none";
             } else {
                 logoImg.style.display = "none";
                 iconEl.style.display = "block";
-                if (category === 'ai') {
-                    iconEl.className = "fa-solid fa-robot text-warning fs-2";
-                } else if (category === 'vpn') {
-                    iconEl.className = "fa-solid fa-shield-halved text-info fs-2";
-                } else if (category === 'proxy') {
-                    iconEl.className = "fa-solid fa-bolt text-success fs-2";
-                } else {
-                    iconEl.className = "fa-solid fa-apple-whole text-danger fs-2";
-                }
+                iconEl.className = category === 'ai' ? "fa-solid fa-robot text-warning fs-2" : (category === 'vpn' ? "fa-solid fa-shield-halved text-info fs-2" : (category === 'proxy' ? "fa-solid fa-bolt text-success fs-2" : "fa-solid fa-apple-whole text-danger fs-2"));
             }
 
-            // Extract duration from product name automatically
-            let match = name.match(/\(([^)]+)\)/);
-            let durationText = match ? match[1].toUpperCase() : "STANDARD PLAN";
-            
-            document.getElementById('detailPlanDuration').innerText = durationText;
-            document.getElementById('detailPlanPrice').innerText = "$" + Number(price).toFixed(2);
             document.getElementById('detailProductCategoryBadge').innerText = category.toUpperCase();
 
             // Features list with checkmarks
@@ -2107,11 +2006,47 @@
                 <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-check text-warning"></i><span class="text-white small">Advanced features included</span></div>
             `;
 
+            let planSelectionBox = document.getElementById('detailPlanSelectionContainer');
+            planSelectionBox.innerHTML = "";
+            let selectedVariant = variants[0]; // default first selected
+
+            function renderPlanBoxes() {
+                planSelectionBox.innerHTML = "";
+                variants.forEach((v) => {
+                    let isSelected = (v.id === selectedVariant.id);
+                    let borderColor = isSelected ? "border-warning" : "border-secondary";
+                    let bgColor = isSelected ? "rgba(243, 198, 83, 0.08)" : "#131a29";
+                    let checkIcon = isSelected ? `<i class="fa-solid fa-circle-check text-warning fs-5"></i>` : `<i class="fa-regular fa-circle text-muted fs-5"></i>`;
+
+                    let variantDiv = document.createElement('div');
+                    variantDiv.className = `p-3 rounded-3 border ${borderColor} plan-option-card`;
+                    variantDiv.style.cssText = `background: ${bgColor}; cursor: pointer; transition: 0.2s;`;
+                    variantDiv.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-white d-block" style="font-size: 13.5px;">${v.name}</span>
+                                <span class="fw-bold text-warning fs-5">$${Number(v.price).toFixed(2)}</span>
+                            </div>
+                            ${checkIcon}
+                        </div>
+                    `;
+                    variantDiv.onclick = function() {
+                        selectedVariant = v;
+                        renderPlanBoxes();
+                    };
+                    planSelectionBox.appendChild(variantDiv);
+                });
+            }
+
+            renderPlanBoxes();
+
             // Setup Add to Cart button
             let addCartBtn = document.getElementById('detailAddToCartBtn');
             addCartBtn.onclick = function() {
-                let unitType = durationText.includes("GB") ? "GB" : (durationText.includes("CARD") ? "Card" : "Pcs");
-                addToCart(name, price, unitType);
+                let match = selectedVariant.name.match(/\(([^)]+)\)/);
+                let durationText = match ? match[1].toUpperCase() : "STANDARD";
+                let unitType = durationText.includes("GB") ? "GB" : (durationText.includes("CARD") ? "Card" : (durationText.includes("PC") ? "Pcs" : "Pcs"));
+                addToCart(selectedVariant.name, selectedVariant.price, unitType);
             };
 
             switchSection('productDetailSection');
@@ -2306,214 +2241,72 @@
                 countDisplayEl.innerText = totalProducts + "+";
             }
             
-            // 1. VPN Services
-            let vpnContainer = document.getElementById('vpnServicesContainer');
-            if (vpnContainer) {
-                vpnContainer.innerHTML = "";
-                if (data.vpn && data.vpn.length > 0) {
-                    data.vpn.forEach(s => {
-                        let qualityBadge = s.quality ? `<span class="text-quality-blue">(Quality)</span>` : "";
-                        let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
+            // Helper to render grouped category cards
+            function renderCategoryContainer(containerId, items, categoryType) {
+                let container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = "";
+                if (!items || items.length === 0) return;
 
-                        let sNameLower = s.name.toLowerCase();
-                        let pCat = "vpn_7days";
-                        if (sNameLower.includes("30 days") || sNameLower.includes("month") || sNameLower.includes("year") || sNameLower.includes("18 month") || sNameLower.includes("2 years") || sNameLower.includes("14 day")) {
-                            pCat = "vpn_30days";
-                        }
+                let groups = {};
+                items.forEach(s => {
+                    let baseName = s.name.replace(/\s*\([^)]*\)\s*$/, '').trim();
+                    if (!groups[baseName]) {
+                        groups[baseName] = { baseName, variants: [], quality: s.quality || false, available: false };
+                    }
+                    groups[baseName].variants.push(s);
+                    if (s.available) groups[baseName].available = true;
+                    if (s.quality) groups[baseName].quality = true;
+                });
 
-                        let iconHtml = `<i class="fa-solid fa-shield-halved text-info fs-4"></i>`;
-                        if (sNameLower.includes('nord')) {
-                            iconHtml = `<img src="https://i.ibb.co/mZQVRdC/nordvpn.png" alt="NordVPN" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('chape')) {
-                            iconHtml = `<img src="https://i.ibb.co/4wKdC6SR/1000017891.jpg" alt="Chape VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('express')) {
-                            iconHtml = `<img src="https://i.ibb.co/hx55VdLt/express.png" alt="ExpressVPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('avast')) {
-                            iconHtml = `<img src="https://i.ibb.co/hFdp940q/avast.png" alt="Avast VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('bitdefendar') || sNameLower.includes('bitdefender')) {
-                            iconHtml = `<img src="https://i.ibb.co/7JfjrfFb/bitdefender.png" alt="Bitdefender VPN" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('hama') || sNameLower.includes('hma')) {
-                            iconHtml = `<img src="https://i.ibb.co/PvHDgrmb/hma.png" alt="HMA VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('proton')) {
-                            iconHtml = `<img src="https://i.ibb.co/jZZ0bT4M/proton.png" alt="Proton VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('atlast')) {
-                            iconHtml = `<img src="https://i.ibb.co/2YFnVJ5g/atlast.png" alt="Atlast VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('betternet')) {
-                            iconHtml = `<img src="https://i.ibb.co/vv1jYZ3V/betternet.png" alt="BetterNet VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('browsec')) {
-                            iconHtml = `<img src="https://i.ibb.co/jv2tR7f2/browsec.png" alt="Browsec VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('cyberghost')) {
-                            iconHtml = `<img src="https://i.ibb.co/5gs1t2kN/cyberghost.png" alt="CyberGhost VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('surfshark')) {
-                            iconHtml = `<img src="https://i.ibb.co/WpjMmVSN/surfshark.png" alt="Surfshark VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('hotspot')) {
-                            iconHtml = `<img src="https://i.ibb.co/mC6WmjBX/hotspot.png" alt="Hotspot Shield" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('ip vanish') || sNameLower.includes('ipvanish')) {
-                            iconHtml = `<img src="https://i.ibb.co/8nnc9dK4/ipvanish.png" alt="Ip Vanish VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('norton')) {
-                            iconHtml = `<img src="https://i.ibb.co/6cgKvzwR/norton.png" alt="Norton VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        } else if (sNameLower.includes('x vpn') || sNameLower.includes('xvpn')) {
-                            iconHtml = `<img src="https://i.ibb.co/xqdRvZD0/xvpn.png" alt="X VPN" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-                        }
+                Object.values(groups).forEach(group => {
+                    let availBadge = group.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
+                    let qualityBadge = group.quality ? `<span class="text-quality-blue">(Quality)</span>` : "";
 
-                        vpnContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
-                                <div class="card card-custom p-3">
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                            ${iconHtml}
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0 fw-bold fs-6">${s.name} ${qualityBadge}</h6>
-                                                ${availBadge}
-                                            </div>
+                    let sNameLower = group.baseName.toLowerCase();
+                    let pCat = categoryType;
+                    if (categoryType === 'proxy') {
+                        pCat = sNameLower.includes("isp") ? "isp_proxy" : "gb_proxy";
+                    } else if (categoryType === 'vpn') {
+                        let has30 = group.variants.some(v => {
+                            let vl = v.name.toLowerCase();
+                            return vl.includes("30 days") || vl.includes("month") || vl.includes("year") || vl.includes("18 month") || vl.includes("2 years") || vl.includes("14 day");
+                        });
+                        pCat = has30 ? "vpn_30days" : "vpn_7days";
+                    }
+
+                    let iconHtml = getProductIconHtml(sNameLower, categoryType);
+                    let variantsJson = encodeURIComponent(JSON.stringify(group.variants));
+
+                    container.innerHTML += `
+                        <div class="col-12 product-item-card" data-name="${group.baseName.toLowerCase()}" data-category="${pCat}">
+                            <div class="card card-custom p-3">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                        ${iconHtml}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0 fw-bold fs-6">${group.baseName} ${qualityBadge}</h6>
+                                            ${availBadge}
                                         </div>
                                     </div>
-                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
-                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'vpn')">
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-view-plans" onclick='openGroupProductDetail("${group.baseName}", JSON.parse(decodeURIComponent("${variantsJson}")), "${categoryType}")'>
                                         View plans →
                                     </button>
                                 </div>
                             </div>
-                        `;
-                    });
-                }
+                        </div>
+                    `;
+                });
             }
 
-            // 2. Proxy Services
-            let proxyContainer = document.getElementById('proxyServicesContainer');
-            if (proxyContainer) {
-                proxyContainer.innerHTML = "";
-                if (data.proxy && data.proxy.length > 0) {
-                    data.proxy.forEach(s => {
-                        let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let sNameLower = s.name.toLowerCase();
-                        let pCat = sNameLower.includes("isp") ? "isp_proxy" : "gb_proxy";
-
-                        let iconHtml = `<i class="fa-solid fa-bolt text-success fs-4"></i>`;
-                        if (sNameLower.includes('datampuls')) {
-                            iconHtml = `<img src="https://i.ibb.co/397Xy254/datampuls.png" alt="Datampuls" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('9 proxy')) {
-                            iconHtml = `<img src="https://i.ibb.co/WvQ3g6hL/9proxy.png" alt="9 Proxy" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('cil')) {
-                            iconHtml = `<img src="https://i.ibb.co/9mzkMtrr/cil.png" alt="Cil Proxy" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('711')) {
-                            iconHtml = `<img src="https://i.ibb.co/LXrPxJV9/711.png" alt="711 Proxy" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('thordata')) {
-                            iconHtml = `<img src="https://i.ibb.co/cXNLzzy7/thordata.png" alt="Thordata" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('ip rocket')) {
-                            iconHtml = `<img src="https://i.ibb.co/twHPBgDf/iprocket.png" alt="IP Rocket" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('bunny')) {
-                            iconHtml = `<img src="https://i.ibb.co/nMKwTDz7/bunny.png" alt="Bunny" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('hub')) {
-                            iconHtml = `<img src="https://i.ibb.co/d4fwRMSB/hub.png" alt="Hub" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('miya')) {
-                            iconHtml = `<img src="https://i.ibb.co/PGWsJTQq/miya.png" alt="Miya" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        }
-
-                        proxyContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="${pCat}">
-                                <div class="card card-custom p-3">
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                            ${iconHtml}
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                                ${availBadge}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
-                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'proxy')">
-                                        View plans →
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            // 3. Apple Section
-            let appleContainer = document.getElementById('appleServicesContainer');
-            if (appleContainer) {
-                appleContainer.innerHTML = "";
-                if (data.apple && data.apple.length > 0) {
-                    data.apple.forEach(s => {
-                        let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-                        let iconHtml = `<img src="https://i.ibb.co/7txWGN4N/apple.png" alt="Apple Gift Card" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.ibb.co/SX76YvzN/1000017025.png';">`;
-
-                        appleContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="apple">
-                                <div class="card card-custom p-3">
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                            ${iconHtml}
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                                ${availBadge}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
-                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'apple')">
-                                        View plans →
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            // 4. AI Section
-            let aiContainer = document.getElementById('aiServicesContainer');
-            if (aiContainer) {
-                aiContainer.innerHTML = "";
-                if (data.ai && data.ai.length > 0) {
-                    data.ai.forEach(s => {
-                        let availBadge = s.available ? `<span class="badge bg-success" style="font-size: 10px;">Available</span>` : `<span class="badge bg-danger" style="font-size: 10px;">Not Available</span>`;
-
-                        let sNameLower = s.name.toLowerCase();
-                        let iconHtml = `<i class="fa-solid fa-robot text-warning fs-4"></i>`;
-
-                        if (sNameLower.includes('gemini')) {
-                            iconHtml = `<img src="https://i.ibb.co/BVN4tcpy/gemini.png" alt="Gemini" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('figma')) {
-                            iconHtml = `<img src="https://i.ibb.co/VWjxf5zk/figma.png" alt="Figma" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        } else if (sNameLower.includes('youtube')) {
-                            iconHtml = `<img src="https://i.ibb.co/spYJZj2t/youtub.png" alt="YouTube" style="width: 36px; height: 36px; object-fit: contain;">`;
-                        }
-
-                        aiContainer.innerHTML += `
-                            <div class="col-12 product-item-card" data-name="${s.name.toLowerCase()}" data-category="ai">
-                                <div class="card card-custom p-3">
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="bg-black p-2 rounded-2 border border-secondary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                            ${iconHtml}
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0 fw-bold fs-6">${s.name}</h6>
-                                                ${availBadge}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="text-warning fw-bold mb-3" style="font-size: 13px; margin-left: 60px;">From $${Number(s.price).toFixed(2)}</div>
-                                    <button class="btn btn-view-plans" onclick="openProductDetail('${s.name}', ${s.price}, 'ai')">
-                                        View plans →
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
+            renderCategoryContainer('vpnServicesContainer', data.vpn, 'vpn');
+            renderCategoryContainer('proxyServicesContainer', data.proxy, 'proxy');
+            renderCategoryContainer('appleServicesContainer', data.apple, 'apple');
+            renderCategoryContainer('aiServicesContainer', data.ai, 'ai');
         }
 
         // Search & Category Filter Logic
