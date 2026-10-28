@@ -702,7 +702,6 @@
                     <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
                         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                             <h4 class="fw-bold mb-0"><i class="fa-solid fa-box-archive text-danger me-2"></i>Customer Orders & Delivery Management</h4>
-                            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="adminClearAllOrders()">Clear All Orders</button>
                         </div>
                         <div id="adminOrdersListContainer">
                             <!-- Injected dynamically -->
@@ -1961,6 +1960,7 @@
                     price: item.price * item.quantity,
                     status: "Processing...",
                     credentials: "",
+                    timestamp: new Date().getTime(),
                     date: new Date().toLocaleString()
                 });
             });
@@ -1972,6 +1972,35 @@
             switchPage('deliveriesPage');
             updateAdminStats();
         }
+
+        // Auto cancel & refund check every second
+        setInterval(() => {
+            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
+            let updated = false;
+            let now = new Date().getTime();
+
+            orders.forEach(o => {
+                if (o.status === "Processing..." && (!o.credentials || o.credentials.trim() === '')) {
+                    // 30 minutes = 30 * 60 * 1000 ms = 1800000 ms
+                    if (now - (o.timestamp || now) > 1800000) {
+                        o.status = "Cancelled";
+                        let currentBal = getUserBalance();
+                        setUserBalance(currentBal + o.price);
+                        updated = true;
+                    }
+                }
+            });
+
+            if (updated) {
+                localStorage.setItem('vaultOrders', JSON.stringify(orders));
+                if (document.getElementById('deliveriesPage').classList.contains('active')) {
+                    renderDeliveries();
+                }
+                if (document.getElementById('adminDashboardPage').classList.contains('active')) {
+                    renderAdminOrders();
+                }
+            }
+        }, 1000);
 
         window.openDepositModal = function() {
             let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -2603,6 +2632,44 @@
             }
 
             orders.forEach((o, index) => {
+                let isLocked = (o.credentials && o.credentials.trim() !== '') || o.status === 'Completed' || o.status === 'Cancelled';
+
+                let actionUi = "";
+                let statusUi = "";
+                let deleteBtnUi = "";
+
+                if(isLocked) {
+                    let badgeBg = o.status === 'Completed' ? 'bg-success' : 'bg-danger';
+                    statusUi = `<span class="badge ${badgeBg} py-2 px-3 fw-bold fs-6">${o.status}</span>`;
+                    deleteBtnUi = `<span class="text-muted small"><i class="fa-solid fa-lock"></i> Locked</span>`;
+                    
+                    if(o.status === 'Completed') {
+                        actionUi = `
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control bg-light font-monospace text-success fw-bold" value="${o.credentials}" readonly>
+                                <span class="input-group-text bg-success text-white fw-bold"><i class="fa-solid fa-lock me-1"></i> Delivered & Locked</span>
+                            </div>
+                        `;
+                    } else {
+                        actionUi = `<div class="text-danger small fw-bold">Order was automatically cancelled (Timeout/Refunded)</div>`;
+                    }
+                } else {
+                    statusUi = `
+                        <select class="form-select form-select-sm" id="status_${index}" onchange="adminUpdateOrderStatus(${index}, this.value)">
+                            <option value="Processing..." ${o.status === 'Processing...' ? 'selected' : ''}>Processing</option>
+                            <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    `;
+                    deleteBtnUi = `<button class="btn btn-outline-danger btn-sm" onclick="adminDeleteOrder(${index})"><i class="fa-solid fa-trash"></i></button>`;
+                    actionUi = `
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="cred_input_${index}" class="form-control" placeholder="Type Product Details / Email:Pass / Key here..." value="${o.credentials || ''}">
+                            <button class="btn btn-primary fw-bold" type="button" onclick="adminSaveCredentials(${index})">Save Details</button>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
                     <div class="border rounded p-3 mb-2 bg-light">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
@@ -2611,18 +2678,11 @@
                                 <br><small class="text-muted">Price: ${formatPrice(o.price)} | Time: ${o.date}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <select class="form-select form-select-sm" id="status_${index}" onchange="adminUpdateOrderStatus(${index}, this.value)">
-                                    <option value="Processing..." ${o.status === 'Processing...' ? 'selected' : ''}>Processing</option>
-                                    <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                    <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                                </select>
-                                <button class="btn btn-outline-danger btn-sm" onclick="adminDeleteOrder(${index})"><i class="fa-solid fa-trash"></i></button>
+                                ${statusUi}
+                                ${deleteBtnUi}
                             </div>
                         </div>
-                        <div class="input-group input-group-sm">
-                            <input type="text" id="cred_input_${index}" class="form-control" placeholder="Type Product Details / Email:Pass / Key here..." value="${o.credentials || ''}">
-                            <button class="btn btn-primary fw-bold" type="button" onclick="adminSaveCredentials(${index})">Save Details</button>
-                        </div>
+                        ${actionUi}
                     </div>
                 `;
             });
@@ -2632,8 +2692,24 @@
         window.adminUpdateOrderStatus = function(index, newStatus) {
             let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
             if(orders[index]) {
+                let oldStatus = orders[index].status;
+                
+                if(newStatus === 'Cancelled' && oldStatus !== 'Cancelled' && (!orders[index].credentials || orders[index].credentials.trim() === '')) {
+                    let refundAmount = orders[index].price;
+                    let currentBal = getUserBalance();
+                    setUserBalance(currentBal + refundAmount);
+                    alert(`Order cancelled! ${formatPrice(refundAmount)} has been refunded to the user wallet.`);
+                }
+
+                if(newStatus === 'Completed') {
+                    if(!orders[index].credentials || orders[index].credentials.trim() === '') {
+                        orders[index].credentials = "Completed & Delivered";
+                    }
+                }
+
                 orders[index].status = newStatus;
                 localStorage.setItem('vaultOrders', JSON.stringify(orders));
+                renderAdminOrders();
             }
         }
 
@@ -2641,28 +2717,33 @@
             let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
             let inputField = document.getElementById(`cred_input_${index}`);
             if(!inputField) return;
-            let credVal = inputField.value;
+            let credVal = inputField.value.trim();
+            if(!credVal) {
+                alert("Please enter product details before saving!");
+                return;
+            }
             if(orders[index]) {
                 orders[index].credentials = credVal;
+                orders[index].status = "Completed";
                 localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                alert("Product details saved successfully! Customer can now view them. ✅");
+                alert("Product details saved & locked permanently! ✅");
                 renderAdminOrders();
             }
         }
 
         window.adminDeleteOrder = function(index) {
+            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
+            let o = orders[index];
+            let isLocked = (o.credentials && o.credentials.trim() !== '') || o.status === 'Completed' || o.status === 'Cancelled';
+            
+            if(isLocked) {
+                alert("This order is completed/locked and cannot be deleted.");
+                return;
+            }
+
             if(confirm("Do you want to delete this order?")) {
-                let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
                 orders.splice(index, 1);
                 localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                renderAdminOrders();
-                updateAdminStats();
-            }
-        }
-
-        window.adminClearAllOrders = function() {
-            if(confirm("Do you want to delete all orders?")) {
-                localStorage.removeItem('vaultOrders');
                 renderAdminOrders();
                 updateAdminStats();
             }
