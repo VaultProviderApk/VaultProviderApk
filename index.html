@@ -321,8 +321,8 @@
             <!-- ================= SCROLLING NOTICE MARQUEE ================= -->
             <div class="alert alert-warning border-0 shadow-sm py-2 px-3 rounded-3 mb-3 d-flex align-items-center" style="background-color: #fff3cd; color: #856404; font-weight: bold; font-size: 13px;">
                 <i class="fa-solid fa-bullhorn me-2 text-danger"></i>
-                <marquee behavior="scroll" direction="left" scrollamount="5">
-                    Welcome to the Proxy & VPN Services store! 24/7 support is available for all services. All prices are displayed in USD and BDT.
+                <marquee behavior="scroll" direction="left" scrollamount="5" scrolldelay="0" onmouseover="this.stop();" onmouseout="this.start();">
+                    <span id="dynamicNoticeMarqueeText">Welcome to Proxy & Vpn Services store! 24/7 support is available for all services. All prices are displayed in USD and BDT.</span>
                 </marquee>
             </div>
             <!-- ================= END OF MARQUEE ================= -->
@@ -507,7 +507,7 @@
                     <div class="card p-3 border-0 shadow-sm h-100">
                         <h5 class="fw-bold text-danger mb-2"><i class="fa-solid fa-bullhorn me-2"></i> Notice</h5>
                         <div class="alert alert-warning small mb-0 py-2" id="accountNoticeText">
-                            ⚡ Welcome to Proxy & Vpn Services store! 24/7 support is available for all services.
+                            Welcome to Proxy & Vpn Services store! 24/7 support is available for all services. All prices are displayed in USD and BDT.
                         </div>
                     </div>
                 </div>
@@ -822,7 +822,7 @@
                 <div class="tab-pane fade" id="pane-notice" role="tabpanel">
                     <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
                         <h4 class="fw-bold mb-3 border-bottom pb-2 text-warning text-dark"><i class="fa-solid fa-bullhorn me-2"></i>Notice Board Management</h4>
-                        <p class="small text-muted mb-3">Updating the notice here will instantly update it on all users' accounts and homepage.</p>
+                        <p class="small text-muted mb-3">Updating the notice here will instantly update it on all users' accounts and homepage marquee.</p>
                         <div class="mb-3">
                             <input type="text" id="adminNoticeInput" class="form-control" placeholder="Type notice here...">
                         </div>
@@ -951,7 +951,7 @@
                             <label class="form-label small text-primary fw-bold">Payment Method</label>
                             <select id="depositTypeSelect" class="form-select border-secondary form-select-sm" onchange="toggleMainPaymentMethod()" required>
                                 <option value="" selected disabled>-- Select Method --</option>
-                                <option value="MobileBanking">Mobile Banking (bKash, Nagad, Rocket)</option>
+                                <option value="MobileBanking">MobileBanking</option>
                                 <option value="Crypto">Crypto</option>
                             </select>
                         </div>
@@ -2160,9 +2160,7 @@
 
         window.renderAccountPage = function() {
             updateBalanceDisplay();
-            let noticeText = localStorage.getItem('vaultNoticeText') || "⚡ Welcome to Proxy & Vpn Services store! 24/7 support is available for all services.";
-            let accNotice = document.getElementById('accountNoticeText');
-            if(accNotice) accNotice.innerText = noticeText;
+            loadAdminNoticeText();
 
             let historyContainer = document.getElementById('accountDepositHistoryContainer');
             if(historyContainer) historyContainer.classList.add('d-none');
@@ -2283,11 +2281,26 @@
         }
 
         function loadAdminNoticeText() {
-            let noticeText = localStorage.getItem('vaultNoticeText') || "⚡ Welcome to Proxy & Vpn Services store! 24/7 support is available for all services.";
-            let displayNotice = document.getElementById('displayNoticeText');
-            if(displayNotice) displayNotice.innerText = noticeText;
+            let noticeText = localStorage.getItem('vaultNoticeText') || "Welcome to Proxy & Vpn Services store! 24/7 support is available for all services. All prices are displayed in USD and BDT.";
+            let marqueeTextEl = document.getElementById('dynamicNoticeMarqueeText');
+            if(marqueeTextEl) marqueeTextEl.innerText = noticeText;
+            
+            let accNotice = document.getElementById('accountNoticeText');
+            if(accNotice) accNotice.innerText = noticeText;
+
             let adminInput = document.getElementById('adminNoticeInput');
             if(adminInput) adminInput.value = noticeText;
+        }
+
+        window.adminSaveNotice = function() {
+            let input = document.getElementById('adminNoticeInput');
+            if(!input) return;
+            let val = input.value.trim();
+            if(val) {
+                localStorage.setItem('vaultNoticeText', val);
+                loadAdminNoticeText();
+                alert("Notice updated and published successfully! ✅");
+            }
         }
 
         function updateAdminStats() {
@@ -2314,17 +2327,6 @@
             } else {
                 switchAuthMode('login');
                 new bootstrap.Modal(document.getElementById('authModal')).show();
-            }
-        }
-
-        window.adminSaveNotice = function() {
-            let input = document.getElementById('adminNoticeInput');
-            if(!input) return;
-            let val = input.value.trim();
-            if(val) {
-                localStorage.setItem('vaultNoticeText', val);
-                loadAdminNoticeText();
-                alert("Notice updated successfully! ✅");
             }
         }
 
@@ -2669,6 +2671,7 @@
         window.onload = function() {
             filterByCategory('all', document.querySelector('.cat-pill'));
             checkLoginState();
+            loadAdminNoticeText();
             updateProductCountDisplay();
         };
     </script>
