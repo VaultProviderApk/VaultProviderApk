@@ -737,16 +737,28 @@
                                         <label class="form-label small fw-bold">Logo Image URL</label>
                                         <input type="url" id="adminProductLogo" class="form-control form-control-sm" placeholder="https://image-link.com/logo.png" required>
                                     </div>
-                                    <div class="row g-2 mb-3">
-                                        <div class="col">
-                                            <label class="form-label small fw-bold">Price ($)</label>
-                                            <input type="number" step="any" id="adminProductPrice" class="form-control form-control-sm" placeholder="1.50" required>
+                                    
+                                    <!-- Dynamic Plans & Prices Section -->
+                                    <div class="mb-3 border rounded p-2 bg-light">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label class="form-label small fw-bold text-primary mb-0">Plans & Prices:</label>
+                                            <button type="button" class="btn btn-outline-success btn-sm py-0 px-2 fw-bold" onclick="addAdminVariantRow()">+ Add Plan</button>
                                         </div>
-                                        <div class="col">
-                                            <label class="form-label small fw-bold">Original Price ($)</label>
-                                            <input type="number" step="any" id="adminProductOrigPrice" class="form-control form-control-sm" placeholder="3.00" required>
+                                        <div id="adminNewProductVariantsContainer" class="d-flex flex-column gap-2">
+                                            <div class="row g-1 align-items-center variant-row">
+                                                <div class="col-7">
+                                                    <input type="text" class="form-control form-control-sm v-name" placeholder="Plan Name (e.g. 1 GB)" required>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="number" step="any" class="form-control form-control-sm v-price" placeholder="Price ($)" required>
+                                                </div>
+                                                <div class="col-1 text-center">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="this.closest('.variant-row').remove()">×</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
                                     <button type="submit" class="btn btn-dark w-100 fw-bold py-2">Publish Product</button>
                                 </form>
                             </div>
@@ -767,7 +779,7 @@
                                         <option value="apple">Apple Gift Card</option>
                                     </select>
                                 </div>
-                                <div id="adminManageServicesContainer" style="max-height: 340px; overflow-y: auto;" class="border rounded p-2 bg-light">
+                                <div id="adminManageServicesContainer" style="max-height: 380px; overflow-y: auto;" class="border rounded p-2 bg-light">
                                     <small class="text-muted">Please select a category above...</small>
                                 </div>
                             </div>
@@ -2355,21 +2367,54 @@
             }
         }
 
+        window.addAdminVariantRow = function() {
+            let container = document.getElementById('adminNewProductVariantsContainer');
+            let row = document.createElement('div');
+            row.className = "row g-1 align-items-center variant-row mt-1";
+            row.innerHTML = `
+                <div class="col-7">
+                    <input type="text" class="form-control form-control-sm v-name" placeholder="Plan Name (e.g. 2 GB)" required>
+                </div>
+                <div class="col-4">
+                    <input type="number" step="any" class="form-control form-control-sm v-price" placeholder="Price ($)" required>
+                </div>
+                <div class="col-1 text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="this.closest('.variant-row').remove()">×</button>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
         window.adminAddNewProduct = function(e) {
             e.preventDefault();
             let cat = document.getElementById('adminProductCategory').value;
             let name = document.getElementById('adminProductName').value;
             let logo = document.getElementById('adminProductLogo').value;
-            let price = parseFloat(document.getElementById('adminProductPrice').value);
-            let origPrice = parseFloat(document.getElementById('adminProductOrigPrice').value);
+            
+            let variants = [];
+            document.querySelectorAll('#adminNewProductVariantsContainer .variant-row').forEach(row => {
+                let vName = row.querySelector('.v-name').value.trim();
+                let vPrice = parseFloat(row.querySelector('.v-price').value) || 0;
+                if(vName) {
+                    variants.push({
+                        name: vName,
+                        price: vPrice,
+                        origPrice: vPrice * 1.5,
+                        discount: "HOT"
+                    });
+                }
+            });
+
+            if(variants.length === 0) {
+                alert("Please add at least one plan/variant!");
+                return;
+            }
 
             let newProduct = {
                 baseName: name,
                 category: cat,
                 logo: logo,
-                variants: [
-                    { name: `${name} (Standard Plan)`, price: price, origPrice: origPrice, discount: "HOT" }
-                ],
+                variants: variants,
                 rating: 5.0,
                 sold: 10
             };
@@ -2383,6 +2428,19 @@
             updateProductCountDisplay();
             alert("New product added successfully! ✅");
             document.getElementById('adminAddProductForm').reset();
+            document.getElementById('adminNewProductVariantsContainer').innerHTML = `
+                <div class="row g-1 align-items-center variant-row">
+                    <div class="col-7">
+                        <input type="text" class="form-control form-control-sm v-name" placeholder="Plan Name (e.g. 1 GB)" required>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" step="any" class="form-control form-control-sm v-price" placeholder="Price ($)" required>
+                    </div>
+                    <div class="col-1 text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="this.closest('.variant-row').remove()">×</button>
+                    </div>
+                </div>
+            `;
         }
 
         window.renderAdminManageServicesList = function() {
@@ -2398,24 +2456,36 @@
 
             container.innerHTML = "";
             servicesData[cat].forEach((prod, pIdx) => {
-                let variant = prod.variants[0] || { name: prod.baseName, price: 0 };
+                let variantsHtml = "";
+                if(prod.variants && prod.variants.length > 0) {
+                    prod.variants.forEach((v, vIdx) => {
+                        variantsHtml += `
+                            <div class="border rounded p-2 mb-2 bg-white">
+                                <div class="mb-1">
+                                    <label class="form-label text-muted small fw-bold mb-0">Plan Name:</label>
+                                    <input type="text" id="edit_v_name_${cat}_${pIdx}_${vIdx}" class="form-control form-control-sm fw-bold" value="${v.name}">
+                                </div>
+                                <div class="mb-1">
+                                    <label class="form-label text-muted small fw-bold mb-0">Price ($):</label>
+                                    <input type="number" step="any" id="edit_v_price_${cat}_${pIdx}_${vIdx}" class="form-control form-control-sm font-monospace" value="${v.price || 0}">
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
                 container.innerHTML += `
-                    <div class="border rounded p-3 mb-2 bg-white shadow-sm">
+                    <div class="border rounded p-3 mb-3 bg-white shadow-sm">
                         <div class="mb-2">
-                            <label class="form-label text-muted small fw-bold mb-0">Name:</label>
+                            <label class="form-label text-primary small fw-bold mb-0">Product Base Name:</label>
                             <input type="text" id="edit_name_${cat}_${pIdx}" class="form-control form-control-sm fw-bold" value="${prod.baseName}">
                         </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-8">
-                                <label class="form-label text-muted small fw-bold mb-0">Price ($):</label>
-                                <input type="number" step="any" id="edit_price_${cat}_${pIdx}" class="form-control form-control-sm font-monospace" value="${variant.price}">
-                            </div>
-                            <div class="col-4 d-flex align-items-end">
-                                <span class="badge bg-success w-100 py-2">Available</span>
-                            </div>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary small fw-bold mb-0">Plans & Prices:</label>
+                            ${variantsHtml}
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-success btn-sm w-50 fw-bold py-1.5" onclick="adminUpdateService('${cat}', ${pIdx})"><i class="fa-solid fa-floppy-disk me-1"></i> Update</button>
+                            <button class="btn btn-success btn-sm w-50 fw-bold py-1.5" onclick="adminUpdateService('${cat}', ${pIdx})"><i class="fa-solid fa-floppy-disk me-1"></i> Update Service</button>
                             <button class="btn btn-outline-danger btn-sm w-50 fw-bold py-1.5" onclick="adminDeleteService('${cat}', ${pIdx})"><i class="fa-solid fa-trash me-1"></i> Delete</button>
                         </div>
                     </div>
@@ -2425,21 +2495,24 @@
 
         window.adminUpdateService = function(cat, index) {
             let nameInput = document.getElementById(`edit_name_${cat}_${index}`);
-            let priceInput = document.getElementById(`edit_price_${cat}_${index}`);
-            if(!nameInput || !priceInput) return;
-
+            if(!nameInput) return;
             let newName = nameInput.value.trim();
-            let newPrice = parseFloat(priceInput.value);
-
-            if(!newName || isNaN(newPrice)) {
-                alert("Please enter a valid name and price!");
+            if(!newName) {
+                alert("Please enter a valid product name!");
                 return;
             }
 
             servicesData[cat][index].baseName = newName;
-            if(servicesData[cat][index].variants && servicesData[cat][index].variants[0]) {
-                servicesData[cat][index].variants[0].name = newName + " (Standard Plan)";
-                servicesData[cat][index].variants[0].price = newPrice;
+
+            if(servicesData[cat][index].variants) {
+                servicesData[cat][index].variants.forEach((v, vIdx) => {
+                    let vNameInput = document.getElementById(`edit_v_name_${cat}_${index}_${vIdx}`);
+                    let vPriceInput = document.getElementById(`edit_v_price_${cat}_${index}_${vIdx}`);
+                    if(vNameInput && vPriceInput) {
+                        v.name = vNameInput.value.trim();
+                        v.price = parseFloat(vPriceInput.value) || 0;
+                    }
+                });
             }
 
             localStorage.setItem('vaultStoreData', JSON.stringify(servicesData));
