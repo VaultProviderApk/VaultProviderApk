@@ -23,6 +23,16 @@
             display: flex;
             flex-direction: column;
             padding-bottom: 60px;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-left: 15px;
+            padding-right: 15px;
         }
 
         /* Daraz Top Utility Bar */
@@ -208,6 +218,17 @@
             cursor: pointer;
             font-size: 16px;
             padding: 5px;
+        }
+
+        /* চারকোনা ইনপুট বক্স ডিজাইন */
+        .square-input-group {
+            border-radius: 0 !important;
+        }
+        .square-input-group .form-control {
+            border-radius: 0 !important;
+        }
+        .square-input-group .btn {
+            border-radius: 0 !important;
         }
 
         .admin-nav-tabs .nav-link {
@@ -961,7 +982,7 @@
                             <div class="d-flex flex-column gap-2">
                                 <div class="border rounded-3 overflow-hidden bg-white">
                                     <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mbBkashCollapse" data-bs-parent="#mobileBankingMainBox" onclick="selectFinalPaymentMethod('bKash', this)">
-                                        <span><i class="fa-solid fa-folder-closed text-danger me-1"></i> bKash</span>
+                                        <span class="d-flex align-items-center gap-2"><img src="https://i.ibb.co.com/LDVRsJMP/bkash.png" alt="bKash" style="height: 22px; width: auto; object-fit: contain;" onerror="this.src='https://i.ibb.co/SX76YvzN/1000017025.png'"> bKash</span>
                                         <i class="fa-solid fa-chevron-down small"></i>
                                     </button>
                                     <div id="mbBkashCollapse" class="collapse" data-bs-parent="#mobileBankingMainBox"><div class="p-2 border-top bg-light d-flex justify-content-between align-items-center">
@@ -971,7 +992,7 @@
                                 </div>
                                 <div class="border rounded-3 overflow-hidden bg-white">
                                     <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mbNagadCollapse" data-bs-parent="#mobileBankingMainBox" onclick="selectFinalPaymentMethod('Nagad', this)">
-                                        <span><i class="fa-solid fa-folder-closed text-warning me-1"></i> Nagad</span>
+                                        <span class="d-flex align-items-center gap-2"><img src="https://i.ibb.co.com/5W98zvMj/nagad.png" alt="Nagad" style="height: 22px; width: auto; object-fit: contain;" onerror="this.src='https://i.ibb.co/SX76YvzN/1000017025.png'"> Nagad</span>
                                         <i class="fa-solid fa-chevron-down small"></i>
                                     </button>
                                     <div id="mbNagadCollapse" class="collapse" data-bs-parent="#mobileBankingMainBox"><div class="p-2 border-top bg-light d-flex justify-content-between align-items-center">
@@ -981,7 +1002,7 @@
                                 </div>
                                 <div class="border rounded-3 overflow-hidden bg-white">
                                     <button class="sub-folder-btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mbRocketCollapse" data-bs-parent="#mobileBankingMainBox" onclick="selectFinalPaymentMethod('Rocket', this)">
-                                        <span><i class="fa-solid fa-folder-closed text-secondary me-1"></i> Rocket</span>
+                                        <span class="d-flex align-items-center gap-2"><img src="https://i.ibb.co.com/RG4vmLkQ/rocket.png" alt="Rocket" style="height: 22px; width: auto; object-fit: contain;" onerror="this.src='https://i.ibb.co/SX76YvzN/1000017025.png'"> Rocket</span>
                                         <i class="fa-solid fa-chevron-down small"></i>
                                     </button>
                                     <div id="mbRocketCollapse" class="collapse" data-bs-parent="#mobileBankingMainBox"><div class="p-2 border-top bg-light d-flex justify-content-between align-items-center">
@@ -1082,7 +1103,7 @@
         let currentSelectedProduct = null;
         let selectedVariantPrice = 0;
         let selectedVariantName = "";
-        let cart = [];
+        let cart = JSON.parse(localStorage.getItem('vaultCartData') || '[]');
 
         const ADMIN_EMAIL = "chironjitkumarsarkarbd@gmail.com";
 
@@ -1806,10 +1827,15 @@
             } else {
                 cart.push({ name: selectedVariantName, price: selectedVariantPrice, quantity: 1 });
             }
+            saveCartToStorage();
             updateCartBadge();
             alert(`${selectedVariantName} successfully added to cart! 🛒`);
             switchPage('homePage');
             setActiveNav('navHomeBtn');
+        }
+
+        function saveCartToStorage() {
+            localStorage.setItem('vaultCartData', JSON.stringify(cart));
         }
 
         function updateCartBadge() {
@@ -1913,18 +1939,21 @@
         window.changeQty = function(index, delta) {
             cart[index].quantity += delta;
             if (cart[index].quantity <= 0) cart.splice(index, 1);
+            saveCartToStorage();
             updateCartBadge();
             renderCart();
         }
 
         window.removeFromCart = function(index) {
             cart.splice(index, 1);
+            saveCartToStorage();
             updateCartBadge();
             renderCart();
         }
 
         window.clearCart = function() {
             cart = [];
+            saveCartToStorage();
             updateCartBadge();
             renderCart();
         }
@@ -1968,6 +1997,7 @@
             localStorage.setItem('vaultOrders', JSON.stringify(orders));
             alert("Order placed successfully! ✅");
             cart = [];
+            saveCartToStorage();
             updateCartBadge();
             switchPage('deliveriesPage');
             updateAdminStats();
@@ -2636,16 +2666,14 @@
 
                 let actionUi = "";
                 let statusUi = "";
-                let deleteBtnUi = "";
 
                 if(isLocked) {
                     let badgeBg = o.status === 'Completed' ? 'bg-success' : 'bg-danger';
                     statusUi = `<span class="badge ${badgeBg} py-2 px-3 fw-bold fs-6">${o.status}</span>`;
-                    deleteBtnUi = `<span class="text-muted small"><i class="fa-solid fa-lock"></i> Locked</span>`;
                     
                     if(o.status === 'Completed') {
                         actionUi = `
-                            <div class="input-group input-group-sm">
+                            <div class="input-group input-group-sm square-input-group">
                                 <input type="text" class="form-control bg-light font-monospace text-success fw-bold" value="${o.credentials}" readonly>
                                 <span class="input-group-text bg-success text-white fw-bold"><i class="fa-solid fa-lock me-1"></i> Delivered & Locked</span>
                             </div>
@@ -2661,11 +2689,10 @@
                             <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                     `;
-                    deleteBtnUi = `<button class="btn btn-outline-danger btn-sm" onclick="adminDeleteOrder(${index})"><i class="fa-solid fa-trash"></i></button>`;
                     actionUi = `
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm square-input-group">
                             <input type="text" id="cred_input_${index}" class="form-control" placeholder="Type Product Details / Email:Pass / Key here..." value="${o.credentials || ''}">
-                            <button class="btn btn-primary fw-bold" type="button" onclick="adminSaveCredentials(${index})">Save Details</button>
+                            <button class="btn btn-primary fw-bold px-4" type="button" onclick="adminSaveCredentials(${index})">Send</button>
                         </div>
                     `;
                 }
@@ -2679,7 +2706,6 @@
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 ${statusUi}
-                                ${deleteBtnUi}
                             </div>
                         </div>
                         ${actionUi}
@@ -2719,33 +2745,15 @@
             if(!inputField) return;
             let credVal = inputField.value.trim();
             if(!credVal) {
-                alert("Please enter product details before saving!");
+                alert("Please enter product details before sending!");
                 return;
             }
             if(orders[index]) {
                 orders[index].credentials = credVal;
                 orders[index].status = "Completed";
                 localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                alert("Product details saved & locked permanently! ✅");
+                alert("Product sent and locked permanently! ✅");
                 renderAdminOrders();
-            }
-        }
-
-        window.adminDeleteOrder = function(index) {
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-            let o = orders[index];
-            let isLocked = (o.credentials && o.credentials.trim() !== '') || o.status === 'Completed' || o.status === 'Cancelled';
-            
-            if(isLocked) {
-                alert("This order is completed/locked and cannot be deleted.");
-                return;
-            }
-
-            if(confirm("Do you want to delete this order?")) {
-                orders.splice(index, 1);
-                localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                renderAdminOrders();
-                updateAdminStats();
             }
         }
 
@@ -2754,6 +2762,7 @@
             checkLoginState();
             loadAdminNoticeText();
             updateProductCountDisplay();
+            updateCartBadge();
         };
     </script>
 </body>
