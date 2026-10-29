@@ -318,11 +318,12 @@
             </a>
 
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-light border position-relative px-3 py-1.5 d-none d-md-block" onclick="switchPage('cartPage')">
+                <!-- Cart & Orders hidden on desktop/md view -->
+                <button class="btn btn-light border position-relative px-3 py-1.5 d-md-none" onclick="switchPage('cartPage')">
                     <i class="fa-solid fa-cart-shopping text-secondary"></i>
                     <span id="cartCountBadge" class="cart-badge-count" style="display: none;">0</span>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm d-none d-md-block" onclick="switchPage('deliveriesPage')">
+                <button class="btn btn-outline-secondary btn-sm d-md-none" onclick="switchPage('deliveriesPage')">
                     <i class="fa-solid fa-box-open"></i> Orders
                 </button>
                 <button class="btn btn-outline-dark btn-sm d-none d-md-block" id="headerAdminBtn" style="display: none !important;" onclick="openAdminModal()">
