@@ -1077,9 +1077,25 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- App Script -->
-    <script>
-        const USD_TO_BDT_RATE = 130; // 1 USD = 130 BDT Exchange Rate
+    <!-- Firebase SDK & App Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhKFaGIgA6UOZ8ExvN-0my-GmTY-aPJ-I",
+            authDomain: "proxyvpnservics.firebaseapp.com",
+            projectId: "proxyvpnservics",
+            storageBucket: "proxyvpnservics.firebasestorage.app",
+            messagingSenderId: "1097793913381",
+            appId: "1:1097793913381:web:aec7e3a99e7a8c3db8f5cc",
+            measurementId: "G-W6BLESK4XN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const USD_TO_BDT_RATE = 130; 
 
         function formatPrice(usdPrice) {
             let bdtPrice = Math.round(usdPrice * USD_TO_BDT_RATE);
@@ -1524,7 +1540,35 @@
             ]
         };
 
-        let servicesData = JSON.parse(localStorage.getItem('vaultStoreData')) || defaultServices;
+        let servicesData = defaultServices;
+
+        // Load Services and App Data from Firestore
+        async function loadFirestoreData() {
+            try {
+                let storeDoc = await getDoc(doc(db, "settings", "storeData"));
+                if (storeDoc.exists()) {
+                    servicesData = storeDoc.data();
+                } else {
+                    await setDoc(doc(db, "settings", "storeData"), defaultServices);
+                }
+                
+                let noticeDoc = await getDoc(doc(db, "settings", "notice"));
+                if (noticeDoc.exists()) {
+                    let noticeText = noticeDoc.data().text;
+                    document.getElementById('dynamicNoticeMarqueeText').innerText = noticeText;
+                    let accNotice = document.getElementById('accountNoticeText');
+                    if(accNotice) accNotice.innerText = noticeText;
+                    let adminInput = document.getElementById('adminNoticeInput');
+                    if(adminInput) adminInput.value = noticeText;
+                }
+
+                filterByCategory('all', document.querySelector('.cat-pill'));
+                updateProductCountDisplay();
+                checkLoginState();
+            } catch (err) {
+                console.error("Error loading from Firestore:", err);
+            }
+        }
 
         function updateProductCountDisplay() {
             let totalProds = (servicesData.vpn?.length || 0) + 
@@ -1562,7 +1606,6 @@
                 renderAdminDepositRequests();
                 renderAdminUsersTable();
                 renderAdminManageServicesList();
-                loadAdminNoticeText();
                 updateAdminStats();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1624,22 +1667,22 @@
             let productsToDisplay = [];
             if(categoryKey === 'all') {
                 productsToDisplay = [
-                    ...servicesData.vpn,
-                    ...servicesData.gb_proxy,
-                    ...servicesData.isp_proxy,
-                    ...servicesData.ai,
-                    ...servicesData.apple
+                    ...(servicesData.vpn || []),
+                    ...(servicesData.gb_proxy || []),
+                    ...(servicesData.isp_proxy || []),
+                    ...(servicesData.ai || []),
+                    ...(servicesData.apple || [])
                 ];
             } else if(categoryKey === 'vpn') {
-                productsToDisplay = servicesData.vpn;
+                productsToDisplay = servicesData.vpn || [];
             } else if(categoryKey === 'gb_proxy') {
-                productsToDisplay = servicesData.gb_proxy;
+                productsToDisplay = servicesData.gb_proxy || [];
             } else if(categoryKey === 'isp_proxy') {
-                productsToDisplay = servicesData.isp_proxy;
+                productsToDisplay = servicesData.isp_proxy || [];
             } else if(categoryKey === 'ai') {
-                productsToDisplay = servicesData.ai;
+                productsToDisplay = servicesData.ai || [];
             } else if(categoryKey === 'apple') {
-                productsToDisplay = servicesData.apple;
+                productsToDisplay = servicesData.apple || [];
             }
 
             if(productsToDisplay.length === 0) {
@@ -1676,7 +1719,7 @@
             let gridContainer = document.getElementById('mainProductsGrid');
             gridContainer.innerHTML = "";
 
-            let allArr = [...servicesData.vpn, ...servicesData.gb_proxy, ...servicesData.isp_proxy, ...servicesData.ai, ...servicesData.apple];
+            let allArr = [...(servicesData.vpn || []), ...(servicesData.gb_proxy || []), ...(servicesData.isp_proxy || []), ...(servicesData.ai || []), ...(servicesData.apple || [])];
             let filtered = allArr.filter(item => item.baseName.toLowerCase().includes(query));
 
             if(filtered.length === 0) {
@@ -1847,19 +1890,34 @@
             }
         }
 
-        function getUserBalance() {
+        async function getUserBalance() {
             let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (!isLoggedIn) return 0.00;
-            return parseFloat(localStorage.getItem('vaultUserFunds') || '0.00');
+            let email = localStorage.getItem('loggedUserEmail');
+            if (!isLoggedIn || !email) return 0.00;
+            try {
+                let userDoc = await getDoc(doc(db, "users", email));
+                if (userDoc.exists()) {
+                    return userDoc.data().balance || 0.00;
+                }
+            } catch (err) {
+                console.error("Error fetching balance:", err);
+            }
+            return 0.00;
         }
 
-        function setUserBalance(val) {
-            localStorage.setItem('vaultUserFunds', val.toFixed(2));
-            updateBalanceDisplay();
+        async function setUserBalance(val) {
+            let email = localStorage.getItem('loggedUserEmail');
+            if (!email) return;
+            try {
+                await setDoc(doc(db, "users", email), { email: email, balance: val }, { merge: true });
+                updateBalanceDisplay();
+            } catch (err) {
+                console.error("Error setting balance:", err);
+            }
         }
 
-        function updateBalanceDisplay() {
-            let bal = getUserBalance();
+        async function updateBalanceDisplay() {
+            let bal = await getUserBalance();
             let topWallet = document.getElementById('topWalletBalance');
             if(topWallet) topWallet.innerText = `Balance: ${formatPrice(bal)}`;
             let cartWallet = document.getElementById('cartWalletDisplay');
@@ -1867,7 +1925,6 @@
             let accountBal = document.getElementById('accountPageBalance');
             if(accountBal) accountBal.innerText = formatPrice(bal);
 
-            // Update Header Username Display
             let headerUserDisp = document.getElementById('headerUsernameDisplay');
             if(headerUserDisp) {
                 let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -1881,8 +1938,8 @@
             }
         }
 
-        function renderCart() {
-            updateBalanceDisplay();
+        async function renderCart() {
+            await updateBalanceDisplay();
             let container = document.getElementById('cartItemsContainer');
             let summaryContainer = document.getElementById('cartSummaryDetails');
             container.innerHTML = "";
@@ -1946,7 +2003,7 @@
             renderCart();
         }
 
-        window.checkoutCart = function() {
+        window.checkoutCart = async function() {
             let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             if (!isLoggedIn) {
                 switchAuthMode('login');
@@ -1960,65 +2017,40 @@
             }
 
             let total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-            let balance = getUserBalance();
+            let balance = await getUserBalance();
 
             if (balance < total) {
                 new bootstrap.Modal(document.getElementById('insufficientBalanceModal')).show();
                 return;
             }
 
-            setUserBalance(balance - total);
+            await setUserBalance(balance - total);
+            let userEmail = localStorage.getItem('loggedUserEmail');
 
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-            cart.forEach(item => {
-                orders.unshift({
-                    id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-                    product: `${item.name} (x${item.quantity})`,
-                    price: item.price * item.quantity,
-                    status: "Processing...",
-                    credentials: "",
-                    timestamp: new Date().getTime(),
-                    date: new Date().toLocaleString()
-                });
-            });
-
-            localStorage.setItem('vaultOrders', JSON.stringify(orders));
-            alert("Order placed successfully! ✅");
-            cart = [];
-            saveCartToStorage();
-            updateCartBadge();
-            switchPage('deliveriesPage');
-            updateAdminStats();
-        }
-
-        // Auto cancel & refund check every second
-        setInterval(() => {
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-            let updated = false;
-            let now = new Date().getTime();
-
-            orders.forEach(o => {
-                if (o.status === "Processing..." && (!o.credentials || o.credentials.trim() === '')) {
-                    // 30 minutes = 30 * 60 * 1000 ms = 1800000 ms
-                    if (now - (o.timestamp || now) > 1800000) {
-                        o.status = "Cancelled";
-                        let currentBal = getUserBalance();
-                        setUserBalance(currentBal + o.price);
-                        updated = true;
-                    }
+            try {
+                for(let item of cart) {
+                    await addDoc(collection(db, "orders"), {
+                        id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+                        user: userEmail,
+                        product: `${item.name} (x${item.quantity})`,
+                        price: item.price * item.quantity,
+                        status: "Processing...",
+                        credentials: "",
+                        timestamp: new Date().getTime(),
+                        date: new Date().toLocaleString()
+                    });
                 }
-            });
-
-            if (updated) {
-                localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                if (document.getElementById('deliveriesPage').classList.contains('active')) {
-                    renderDeliveries();
-                }
-                if (document.getElementById('adminDashboardPage').classList.contains('active')) {
-                    renderAdminOrders();
-                }
+                alert("Order placed successfully! ✅");
+                cart = [];
+                saveCartToStorage();
+                updateCartBadge();
+                switchPage('deliveriesPage');
+                updateAdminStats();
+            } catch (err) {
+                console.error("Error checking out:", err);
+                alert("Error placing order. Please try again.");
             }
-        }, 1000);
+        }
 
         window.openDepositModal = function() {
             let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -2077,7 +2109,7 @@
 
         let depositFormEl = document.getElementById('depositForm');
         if(depositFormEl) {
-            depositFormEl.addEventListener('submit', function(e){
+            depositFormEl.addEventListener('submit', async function(e){
                 e.preventDefault();
                 let method = document.getElementById('selectedFinalMethod').value;
                 if(!method) {
@@ -2094,72 +2126,81 @@
                     return;
                 }
 
-                let allDeposits = JSON.parse(localStorage.getItem('vaultDepositRequests') || '[]');
-                let isTrxUsed = allDeposits.some(d => d.trxId === trxId);
-                if(isTrxUsed) {
-                    alert("⚠️ This Transaction ID (Trx ID) has already been used!");
-                    return;
+                try {
+                    let convertedAmount = (method === 'bKash' || method === 'Nagad' || method === 'Rocket') ? (amount > 10 ? amount / USD_TO_BDT_RATE : amount) : amount;
+
+                    await addDoc(collection(db, "deposits"), {
+                        id: 'DEP-' + Math.floor(100000 + Math.random() * 900000),
+                        user: userEmail,
+                        amount: convertedAmount,
+                        method: method,
+                        trxId: trxId,
+                        status: "Processing...",
+                        date: new Date().toLocaleString()
+                    });
+
+                    alert(`Deposit request submitted successfully! ✅`);
+                    let modalEl = document.getElementById('depositModal');
+                    let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if(modalInstance) modalInstance.hide();
+                    this.reset();
+                    document.getElementById('mobileBankingMainBox').style.display = 'none';
+                    document.getElementById('cryptoMainBox').style.display = 'none';
+                    document.getElementById('selectedMethodNotice').classList.add('d-none');
+                    renderAccountPage();
+                    updateAdminStats();
+                } catch(err) {
+                    console.error("Deposit submission error:", err);
+                    alert("Error submitting deposit.");
                 }
-
-                let convertedAmount = (method === 'bKash' || method === 'Nagad' || method === 'Rocket') ? (amount > 10 ? amount / USD_TO_BDT_RATE : amount) : amount;
-
-                let newDeposit = {
-                    id: 'DEP-' + Math.floor(100000 + Math.random() * 900000),
-                    user: userEmail,
-                    amount: convertedAmount,
-                    method: method,
-                    trxId: trxId,
-                    status: "Processing...",
-                    date: new Date().toLocaleString()
-                };
-
-                allDeposits.unshift(newDeposit);
-                localStorage.setItem('vaultDepositRequests', JSON.stringify(allDeposits));
-
-                alert(`Deposit request submitted successfully! ✅`);
-                let modalEl = document.getElementById('depositModal');
-                let modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if(modalInstance) modalInstance.hide();
-                this.reset();
-                document.getElementById('mobileBankingMainBox').style.display = 'none';
-                document.getElementById('cryptoMainBox').style.display = 'none';
-                document.getElementById('selectedMethodNotice').classList.add('d-none');
-                renderAccountPage();
-                updateAdminStats();
             });
         }
 
-        window.renderDeliveries = function() {
+        window.renderDeliveries = async function() {
             let container = document.getElementById('deliveriesListContainer');
             if(!container) return;
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
+            let userEmail = localStorage.getItem('loggedUserEmail');
             container.innerHTML = "";
 
-            if (orders.length === 0) {
-                container.innerHTML = `<div class="card p-4 text-center text-muted border-0 shadow-sm">No orders found.</div>`;
-                return;
-            }
+            try {
+                let querySnapshot = await getDocs(collection(db, "orders"));
+                let orders = [];
+                querySnapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    data.firestoreId = docSnap.id;
+                    if(data.user === userEmail || userEmail === ADMIN_EMAIL) {
+                        orders.push(data);
+                    }
+                });
 
-            orders.forEach(o => {
-                let badgeColor = o.status === 'Completed' ? 'bg-success' : (o.status === 'Cancelled' ? 'bg-danger' : 'bg-warning text-dark');
-                let credSection = o.credentials ? `
-                    <div class="mt-2 p-2 bg-light border rounded d-flex justify-content-between align-items-center">
-                        <span class="font-monospace small text-primary fw-bold" id="cred_${o.id}">${o.credentials}</span>
-                        <button class="btn btn-outline-primary btn-sm py-0 px-2" onclick="copyOrderCredentials('${o.credentials}', this)">📋 Copy</button>
-                    </div>
-                ` : `<div class="mt-1"><small class="text-muted fst-italic">Admin has not delivered the product yet (Processing)...</small></div>`;
+                if (orders.length === 0) {
+                    container.innerHTML = `<div class="card p-4 text-center text-muted border-0 shadow-sm">No orders found.</div>`;
+                    return;
+                }
 
-                container.innerHTML += `
-                    <div class="card p-3 mb-3 border-0 shadow-sm">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold mb-0">${o.product}</h6>
-                            <span class="badge ${badgeColor}">${o.status}</span>
+                orders.forEach(o => {
+                    let badgeColor = o.status === 'Completed' ? 'bg-success' : (o.status === 'Cancelled' ? 'bg-danger' : 'bg-warning text-dark');
+                    let credSection = o.credentials ? `
+                        <div class="mt-2 p-2 bg-light border rounded d-flex justify-content-between align-items-center">
+                            <span class="font-monospace small text-primary fw-bold" id="cred_${o.id}">${o.credentials}</span>
+                            <button class="btn btn-outline-primary btn-sm py-0 px-2" onclick="copyOrderCredentials('${o.credentials}', this)">📋 Copy</button>
                         </div>
-                        <small class="text-muted">Order ID: ${o.id || 'N/A'} • Price: ${formatPrice(o.price)} • ${o.date}</small>
-                        ${credSection}
-                    </div>
-                `;
-            });
+                    ` : `<div class="mt-1"><small class="text-muted fst-italic">Admin has not delivered the product yet (Processing)...</small></div>`;
+
+                    container.innerHTML += `
+                        <div class="card p-3 mb-3 border-0 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="fw-bold mb-0">${o.product}</h6>
+                                <span class="badge ${badgeColor}">${o.status}</span>
+                            </div>
+                            <small class="text-muted">Order ID: ${o.id || 'N/A'} • Price: ${formatPrice(o.price)} • ${o.date}</small>
+                            ${credSection}
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Error loading deliveries:", err);
+            }
         }
 
         window.copyOrderCredentials = function(text, btn) {
@@ -2182,51 +2223,70 @@
             }
         }
 
-        window.renderAccountDepositHistory = function() {
+        window.renderAccountDepositHistory = async function() {
             let historyContainer = document.getElementById('accountDepositHistoryContainer');
             if(!historyContainer) return;
-            let email = localStorage.getItem('loggedUserEmail') || 'user@vault.com';
-            let allDeposits = JSON.parse(localStorage.getItem('vaultDepositRequests') || '[]');
-            let userDeposits = allDeposits.filter(d => d.user === email);
+            let email = localStorage.getItem('loggedUserEmail');
 
-            if(userDeposits.length === 0) {
-                historyContainer.innerHTML = `<p class="text-muted small mb-0 text-center">No deposit history available.</p>`;
-            } else {
-                historyContainer.innerHTML = "";
-                userDeposits.forEach(h => {
-                    let badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark');
-                    historyContainer.innerHTML += `
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1 small">
-                            <span><b>${formatPrice(h.amount)}</b> (${h.method}) - <span class="badge ${badgeClass}">${h.status}</span></span>
-                            <span class="text-muted" style="font-size: 10px;">${h.date}</span>
-                        </div>
-                    `;
+            try {
+                let querySnapshot = await getDocs(collection(db, "deposits"));
+                let userDeposits = [];
+                querySnapshot.forEach((docSnap) => {
+                    let d = docSnap.data();
+                    if(d.user === email) userDeposits.push(d);
                 });
+
+                if(userDeposits.length === 0) {
+                    historyContainer.innerHTML = `<p class="text-muted small mb-0 text-center">No deposit history available.</p>`;
+                } else {
+                    historyContainer.innerHTML = "";
+                    userDeposits.forEach(h => {
+                        let badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark');
+                        historyContainer.innerHTML += `
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1 small">
+                                <span><b>${formatPrice(h.amount)}</b> (${h.method}) - <span class="badge ${badgeClass}">${h.status}</span></span>
+                                <span class="text-muted" style="font-size: 10px;">${h.date}</span>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Error loading deposit history:", err);
             }
         }
 
-        window.renderAccountPage = function() {
-            updateBalanceDisplay();
-            loadAdminNoticeText();
+        window.renderAccountPage = async function() {
+            await updateBalanceDisplay();
 
             let historyContainer = document.getElementById('accountDepositHistoryContainer');
             if(historyContainer) historyContainer.classList.add('d-none');
 
             let quickDeliveries = document.getElementById('accountQuickDeliveriesContainer');
             if(quickDeliveries) {
-                let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-                if(orders.length === 0) {
-                    quickDeliveries.innerHTML = `<p class="text-muted small mb-0 text-center">No orders found.</p>`;
-                } else {
-                    quickDeliveries.innerHTML = "";
-                    orders.slice(0, 3).forEach(o => {
-                        quickDeliveries.innerHTML += `
-                            <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1 small">
-                                <span><b>${o.product}</b></span>
-                                <span class="badge bg-warning text-dark" style="font-size: 9px;">${o.status}</span>
-                            </div>
-                        `;
+                let userEmail = localStorage.getItem('loggedUserEmail');
+                try {
+                    let querySnapshot = await getDocs(collection(db, "orders"));
+                    let orders = [];
+                    querySnapshot.forEach((docSnap) => {
+                        let d = docSnap.data();
+                        if(d.user === userEmail) orders.push(d);
                     });
+
+                    if(orders.length === 0) {
+                        quickDeliveries.innerHTML = `<p class="text-muted small mb-0 text-center">No orders found.</p>`;
+                    } else {
+                        quickDeliveries.innerHTML = "";
+                        orders.slice(0, 3).forEach(o => {
+                            quickDeliveries.innerHTML += `
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1 small">
+                                    <span><b>${o.product}</b></span>
+                                    <span class="badge bg-warning text-dark" style="font-size: 9px;">${o.status}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                } catch (err) {
+                    console.error("Error loading quick deliveries:", err);
                 }
             }
         }
@@ -2246,14 +2306,18 @@
             }
         }
 
-        window.handleLoginSubmit = function(e) {
+        window.handleLoginSubmit = async function(e) {
             e.preventDefault();
             let emailInput = document.getElementById('loginEmail').value.trim();
             
-            let regUsers = JSON.parse(localStorage.getItem('vaultRegisteredUsers') || '[]');
-            if(!regUsers.some(u => u.email === emailInput)) {
-                regUsers.push({ email: emailInput });
-                localStorage.setItem('vaultRegisteredUsers', JSON.stringify(regUsers));
+            try {
+                let userRef = doc(db, "users", emailInput);
+                let userSnap = await getDoc(userRef);
+                if(!userSnap.exists()) {
+                    await setDoc(userRef, { email: emailInput, balance: 0.00 });
+                }
+            } catch(err) {
+                console.error("Login user check error:", err);
             }
 
             localStorage.setItem('isLoggedIn', 'true');
@@ -2274,7 +2338,7 @@
             }
         }
 
-        window.handleRegisterSubmit = function(e) {
+        window.handleRegisterSubmit = async function(e) {
             e.preventDefault();
             let emailInput = document.getElementById('regEmail').value.trim();
             let pass = document.getElementById('regPassword').value;
@@ -2285,10 +2349,11 @@
                 return;
             }
 
-            let regUsers = JSON.parse(localStorage.getItem('vaultRegisteredUsers') || '[]');
-            if(!regUsers.some(u => u.email === emailInput)) {
-                regUsers.push({ email: emailInput });
-                localStorage.setItem('vaultRegisteredUsers', JSON.stringify(regUsers));
+            try {
+                let userRef = doc(db, "users", emailInput);
+                await setDoc(userRef, { email: emailInput, balance: 0.00 }, { merge: true });
+            } catch(err) {
+                console.error("Registration error:", err);
             }
 
             localStorage.setItem('isLoggedIn', 'true');
@@ -2324,47 +2389,46 @@
             }
 
             updateBalanceDisplay();
-            loadAdminNoticeText();
         }
 
-        function loadAdminNoticeText() {
-            let noticeText = localStorage.getItem('vaultNoticeText') || "Welcome to Proxy & Vpn Services store! 24/7 support is available for all services. All prices are displayed in USD and BDT.";
-            let marqueeTextEl = document.getElementById('dynamicNoticeMarqueeText');
-            if(marqueeTextEl) marqueeTextEl.innerText = noticeText;
-            
-            let accNotice = document.getElementById('accountNoticeText');
-            if(accNotice) accNotice.innerText = noticeText;
-
-            let adminInput = document.getElementById('adminNoticeInput');
-            if(adminInput) adminInput.value = noticeText;
-        }
-
-        window.adminSaveNotice = function() {
+        window.adminSaveNotice = async function() {
             let input = document.getElementById('adminNoticeInput');
             if(!input) return;
             let val = input.value.trim();
             if(val) {
-                localStorage.setItem('vaultNoticeText', val);
-                loadAdminNoticeText();
-                alert("Notice updated and published successfully! ✅");
+                try {
+                    await setDoc(doc(db, "settings", "notice"), { text: val });
+                    document.getElementById('dynamicNoticeMarqueeText').innerText = val;
+                    let accNotice = document.getElementById('accountNoticeText');
+                    if(accNotice) accNotice.innerText = val;
+                    alert("Notice updated and published successfully! ✅");
+                } catch(err) {
+                    console.error("Error saving notice:", err);
+                }
             }
         }
 
-        function updateAdminStats() {
+        async function updateAdminStats() {
             let totalProds = (servicesData.vpn?.length || 0) + (servicesData.gb_proxy?.length || 0) + (servicesData.isp_proxy?.length || 0) + (servicesData.ai?.length || 0) + (servicesData.apple?.length || 0);
-            let totalOrders = JSON.parse(localStorage.getItem('vaultOrders') || '[]').length;
-            let pendingDeps = JSON.parse(localStorage.getItem('vaultDepositRequests') || '[]').filter(d => d.status === 'Processing...').length;
-            let totalUsers = JSON.parse(localStorage.getItem('vaultRegisteredUsers') || '[]').length || 1;
+            
+            try {
+                let ordersSnap = await getDocs(collection(db, "orders"));
+                let totalOrders = ordersSnap.size;
 
-            let pEl = document.getElementById('statTotalProducts');
-            let oEl = document.getElementById('statTotalOrders');
-            let dEl = document.getElementById('statPendingDeposits');
-            let uEl = document.getElementById('statTotalUsers');
+                let depositsSnap = await getDocs(collection(db, "deposits"));
+                let pendingDeps = 0;
+                depositsSnap.forEach(d => { if(d.data().status === 'Processing...') pendingDeps++; });
 
-            if(pEl) pEl.innerText = totalProds;
-            if(oEl) oEl.innerText = totalOrders;
-            if(dEl) dEl.innerText = pendingDeps;
-            if(uEl) uEl.innerText = totalUsers;
+                let usersSnap = await getDocs(collection(db, "users"));
+                let totalUsers = usersSnap.size || 1;
+
+                document.getElementById('statTotalProducts').innerText = totalProds;
+                document.getElementById('statTotalOrders').innerText = totalOrders;
+                document.getElementById('statPendingDeposits').innerText = pendingDeps;
+                document.getElementById('statTotalUsers').innerText = totalUsers;
+            } catch(err) {
+                console.error("Error updating admin stats:", err);
+            }
         }
 
         window.openAdminModal = function() {
@@ -2377,40 +2441,44 @@
             }
         }
 
-        window.renderAdminUsersTable = function() {
+        window.renderAdminUsersTable = async function() {
             let tbody = document.getElementById('adminUsersTableBody');
             if(!tbody) return;
             tbody.innerHTML = "";
 
-            let regUsers = JSON.parse(localStorage.getItem('vaultRegisteredUsers') || '[]');
-            if(!regUsers.some(u => u.email === ADMIN_EMAIL)) {
-                regUsers.push({ email: ADMIN_EMAIL });
+            try {
+                let usersSnap = await getDocs(collection(db, "users"));
+                usersSnap.forEach((docSnap, index) => {
+                    let u = docSnap.data();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${u.email}</b></td>
+                            <td>
+                                <input type="number" step="any" id="user_bal_${index}" class="form-control form-control-sm font-monospace" value="${(u.balance || 0).toFixed(2)}" style="max-width: 120px; display: inline-block;">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm py-0 px-2 fw-bold" onclick="adminSaveUserBalance('${u.email}', 'user_bal_${index}')">Save</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Error loading users table:", err);
             }
-
-            regUsers.forEach((u, index) => {
-                let userBal = getUserBalance();
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${u.email}</b></td>
-                        <td>
-                            <input type="number" step="any" id="user_bal_${index}" class="form-control form-control-sm font-monospace" value="${userBal.toFixed(2)}" style="max-width: 120px; display: inline-block;">
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm py-0 px-2 fw-bold" onclick="adminSaveUserBalance(${index}, '${u.email}')">Save</button>
-                        </td>
-                    </tr>
-                `;
-            });
         }
 
-        window.adminSaveUserBalance = function(index, email) {
-            let input = document.getElementById(`user_bal_${index}`);
+        window.adminSaveUserBalance = async function(email, inputId) {
+            let input = document.getElementById(inputId);
             if(!input) return;
             let newVal = parseFloat(input.value);
             if(!isNaN(newVal)) {
-                setUserBalance(newVal);
-                alert(`${email}'s balance updated to $${newVal.toFixed(2)} (${Math.round(newVal*USD_TO_BDT_RATE)}৳)! ✅`);
-                renderAdminUsersTable();
+                try {
+                    await setDoc(doc(db, "users", email), { balance: newVal }, { merge: true });
+                    alert(`${email}'s balance updated to $${newVal.toFixed(2)} (${Math.round(newVal*USD_TO_BDT_RATE)}৳)! ✅`);
+                    renderAdminUsersTable();
+                } catch(err) {
+                    console.error("Error saving user balance:", err);
+                }
             } else {
                 alert("Please enter a valid amount!");
             }
@@ -2434,7 +2502,7 @@
             container.appendChild(row);
         }
 
-        window.adminAddNewProduct = function(e) {
+        window.adminAddNewProduct = async function(e) {
             e.preventDefault();
             let cat = document.getElementById('adminProductCategory').value;
             let name = document.getElementById('adminProductName').value;
@@ -2470,26 +2538,31 @@
 
             if(!servicesData[cat]) servicesData[cat] = [];
             servicesData[cat].unshift(newProduct);
-            localStorage.setItem('vaultStoreData', JSON.stringify(servicesData));
-            filterByCategory('all', document.querySelector('.cat-pill'));
-            renderAdminManageServicesList();
-            updateAdminStats();
-            updateProductCountDisplay();
-            alert("New product added successfully! ✅");
-            document.getElementById('adminAddProductForm').reset();
-            document.getElementById('adminNewProductVariantsContainer').innerHTML = `
-                <div class="row g-1 align-items-center variant-row">
-                    <div class="col-7">
-                        <input type="text" class="form-control form-control-sm v-name" placeholder="Plan Name (e.g. 1 GB)" required>
+
+            try {
+                await setDoc(doc(db, "settings", "storeData"), servicesData);
+                filterByCategory('all', document.querySelector('.cat-pill'));
+                renderAdminManageServicesList();
+                updateAdminStats();
+                updateProductCountDisplay();
+                alert("New product added successfully! ✅");
+                document.getElementById('adminAddProductForm').reset();
+                document.getElementById('adminNewProductVariantsContainer').innerHTML = `
+                    <div class="row g-1 align-items-center variant-row">
+                        <div class="col-7">
+                            <input type="text" class="form-control form-control-sm v-name" placeholder="Plan Name (e.g. 1 GB)" required>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" step="any" class="form-control form-control-sm v-price" placeholder="Price ($)" required>
+                        </div>
+                        <div class="col-1 text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="this.closest('.variant-row').remove()">×</button>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <input type="number" step="any" class="form-control form-control-sm v-price" placeholder="Price ($)" required>
-                    </div>
-                    <div class="col-1 text-center">
-                        <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="this.closest('.variant-row').remove()">×</button>
-                    </div>
-                </div>
-            `;
+                `;
+            } catch(err) {
+                console.error("Error adding product:", err);
+            }
         }
 
         window.renderAdminManageServicesList = function() {
@@ -2542,7 +2615,7 @@
             });
         }
 
-        window.adminUpdateService = function(cat, index) {
+        window.adminUpdateService = async function(cat, index) {
             let nameInput = document.getElementById(`edit_name_${cat}_${index}`);
             if(!nameInput) return;
             let newName = nameInput.value.trim();
@@ -2564,171 +2637,203 @@
                 });
             }
 
-            localStorage.setItem('vaultStoreData', JSON.stringify(servicesData));
-            filterByCategory('all', document.querySelector('.cat-pill'));
-            renderAdminManageServicesList();
-            updateProductCountDisplay();
-            alert("Service updated successfully! ✅");
+            try {
+                await setDoc(doc(db, "settings", "storeData"), servicesData);
+                filterByCategory('all', document.querySelector('.cat-pill'));
+                renderAdminManageServicesList();
+                updateProductCountDisplay();
+                alert("Service updated successfully! ✅");
+            } catch(err) {
+                console.error("Error updating service:", err);
+            }
         }
 
-        window.adminDeleteService = function(cat, index) {
+        window.adminDeleteService = async function(cat, index) {
             if(confirm("Do you want to delete this service?")) {
                 if(servicesData[cat]) {
                     servicesData[cat].splice(index, 1);
-                    localStorage.setItem('vaultStoreData', JSON.stringify(servicesData));
-                    filterByCategory('all', document.querySelector('.cat-pill'));
-                    renderAdminManageServicesList();
-                    updateAdminStats();
-                    updateProductCountDisplay();
-                    alert("Service deleted successfully! 🗑️");
+                    try {
+                        await setDoc(doc(db, "settings", "storeData"), servicesData);
+                        filterByCategory('all', document.querySelector('.cat-pill'));
+                        renderAdminManageServicesList();
+                        updateAdminStats();
+                        updateProductCountDisplay();
+                        alert("Service deleted successfully! 🗑️");
+                    } catch(err) {
+                        console.error("Error deleting service:", err);
+                    }
                 }
             }
         }
 
-        window.renderAdminDepositRequests = function() {
+        window.renderAdminDepositRequests = async function() {
             let container = document.getElementById('adminDepositRequestsContainer');
             if(!container) return;
-            let requests = JSON.parse(localStorage.getItem('vaultDepositRequests') || '[]');
             container.innerHTML = "";
 
-            if(requests.length === 0) {
-                container.innerHTML = `<p class="text-muted small">No deposit requests found.</p>`;
-                return;
-            }
+            try {
+                let querySnapshot = await getDocs(collection(db, "deposits"));
+                let requests = [];
+                querySnapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    data.firestoreId = docSnap.id;
+                    requests.push(data);
+                });
 
-            requests.forEach((req, index) => {
-                let badgeBg = req.status === 'Approved' ? 'bg-success' : (req.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark');
-                container.innerHTML += `
-                    <div class="border rounded p-3 mb-2 bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div>
-                            <span class="fw-bold text-primary">${req.user}</span> • <b>${formatPrice(req.amount)}</b> 
-                            <br><span class="badge bg-secondary mb-1">Method: ${req.method}</span>
-                            <br><small class="text-muted">Trx ID: <span class="font-monospace text-dark fw-bold">${req.trxId}</span> | Time: ${req.date}</small>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge ${badgeBg}">${req.status}</span>
-                            ${req.status === 'Processing...' ? `
-                                <button class="btn btn-success btn-sm fw-bold" onclick="adminActionDeposit(${index}, 'Approve')">Approve</button>
-                                <button class="btn btn-danger btn-sm fw-bold" onclick="adminActionDeposit(${index}, 'Reject')">Reject</button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            updateAdminStats();
-        }
-
-        window.adminActionDeposit = function(index, action) {
-            let requests = JSON.parse(localStorage.getItem('vaultDepositRequests') || '[]');
-            let req = requests[index];
-
-            if(action === 'Approve') {
-                req.status = 'Approved';
-                let currentBal = getUserBalance();
-                setUserBalance(currentBal + req.amount);
-                alert(`Deposit approved successfully! ${formatPrice(req.amount)} added to user's wallet.`);
-            } else {
-                req.status = 'Rejected';
-                alert("Deposit request rejected.");
-            }
-
-            localStorage.setItem('vaultDepositRequests', JSON.stringify(requests));
-            renderAdminDepositRequests();
-            renderAdminUsersTable();
-            updateAdminStats();
-        }
-
-        window.renderAdminOrders = function() {
-            let container = document.getElementById('adminOrdersListContainer');
-            if(!container) return;
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-            container.innerHTML = "";
-
-            if(orders.length === 0) {
-                container.innerHTML = `<p class="text-muted small">No orders found.</p>`;
-                return;
-            }
-
-            orders.forEach((o, index) => {
-                let isLocked = (o.credentials && o.credentials.trim() !== '') || o.status === 'Completed' || o.status === 'Cancelled';
-
-                let actionUi = "";
-                let statusUi = "";
-
-                if(isLocked) {
-                    let badgeBg = o.status === 'Completed' ? 'bg-success' : 'bg-danger';
-                    statusUi = `<span class="badge ${badgeBg} py-2 px-3 fw-bold fs-6">${o.status}</span>`;
-                    
-                    if(o.status === 'Completed') {
-                        actionUi = `
-                            <div class="input-group input-group-sm square-input-group">
-                                <input type="text" class="form-control bg-light font-monospace text-success fw-bold" value="${o.credentials}" readonly>
-                                <span class="input-group-text bg-success text-white fw-bold"><i class="fa-solid fa-lock me-1"></i> Delivered & Locked</span>
-                            </div>
-                        `;
-                    } else {
-                        actionUi = `<div class="text-danger small fw-bold">Order was automatically cancelled (Timeout/Refunded)</div>`;
-                    }
-                } else {
-                    statusUi = `
-                        <select class="form-select form-select-sm" id="status_${index}" onchange="adminUpdateOrderStatus(${index}, this.value)">
-                            <option value="Processing..." ${o.status === 'Processing...' ? 'selected' : ''}>Processing</option>
-                            <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                            <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    `;
-                    actionUi = `
-                        <div class="input-group input-group-sm square-input-group">
-                            <input type="text" id="cred_input_${index}" class="form-control" placeholder="Type Product Details / Email:Pass / Key here..." value="${o.credentials || ''}">
-                            <button class="btn btn-primary fw-bold px-4" type="button" onclick="adminSaveCredentials(${index})">Send</button>
-                        </div>
-                    `;
+                if(requests.length === 0) {
+                    container.innerHTML = `<p class="text-muted small">No deposit requests found.</p>`;
+                    return;
                 }
 
-                container.innerHTML += `
-                    <div class="border rounded p-3 mb-2 bg-light">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                requests.forEach((req, index) => {
+                    let badgeBg = req.status === 'Approved' ? 'bg-success' : (req.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark');
+                    container.innerHTML += `
+                        <div class="border rounded p-3 mb-2 bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
-                                <span class="fw-bold small text-danger">${o.id || 'ORD-000'}</span> - <span class="fw-bold">${o.product}</span>
-                                <br><small class="text-muted">Price: ${formatPrice(o.price)} | Time: ${o.date}</small>
+                                <span class="fw-bold text-primary">${req.user}</span> • <b>${formatPrice(req.amount)}</b> 
+                                <br><span class="badge bg-secondary mb-1">Method: ${req.method}</span>
+                                <br><small class="text-muted">Trx ID: <span class="font-monospace text-dark fw-bold">${req.trxId}</span> | Time: ${req.date}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                ${statusUi}
+                                <span class="badge ${badgeBg}">${req.status}</span>
+                                ${req.status === 'Processing...' ? `
+                                    <button class="btn btn-success btn-sm fw-bold" onclick="adminActionDeposit('${req.firestoreId}', '${req.user}', ${req.amount}, 'Approve')">Approve</button>
+                                    <button class="btn btn-danger btn-sm fw-bold" onclick="adminActionDeposit('${req.firestoreId}', '', 0, 'Reject')">Reject</button>
+                                ` : ''}
                             </div>
                         </div>
-                        ${actionUi}
-                    </div>
-                `;
-            });
-            updateAdminStats();
-        }
-
-        window.adminUpdateOrderStatus = function(index, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
-            if(orders[index]) {
-                let oldStatus = orders[index].status;
-                
-                if(newStatus === 'Cancelled' && oldStatus !== 'Cancelled' && (!orders[index].credentials || orders[index].credentials.trim() === '')) {
-                    let refundAmount = orders[index].price;
-                    let currentBal = getUserBalance();
-                    setUserBalance(currentBal + refundAmount);
-                    alert(`Order cancelled! ${formatPrice(refundAmount)} has been refunded to the user wallet.`);
-                }
-
-                if(newStatus === 'Completed') {
-                    if(!orders[index].credentials || orders[index].credentials.trim() === '') {
-                        orders[index].credentials = "Completed & Delivered";
-                    }
-                }
-
-                orders[index].status = newStatus;
-                localStorage.setItem('vaultOrders', JSON.stringify(orders));
-                renderAdminOrders();
+                    `;
+                });
+                updateAdminStats();
+            } catch(err) {
+                console.error("Error loading deposit requests:", err);
             }
         }
 
-        window.adminSaveCredentials = function(index) {
-            let orders = JSON.parse(localStorage.getItem('vaultOrders') || '[]');
+        window.adminActionDeposit = async function(firestoreId, userEmail, amount, action) {
+            try {
+                let depRef = doc(db, "deposits", firestoreId);
+                if(action === 'Approve') {
+                    await updateDoc(depRef, { status: 'Approved' });
+                    
+                    let userDocRef = doc(db, "users", userEmail);
+                    let userSnap = await getDoc(userDocRef);
+                    let currentBal = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+                    await setDoc(userDocRef, { balance: currentBal + amount }, { merge: true });
+
+                    alert(`Deposit approved successfully! ${formatPrice(amount)} added to user's wallet.`);
+                } else {
+                    await updateDoc(depRef, { status: 'Rejected' });
+                    alert("Deposit request rejected.");
+                }
+
+                renderAdminDepositRequests();
+                renderAdminUsersTable();
+                updateAdminStats();
+            } catch(err) {
+                console.error("Error processing deposit action:", err);
+            }
+        }
+
+        window.renderAdminOrders = async function() {
+            let container = document.getElementById('adminOrdersListContainer');
+            if(!container) return;
+            container.innerHTML = "";
+
+            try {
+                let querySnapshot = await getDocs(collection(db, "orders"));
+                let orders = [];
+                querySnapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    data.firestoreId = docSnap.id;
+                    orders.push(data);
+                });
+
+                if(orders.length === 0) {
+                    container.innerHTML = `<p class="text-muted small">No orders found.</p>`;
+                    return;
+                }
+
+                orders.forEach((o, index) => {
+                    let isLocked = (o.credentials && o.credentials.trim() !== '') || o.status === 'Completed' || o.status === 'Cancelled';
+                    let actionUi = "";
+                    let statusUi = "";
+
+                    if(isLocked) {
+                        let badgeBg = o.status === 'Completed' ? 'bg-success' : 'bg-danger';
+                        statusUi = `<span class="badge ${badgeBg} py-2 px-3 fw-bold fs-6">${o.status}</span>`;
+                        
+                        if(o.status === 'Completed') {
+                            actionUi = `
+                                <div class="input-group input-group-sm square-input-group">
+                                    <input type="text" class="form-control bg-light font-monospace text-success fw-bold" value="${o.credentials}" readonly>
+                                    <span class="input-group-text bg-success text-white fw-bold"><i class="fa-solid fa-lock me-1"></i> Delivered & Locked</span>
+                                </div>
+                            `;
+                        } else {
+                            actionUi = `<div class="text-danger small fw-bold">Order was automatically cancelled (Timeout/Refunded)</div>`;
+                        }
+                    } else {
+                        statusUi = `
+                            <select class="form-select form-select-sm" id="status_${index}" onchange="adminUpdateOrderStatus('${o.firestoreId}', '${o.user}', ${o.price}, '${o.status}', this.value)">
+                                <option value="Processing..." ${o.status === 'Processing...' ? 'selected' : ''}>Processing</option>
+                                <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        `;
+                        actionUi = `
+                            <div class="input-group input-group-sm square-input-group">
+                                <input type="text" id="cred_input_${index}" class="form-control" placeholder="Type Product Details / Email:Pass / Key here..." value="${o.credentials || ''}">
+                                <button class="btn btn-primary fw-bold px-4" type="button" onclick="adminSaveCredentials('${o.firestoreId}', ${index})">Send</button>
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML += `
+                        <div class="border rounded p-3 mb-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                <div>
+                                    <span class="fw-bold small text-danger">${o.id || 'ORD-000'}</span> - <span class="fw-bold">${o.product}</span>
+                                    <br><small class="text-muted">Price: ${formatPrice(o.price)} | Time: ${o.date}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${statusUi}
+                                </div>
+                            </div>
+                            ${actionUi}
+                        </div>
+                    `;
+                });
+                updateAdminStats();
+            } catch(err) {
+                console.error("Error loading admin orders:", err);
+            }
+        }
+
+        window.adminUpdateOrderStatus = async function(firestoreId, userEmail, price, oldStatus, newStatus) {
+            try {
+                let orderRef = doc(db, "orders", firestoreId);
+                if(newStatus === 'Cancelled' && oldStatus !== 'Cancelled') {
+                    let userDocRef = doc(db, "users", userEmail);
+                    let userSnap = await getDoc(userDocRef);
+                    let currentBal = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+                    await setDoc(userDocRef, { balance: currentBal + price }, { merge: true });
+                    alert(`Order cancelled! ${formatPrice(price)} has been refunded to the user wallet.`);
+                }
+
+                let updateData = { status: newStatus };
+                if(newStatus === 'Completed') {
+                    updateData.credentials = "Completed & Delivered";
+                }
+
+                await updateDoc(orderRef, updateData);
+                renderAdminOrders();
+            } catch(err) {
+                console.error("Error updating order status:", err);
+            }
+        }
+
+        window.adminSaveCredentials = async function(firestoreId, index) {
             let inputField = document.getElementById(`cred_input_${index}`);
             if(!inputField) return;
             let credVal = inputField.value.trim();
@@ -2736,20 +2841,21 @@
                 alert("Please enter product details before sending!");
                 return;
             }
-            if(orders[index]) {
-                orders[index].credentials = credVal;
-                orders[index].status = "Completed";
-                localStorage.setItem('vaultOrders', JSON.stringify(orders));
+
+            try {
+                await updateDoc(doc(db, "orders", firestoreId), {
+                    credentials: credVal,
+                    status: "Completed"
+                });
                 alert("Product sent and locked permanently! ✅");
                 renderAdminOrders();
+            } catch(err) {
+                console.error("Error saving credentials:", err);
             }
         }
 
         window.onload = function() {
-            filterByCategory('all', document.querySelector('.cat-pill'));
-            checkLoginState();
-            loadAdminNoticeText();
-            updateProductCountDisplay();
+            loadFirestoreData();
             updateCartBadge();
         };
     </script>
