@@ -21,6 +21,27 @@
 :where(code, pre, kbd, samp) {
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
+</style><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
 </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -107,17 +128,46 @@
             <div class="cat-pill" onclick="filterByCategory('ai', this)">🤖 AI TOOLS</div>
             <div class="cat-pill" onclick="filterByCategory('apple', this)">🍎 Apple Gift</div>
         </div>
+        
         <div class="row g-3 mb-4" id="mainProductsGrid"></div>
-        <div class="card nowpay-card p-3 mb-4 shadow-sm">
-            <div class="d-flex align-items-center gap-3">
-                <img src="https://nowpayments.io/images/press/logo_nopayments.svg" alt="NowPayments" style="height:32px" onerror="this.style.display='none'">
-                <div>
-                    <h6 class="fw-bold mb-0 text-dark">NowPayments Crypto Gateway Active</h6>
-                    <small class="text-muted">BTC, ETH, BNB, TRX, USDT, LTC & 300+ more • API: QCWYJDM-***</small>
+        <!-- HOW TO ORDER SECTION - REPLACES NOWPAYMENTS BANNER -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" style="border-radius:20px !important;">
+            <div class="mb-3">
+                <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background:#f3f4f6;color:#212121;border:1px solid #e5e7eb;font-size:13px;">Simple process</span>
+            </div>
+            <h2 class="fw-bold mb-2" style="font-size:28px;letter-spacing:-0.5px;color:#111;">How to order</h2>
+            <p class="text-muted mb-4" style="font-size:15px;line-height:1.5;">Buying from PROXY & VPN SERVICES takes under 2 minutes from start to delivery.</p>
+            
+            <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
+                    <span class="fw-bold" style="font-size:26px;color:#212121;">1</span>
                 </div>
-                <span class="ms-auto badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Live</span>
+                <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Pick a product</h4>
+                <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Browse all products. Use the search or category filter to find what you need.</p>
+            </div>
+
+            <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
+                    <span class="fw-bold" style="font-size:26px;color:#212121;">2</span>
+                </div>
+                <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Make payment</h4>
+                <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Deposit balance securely using bKash, Nagad, Rocket, or Crypto to complete your purchase.</p>
+            </div>
+
+            <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
+                    <span class="fw-bold" style="font-size:26px;color:#212121;">3</span>
+                </div>
+                <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Instant delivery</h4>
+                <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Receive your product details instantly in your deliveries section with 24/7 support.</p>
             </div>
         </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white text-center" style="border-radius:20px !important;">
+            <h3 class="fw-bold mb-2" style="color:#f85606;font-size:22px;line-height:1.3;">Proxy & VPN Services & Network Solutions</h3>
+            <p class="fw-semibold text-muted mb-0" style="font-size:15px;">Secure | Fast | Reliable Connections</p>
+        </div>
+
     </div>
 
     <div id="productDetailSection" class="section-page">
@@ -209,8 +259,15 @@
             <div class="tab-pane fade" id="pane-notice"><div class="card p-4 border-0 shadow-sm bg-white"><input type="text" id="adminNoticeInput" class="form-control mb-3" placeholder="Notice"><button class="btn btn-dark" onclick="adminSaveNotice()">Update Notice</button></div></div>
             <div class="tab-pane fade" id="pane-nowpay"><div class="card p-4 border-0 shadow-sm bg-white">
                 <h5 class="fw-bold text-primary"><i class="fa-solid fa-link me-2"></i>NowPayments Configuration</h5>
-                <div class="alert alert-info small">API Key: QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ | IPN: <code>https://vaultproviderapk.onrender.com/api/ipn</code> সেট করুন NowPayments Dashboard এ।</div>
+                <div class="alert alert-info small">
+                    <b>API Key:</b> QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ<br>
+                    <b>IPN Secret:</b> <code>/Rczecy1IsRbDWiBCun27es7v8XOS50N</code><br>
+                    <b>Webhook URL:</b> <code>https://vaultproviderapk.onrender.com/api/ipn</code><br>
+                    এই URL টা NowPayments Dashboard → Settings → IPN Settings → Webhook URL এ বসান, আর IPN Secret Key টা উপরেরটা ব্যবহার করুন।
+                </div>
                 <div class="mb-3"><label class="small fw-bold">API Key (Sandbox / Production)</label><input type="text" id="nowpayApiKey" class="form-control" value="QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ"></div>
+                <div class="mb-3"><label class="small fw-bold">IPN Secret Key</label><div class="input-group"><input type="text" id="nowpayIpnSecret" class="form-control" value="/Rczecy1IsRbDWiBCun27es7v8XOS50N"><button class="btn btn-outline-secondary btn-sm" type="button" onclick="copyToClipboard('/Rczecy1IsRbDWiBCun27es7v8XOS50N', this)">Copy</button></div><small class="text-muted" style="font-size:10px;">NowPayments Dashboard এ এই Secret Key টা Verify করার জন্য ব্যবহার হবে</small></div>
+                <div class="mb-3"><label class="small fw-bold">Webhook URL (IPN URL)</label><div class="input-group"><input type="text" id="nowpayWebhookUrl" class="form-control" value="https://vaultproviderapk.onrender.com/api/ipn"><button class="btn btn-outline-primary btn-sm" type="button" onclick="copyToClipboard('https://vaultproviderapk.onrender.com/api/ipn', this)">Copy</button></div></div>
                 <div class="mb-3"><label class="small fw-bold">Success URL</label><input type="text" id="nowpaySuccessUrl" class="form-control" value="https://proxyvpnservices.com/success"></div>
                 <div class="mb-3"><label class="small fw-bold">Cancel URL</label><input type="text" id="nowpayCancelUrl" class="form-control" value="https://proxyvpnservices.com/cancel"></div>
                 <button class="btn btn-success" onclick="saveNowPayConfig()">Save Config</button>
@@ -263,27 +320,94 @@
             <div class="col-md-6">
                 <h6 class="fw-bold text-success">Manual Methods</h6>
                 <form id="depositForm">
-                    <select id="depositTypeSelect" class="form-select form-select-sm mb-2" onchange="toggleMainPaymentMethod()" required><option value="" disabled selected>-- Method --</option><option value="MobileBanking">Mobile Banking</option><option value="CryptoManual">Crypto Manual</option></select>
+                                        <div id="mobileBankingToggle" class="border rounded-3 bg-white p-3 mb-2 d-flex justify-content-between align-items-center" style="cursor:pointer;border:2px solid #f85606 !important;" onclick="toggleMainPaymentMethod()">
+                        <div><i class="fa-solid fa-building-columns me-2 text-danger"></i><b>Mobile Banking</b> <small class="text-muted ms-1">bKash / Nagad / Rocket / Binance</small></div>
+                        <i id="icon-mobileBankingMain" class="fa-solid fa-chevron-down" style="transition:0.3s;"></i>
+                    </div>
+                                                            
                     <div id="mobileBankingMainBox" class="border rounded p-2 mb-2 bg-light" style="display:none;">
-                        <div class="payment-option mb-2" onclick="selectFinalPaymentMethod('bKash', this)"><b>bKash</b> - 01935164417 <span class="float-end badge bg-danger">Personal</span></div>
-                        <div class="payment-option mb-2" onclick="selectFinalPaymentMethod('Nagad', this)"><b>Nagad</b> - 01935164417</div>
-                        <div class="payment-option" onclick="selectFinalPaymentMethod('Rocket', this)"><b>Rocket</b> - 01935164417</div>
+                        <!-- bKash Folder -->
+                        <div class="payment-folder mb-2 border rounded-3 bg-white overflow-hidden">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3" style="cursor:pointer;margin:0;border:none;" onclick="togglePaymentFolder('bKash')">
+                                <div class="d-flex align-items-center gap-2"><img src="https://i.ibb.co/8Q8WV2B/images.png" alt="bKash" style="width:28px;height:28px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #eee;"><div><b>বিকাশ</b> <small class="text-muted">bKash</small></div></div>
+                                <i id="icon-bKash" class="fa-solid fa-chevron-down text-muted" style="transition:0.2s;"></i>
+                            </div>
+                            <div id="folder-bKash" class="payment-folder-body d-none p-3 border-top bg-light" style="background:#f8fafc !important;">
+                                <div class="d-flex justify-content-between align-items-center bg-white border rounded-3 p-3 mb-3">
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size:10px;">bKash Personal Number</small>
+                                        <span class="fw-bold" style="font-size:16px;user-select:all;">01935164417</span>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" onclick="copyToClipboard('01935164417', this)"><i class="fa-solid fa-copy me-1"></i>Copy</button>
+                                </div>
+                                <input type="number" step="any" id="amount_bKash" class="form-control form-control-sm mb-2" placeholder="পরিমান লিখুন (Amount)">
+                                <input type="text" id="trx_bKash" class="form-control form-control-sm mb-2" placeholder="TRX ID লিখুন">
+                                <button type="button" class="btn text-white w-100 btn-sm fw-bold" style="background:#f85606;" onclick="submitManualDepositFor('bKash')">Submit Deposit</button>
+                            </div>
+                        </div>
+
+                        <!-- Nagad Folder -->
+                        <div class="payment-folder mb-2 border rounded-3 bg-white overflow-hidden">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3" style="cursor:pointer;margin:0;border:none;" onclick="togglePaymentFolder('Nagad')">
+                                <div class="d-flex align-items-center gap-2"><img src="https://i.ibb.co/xtLNhZfQ/images-1.png" alt="Nagad" style="width:28px;height:28px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #eee;"><div><b>নগদ</b> <small class="text-muted">Nagad</small></div></div>
+                                <i id="icon-Nagad" class="fa-solid fa-chevron-down text-muted" style="transition:0.2s;"></i>
+                            </div>
+                            <div id="folder-Nagad" class="payment-folder-body d-none p-3 border-top bg-light" style="background:#f8fafc !important;">
+                                <div class="d-flex justify-content-between align-items-center bg-white border rounded-3 p-3 mb-3">
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size:10px;">Nagad Personal Number</small>
+                                        <span class="fw-bold" style="font-size:16px;user-select:all;">01935164417</span>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" onclick="copyToClipboard('01935164417', this)"><i class="fa-solid fa-copy me-1"></i>Copy</button>
+                                </div>
+                                <input type="number" step="any" id="amount_Nagad" class="form-control form-control-sm mb-2" placeholder="পরিমান লিখুন (Amount)">
+                                <input type="text" id="trx_Nagad" class="form-control form-control-sm mb-2" placeholder="TRX ID লিখুন">
+                                <button type="button" class="btn text-white w-100 btn-sm fw-bold" style="background:#f85606;" onclick="submitManualDepositFor('Nagad')">Submit Deposit</button>
+                            </div>
+                        </div>
+
+                        <!-- Rocket Folder -->
+                        <div class="payment-folder mb-2 border rounded-3 bg-white overflow-hidden">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3" style="cursor:pointer;margin:0;border:none;" onclick="togglePaymentFolder('Rocket')">
+                                <div class="d-flex align-items-center gap-2"><img src="https://i.ibb.co/gbz1Wh3f/unnamed.png" alt="Rocket" style="width:28px;height:28px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #eee;"><div><b>রকেট</b> <small class="text-muted">Rocket</small></div></div>
+                                <i id="icon-Rocket" class="fa-solid fa-chevron-down text-muted" style="transition:0.2s;"></i>
+                            </div>
+                            <div id="folder-Rocket" class="payment-folder-body d-none p-3 border-top bg-light" style="background:#f8fafc !important;">
+                                <div class="d-flex justify-content-between align-items-center bg-white border rounded-3 p-3 mb-3">
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size:10px;">Rocket Personal Number</small>
+                                        <span class="fw-bold" style="font-size:16px;user-select:all;">01935164417</span>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" onclick="copyToClipboard('01935164417', this)"><i class="fa-solid fa-copy me-1"></i>Copy</button>
+                                </div>
+                                <input type="number" step="any" id="amount_Rocket" class="form-control form-control-sm mb-2" placeholder="পরিমান লিখুন (Amount)">
+                                <input type="text" id="trx_Rocket" class="form-control form-control-sm mb-2" placeholder="TRX ID লিখুন">
+                                <button type="button" class="btn text-white w-100 btn-sm fw-bold" style="background:#f85606;" onclick="submitManualDepositFor('Rocket')">Submit Deposit</button>
+                            </div>
+                        </div>
+
+                        <!-- Binance Folder -->
+                        <div class="payment-folder mb-2 border rounded-3 bg-white overflow-hidden">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3" style="cursor:pointer;margin:0;border:none;" onclick="togglePaymentFolder('Binance')">
+                                <div class="d-flex align-items-center gap-2"><img src="https://i.ibb.co/rKMzgvz2/Binance-BNB-Icon-Logo-wine.jpg" alt="Binance" style="width:28px;height:28px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #eee;"><div><b>বাইন্যান্স</b> <small class="text-muted">Binance Pay</small> <span class="badge bg-warning text-dark ms-1" style="font-size:9px;">UID</span></div></div>
+                                <i id="icon-Binance" class="fa-solid fa-chevron-down text-muted" style="transition:0.2s;"></i>
+                            </div>
+                            <div id="folder-Binance" class="payment-folder-body d-none p-3 border-top bg-light" style="background:#f8fafc !important;">
+                                <div class="d-flex justify-content-between align-items-center bg-white border rounded-3 p-3 mb-3">
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size:10px;">Binance Pay UID</small>
+                                        <span class="fw-bold" style="font-size:16px;user-select:all;">751363394</span>
+                                    </div>
+                                    <button type="button" class="btn btn-dark btn-sm rounded-pill px-3" onclick="copyToClipboard('751363394', this)"><i class="fa-solid fa-copy me-1"></i>Copy</button>
+                                </div>
+                                <input type="number" step="any" id="amount_Binance" class="form-control form-control-sm mb-2" placeholder="পরিমান লিখুন (Amount)">
+                                <input type="text" id="trx_Binance" class="form-control form-control-sm mb-2" placeholder="TRX ID / PayID লিখুন">
+                                <button type="button" class="btn text-white w-100 btn-sm fw-bold" style="background:#f85606;" onclick="submitManualDepositFor('Binance Pay UID - 751363394')">Submit Deposit</button>
+                            </div>
+                        </div>
                     </div>
-                    <div id="cryptoMainBox" class="border rounded p-2 mb-2 bg-light" style="display:none;">
-                        <div class="payment-option mb-1" onclick="selectFinalPaymentMethod('Binance Pay UID - 751363394', this)">Binance Pay: 751363394</div>
-                        <div class="payment-option mb-1" onclick="selectFinalPaymentMethod('TRC20', this)">TRC20: TVE1gh7...kiptuG</div>
-                        <div class="payment-option mb-1" onclick="selectFinalPaymentMethod('BEP20', this)">BEP20: 0x1bf3...7eac</div>
-                        <div class="payment-option" onclick="selectFinalPaymentMethod('LTC', this)">LTC: Lh2J...Ys5e</div>
+
                     </div>
-                    <input type="hidden" id="selectedFinalMethod">
-                    <div id="selectedMethodNotice" class="alert alert-success py-1 px-2 small d-none"></div>
-                    <input type="number" step="any" id="amount" class="form-control form-control-sm mb-2" placeholder="Amount">
-                    <input type="text" id="trxId" class="form-control form-control-sm mb-2" placeholder="TrxID">
-                    <button type="submit" class="btn text-white w-100 btn-sm fw-bold" style="background:#f85606;">Submit Manual Deposit</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </div></div></div>
 
 <!-- NowPayments Invoice Modal -->
@@ -299,8 +423,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const USD_TO_BDT_RATE = 130;
-const NOWPAY_API_KEY = "QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ"; // Production Key - Move to server in production!
+const NOWPAY_API_KEY = "QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ";
+const NOWPAY_IPN_SECRET = "/Rczecy1IsRbDWiBCun27es7v8XOS50N";
 const NOWPAY_API_URL = "https://api.nowpayments.io/v1";
+const NOWPAY_IPN_WEBHOOK_URL = "https://vaultproviderapk.onrender.com/api/ipn";
 
 window.NOWPAY_API_KEY = NOWPAY_API_KEY;
 
@@ -398,7 +524,7 @@ window.openProductDetail=function(item){
  currentSelectedProduct=item; document.getElementById('detailLogoImg').src=item.logo; document.getElementById('detailCategoryBadge').innerText=item.category.toUpperCase(); document.getElementById('detailProductName').innerText=item.baseName;
  document.getElementById('dynamicFeaturesContainer').innerHTML=`<div><i class="fa-solid fa-check text-success me-1"></i>Instant Delivery • 24/7 Support via Telegram/WhatsApp</div><div><i class="fa-solid fa-check text-success me-1"></i>Secure NowPayments Crypto Accepted</div>`;
  let planC=document.getElementById('detailPlanSelectionContainer'); planC.innerHTML=""; let first=item.variants.find(v=>!v.soldOut)||item.variants[0]; selectedVariantPrice=first.price||0; selectedVariantName=first.name;
- item.variants.forEach((v,i)=>{let checked=v.name===first.name?"checked":""; let dis=v.soldOut?"disabled":""; let price=v.soldOut?`Sold Out`:`${formatPrice(v.price)}`; planC.innerHTML+=`<div class="form-check border p-2 rounded ${checked?'border-danger bg-light':'border-secondary'} variant-option" style="cursor:pointer"><input class="form-check-input" type="radio" name="productVariant" id="var_${i}" ${checked} ${dis} onclick='selectVariant("${v.name.replace(/"/g,'\\"')}",${v.price},this)'><label class="form-check-label d-flex justify-content-between w-100" for="var_${i}"><span class="fw-bold">${v.name}</span><span class="fw-bold text-danger">${price}</span></label></div>`;});
+ item.variants.forEach((v,i)=>{let checked=v.name===first.name?"checked":""; let dis=v.soldOut?"disabled":""; let price=v.soldOut?`Sold Out`:`${formatPrice(v.price)}`; planC.innerHTML+=`<div class="form-check border p-2 rounded ${checked?'border-danger bg-light':'border-secondary'} variant-option" style="cursor:pointer"><input class="form-check-input" type="radio" name="productVariant" id="var_${i}" ${checked} ${dis} onclick='selectVariant("${v.name.replace(/"/g,'\"')}",${v.price},this)'><label class="form-check-label d-flex justify-content-between w-100" for="var_${i}"><span class="fw-bold">${v.name}</span><span class="fw-bold text-danger">${price}</span></label></div>`;});
  switchPage('productDetailSection');
 }
 window.selectVariant=function(name,price,el){selectedVariantName=name; selectedVariantPrice=price; document.querySelectorAll('.variant-option').forEach(o=>{o.classList.remove('border-danger','bg-light'); o.classList.add('border-secondary');}); el.closest('.form-check').classList.add('border-danger','bg-light');}
@@ -414,7 +540,6 @@ window.changeQty=function(i,d){cart[i].quantity+=d; if(cart[i].quantity<=0) cart
 window.removeFromCart=function(i){cart.splice(i,1); saveCart(); updateCartBadge(); renderCart();}
 window.clearCart=function(){cart=[]; saveCart(); updateCartBadge(); renderCart();}
 
-// ============ NOWPAYMENTS INTEGRATION ============
 window.createNowPaymentsInvoice = async function(isCart=false){
  let apiKey = document.getElementById('nowpayApiKey')?.value || localStorage.getItem('nowpayApiKey') || NOWPAY_API_KEY;
  let amountInput = isCart ? cart.reduce((s,i)=>s+i.price*i.quantity,0) : parseFloat(document.getElementById('nowpayAmount').value);
@@ -427,7 +552,6 @@ window.createNowPaymentsInvoice = async function(isCart=false){
  modal.show();
 
  try{
-  // Create invoice via NowPayments API
   let response = await fetch(`${NOWPAY_API_URL}/invoice`,{
    method:'POST',
    headers:{
@@ -439,7 +563,7 @@ window.createNowPaymentsInvoice = async function(isCart=false){
     price_currency: "usd",
     order_id: orderId,
     order_description: isCart ? `Order ${orderId} - ${cart.map(c=>c.name).join(', ')}` : `Deposit ${formatPrice(amountInput)} to wallet`,
-    ipn_callback_url: "https://vaultproviderapk.onrender.com/api/ipn", // Set this in NowPayments dashboard
+    ipn_callback_url: (localStorage.getItem("nowpayWebhookUrl") || "https://vaultproviderapk.onrender.com/api/ipn"),
     success_url: window.location.origin + window.location.pathname + "?payment=success&order_id=" + orderId,
     cancel_url: window.location.origin + window.location.pathname + "?payment=cancel",
     is_fixed_rate: false,
@@ -451,7 +575,6 @@ window.createNowPaymentsInvoice = async function(isCart=false){
   if(!response.ok){
    throw new Error(data.message || 'Failed to create invoice');
   }
-  // Save pending deposit/order
   await addDoc(collection(db, isCart ? "orders" : "deposits"), {
    id: orderId,
    user: userEmail,
@@ -477,13 +600,10 @@ window.createNowPaymentsInvoice = async function(isCart=false){
   document.getElementById('nowpayInvoiceResult').classList.remove('d-none');
   document.getElementById('nowpayInvoiceResult').innerHTML=`<div class="alert alert-success small mb-0"><a href="${data.invoice_url}" target="_blank" class="fw-bold text-success">Click to Pay ${formatPrice(amountInput)} via Crypto →</a></div>`;
   
-  if(isCart){
-   // Keep cart until payment confirmed via IPN
-  }
  }catch(err){
   console.error(err);
   document.getElementById('nowpayModalBody').innerHTML=`<div class="alert alert-danger small">Error: ${err.message}<br><br>Check API Key or try Manual deposit. If CORS blocked, create invoice from backend / use NowPayments Dashboard link.<br><br>Fallback: Use manual TRC20/BEP20 addresses.</div><button class="btn btn-secondary w-100 mt-2" data-bs-dismiss="modal">Close</button>`;
-  alert("NowPayments Error: " + err.message + "\n\nTip: NowPayments API blocks browser directly. For production, create a Cloud Function to call API. For now, you can use direct payment links.");
+  alert("NowPayments Error: " + err.message);
  }
 }
 
@@ -509,7 +629,69 @@ window.checkoutCart=async function(){
 
 window.openDepositModal=function(){if(localStorage.getItem('isLoggedIn')!=='true'){switchAuthMode('login'); new bootstrap.Modal(document.getElementById('authModal')).show(); return;} new bootstrap.Modal(document.getElementById('depositModal')).show();}
 window.goToDepositFromModal=function(){let el=document.getElementById('insufficientBalanceModal'); let m=bootstrap.Modal.getInstance(el); if(m) m.hide(); new bootstrap.Modal(document.getElementById('depositModal')).show();}
-window.toggleMainPaymentMethod=function(){let type=document.getElementById('depositTypeSelect').value; document.getElementById('mobileBankingMainBox').style.display=type==='MobileBanking'?'block':'none'; document.getElementById('cryptoMainBox').style.display=type==='CryptoManual'?'block':'none'; document.getElementById('selectedFinalMethod').value=""; document.getElementById('selectedMethodNotice').classList.add('d-none');}
+window.toggleMainPaymentMethod=function(){
+  let box=document.getElementById('mobileBankingMainBox');
+  let icon=document.getElementById('icon-mobileBankingMain');
+  let isHidden = !box || box.style.display==='none' || box.classList.contains('d-none') || getComputedStyle(box).display==='none';
+  // Our box uses style.display none initially
+  if(box.style.display==='' || box.style.display==='none'){
+    box.style.display='block';
+    box.classList.remove('d-none');
+    if(icon){ icon.className='fa-solid fa-chevron-up text-danger'; icon.style.transform='rotate(180deg)'; }
+  } else {
+    box.style.display='none';
+    if(icon){ icon.className='fa-solid fa-chevron-down'; icon.style.transform='rotate(0deg)'; }
+    // also close all inner folders when main closes
+    ['bKash','Nagad','Rocket','Binance'].forEach(m=>{
+      let b=document.getElementById('folder-'+m);
+      if(b) b.classList.add('d-none');
+      let ic=document.getElementById('icon-'+m);
+      if(ic) ic.className='fa-solid fa-chevron-down text-muted';
+    });
+  }
+  document.getElementById('selectedFinalMethod').value="";
+  let n=document.getElementById('selectedMethodNotice'); if(n) n.classList.add('d-none');
+}
+window.togglePaymentFolder=function(method){
+  let folders=['bKash','Nagad','Rocket','Binance'];
+  folders.forEach(m=>{
+    let body=document.getElementById('folder-'+m);
+    let icon=document.getElementById('icon-'+m);
+    if(m===method){
+      let isHidden=body.classList.contains('d-none');
+      if(isHidden){ body.classList.remove('d-none'); if(icon) icon.className='fa-solid fa-chevron-up text-danger'; document.getElementById('selectedFinalMethod').value=method; }
+      else { body.classList.add('d-none'); if(icon) icon.className='fa-solid fa-chevron-down text-muted'; }
+    } else {
+      if(body) body.classList.add('d-none');
+      let otherIcon=document.getElementById('icon-'+m);
+      if(otherIcon) otherIcon.className='fa-solid fa-chevron-down text-muted';
+    }
+  });
+}
+window.submitManualDepositFor=async function(method){
+  let shortMethod=method;
+  if(method.includes('Binance')) shortMethod='Binance';
+  let amountInput=document.getElementById('amount_'+shortMethod);
+  let trxInput=document.getElementById('trx_'+shortMethod);
+  let amount=amountInput ? parseFloat(amountInput.value) : NaN;
+  let trxId=trxInput ? trxInput.value.trim() : '';
+  if(isNaN(amount)||amount<=0||!trxId){ alert('পরিমান এবং TRX ID সঠিকভাবে লিখুন'); return; }
+  let email=localStorage.getItem('loggedUserEmail');
+  if(!email){ alert('Please login first'); return; }
+  let conv=(method==='bKash'||method==='Nagad'||method==='Rocket') ? (amount>10?amount/130:amount) : amount;
+  try{
+    const { collection: col, addDoc: add } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+    // Use existing db reference via window if available, else use global db
+    await addDoc(collection(db,'deposits'),{id:'DEP-'+Math.floor(100000+Math.random()*900000),user:email,amount:conv,method:method,trxId:trxId,status:'Processing...',date:new Date().toLocaleString()});
+    alert('Deposit submitted for '+method+'! Admin approval এর পর ব্যালেন্স যোগ হবে।');
+    if(amountInput) amountInput.value=''; if(trxInput) trxInput.value='';
+    let modalEl=document.getElementById('depositModal');
+    let modal=bootstrap.Modal.getInstance(modalEl); if(modal) modal.hide();
+    if(typeof renderAccountPage==='function') renderAccountPage();
+    if(typeof updateAdminStats==='function') updateAdminStats();
+  }catch(e){ console.error(e); alert('Error: '+e.message); }
+}
+
 window.selectFinalPaymentMethod=function(name,el){document.getElementById('selectedFinalMethod').value=name; document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected')); if(el) el.classList.add('selected'); let n=document.getElementById('selectedMethodNotice'); n.classList.remove('d-none'); n.innerHTML=`✅ Selected: <b>${name}</b>`;}
 window.copyToClipboard=function(text,btn){navigator.clipboard.writeText(text).then(()=>{let o=btn.innerHTML; btn.innerHTML="✅ Copied!"; setTimeout(()=>btn.innerHTML=o,1500);});}
 
@@ -519,7 +701,7 @@ document.getElementById('depositForm').addEventListener('submit', async function
  if(isNaN(amount)||amount<=0||!trx){alert("Valid amount & TrxID needed"); return;}
  let conv=(method.includes('bKash')||method.includes('Nagad')||method.includes('Rocket')) ? (amount>10?amount/USD_TO_BDT_RATE:amount) : amount;
  await addDoc(collection(db,"deposits"),{id:'DEP-'+Math.floor(100000+Math.random()*900000),user:email,amount:conv,method,trxId:trx,status:"Processing...",date:new Date().toLocaleString()});
- alert("Deposit submitted!"); bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide(); this.reset(); document.getElementById('mobileBankingMainBox').style.display='none'; document.getElementById('cryptoMainBox').style.display='none'; renderAccountPage(); updateAdminStats();
+ alert("Deposit submitted!"); bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide(); this.reset(); document.getElementById('mobileBankingMainBox').style.display='none';  renderAccountPage(); updateAdminStats();
 });
 
 window.renderDeliveries=async function(){
@@ -559,9 +741,16 @@ window.adminActionDeposit=async function(fid,user,amt,action){let ref=doc(db,"de
 window.renderAdminOrders=async function(){let con=document.getElementById('adminOrdersListContainer'); con.innerHTML=""; let snap=await getDocs(collection(db,"orders")); let ord=[]; snap.forEach(d=>{let data=d.data(); data.firestoreId=d.id; ord.push(data);}); if(!ord.length){con.innerHTML=`<p class="text-muted small">No orders</p>`; return;} ord.forEach((o,i)=>{let locked=o.credentials||o.status==='Completed'||o.status==='Cancelled'; let badge=o.status==='Completed'?'bg-success':o.status==='Cancelled'?'bg-danger':'bg-warning text-dark'; let action=locked?`<div class="input-group input-group-sm"><input class="form-control bg-light" value="${o.credentials||''}" readonly><span class="input-group-text bg-success text-white">${o.status}</span></div>`: `<div class="d-flex gap-2"><select class="form-select form-select-sm" id="status_${i}" onchange="adminUpdateOrderStatus('${o.firestoreId}','${o.user}',${o.price||o.amount||0},'${o.status}',this.value)"><option ${o.status==='Processing...'?'selected':''}>Processing...</option><option ${o.status==='Completed'?'selected':''}>Completed</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option></select><input id="cred_input_${i}" class="form-control form-control-sm" placeholder="Email:Pass" value="${o.credentials||''}"><button class="btn btn-primary btn-sm" onclick="adminSaveCredentials('${o.firestoreId}',${i})">Send</button></div>`; con.innerHTML+=`<div class="border rounded p-3 mb-2 bg-light"><div class="d-flex justify-content-between mb-2"><span class="fw-bold small text-danger">${o.id}</span><span class="badge ${badge}">${o.status}</span></div><div><b>${o.product}</b><br><small>${formatPrice(o.price||o.amount||0)} | ${o.date||''}</small>${o.invoice_url?`<br><a href="${o.invoice_url}" target="_blank" class="small">Crypto Invoice</a>`:''}</div><div class="mt-2">${action}</div></div>`;});}
 window.adminUpdateOrderStatus=async function(fid,user,price,oldS,newS){let ref=doc(db,"orders",fid); if(newS==='Cancelled'&&oldS!=='Cancelled'){let uRef=doc(db,"users",user); let s=await getDoc(uRef); let bal=s.exists()?(s.data().balance||0):0; await setDoc(uRef,{balance:bal+price},{merge:true}); alert("Refunded!");} await updateDoc(ref,{status:newS}); renderAdminOrders();}
 window.adminSaveCredentials=async function(fid,idx){let v=document.getElementById(`cred_input_${idx}`).value.trim(); if(!v){alert("Enter details"); return;} await updateDoc(doc(db,"orders",fid),{credentials:v,status:"Completed"}); alert("Delivered!"); renderAdminOrders();}
-window.saveNowPayConfig=async function(){let key=document.getElementById('nowpayApiKey').value.trim(); await setDoc(doc(db,"settings","nowpayConfig"),{apiKey:key,successUrl:document.getElementById('nowpaySuccessUrl').value,cancelUrl:document.getElementById('nowpayCancelUrl').value},{merge:true}); localStorage.setItem('nowpayApiKey',key); alert("NowPayments config saved!");}
+window.saveNowPayConfig=async function(){
+  let key=document.getElementById('nowpayApiKey').value.trim();
+  let ipnSecret=document.getElementById('nowpayIpnSecret')?.value.trim() || "/Rczecy1IsRbDWiBCun27es7v8XOS50N";
+  let webhook=document.getElementById('nowpayWebhookUrl')?.value.trim() || "https://vaultproviderapk.onrender.com/api/ipn";
+  await setDoc(doc(db,"settings","nowpayConfig"),{apiKey:key, ipnSecret:ipnSecret, webhookUrl:webhook, successUrl:document.getElementById('nowpaySuccessUrl').value, cancelUrl:document.getElementById('nowpayCancelUrl').value},{merge:true});
+  localStorage.setItem('nowpayApiKey',key);
+  localStorage.setItem('nowpayIpnSecret',ipnSecret);
+  alert("NowPayments config saved!\nIPN Secret: "+ipnSecret+"\nWebhook: "+webhook);
+}
 
-// Handle success redirect
 let params=new URLSearchParams(window.location.search); if(params.get('payment')==='success'){alert("Payment success! Order ID: "+params.get('order_id')+" - Admin will confirm after blockchain confirmation.");}
 
 window.onload=function(){loadFirestoreData(); updateCartBadge();};
