@@ -21,27 +21,6 @@
 :where(code, pre, kbd, samp) {
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
-</style><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
 </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -73,7 +52,6 @@
         .auth-input-group i.left-icon{color:#0d6efd;font-size:16px;margin-right:12px}
         .auth-input-group input{background:transparent;border:none;outline:none;width:100%;padding:8px 0;font-size:14px;color:#334155}
         .auth-input-group i.right-icon{color:#64748b;cursor:pointer;font-size:16px;padding:5px}
-        .square-input-group{border-radius:0!important}.square-input-group .form-control{border-radius:0!important}.square-input-group .btn{border-radius:0!important}
         .admin-nav-tabs .nav-link{color:#495057;font-weight:bold;border-radius:6px;transition:.2s}
         .admin-nav-tabs .nav-link.active{background:#f85606!important;color:#fff!important}
         .stat-card{border:none;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);transition:transform .2s}
@@ -84,7 +62,6 @@
         .nowpay-card{border:2px solid #f85606;background:linear-gradient(135deg,#fff7f0,#ffffff);border-radius:12px}
         .payment-option{border:1px solid #e2e8f0;border-radius:10px;padding:12px;cursor:pointer;transition:.2s;background:#fff}
         .payment-option:hover{border-color:#f85606;background:#fff8f5}
-        .payment-option.selected{border-color:#10b981;background:#ecfdf5;box-shadow:0 0 0 2px rgba(16,185,129,.2)}
     </style>
 </head>
 <body>
@@ -130,34 +107,26 @@
         </div>
         
         <div class="row g-3 mb-4" id="mainProductsGrid"></div>
-        <!-- HOW TO ORDER SECTION - REPLACES NOWPAYMENTS BANNER -->
+        
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" style="border-radius:20px !important;">
-            <div class="mb-3">
-                <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background:#f3f4f6;color:#212121;border:1px solid #e5e7eb;font-size:13px;">Simple process</span>
-            </div>
+            <div class="mb-3"><span class="badge rounded-pill px-3 py-2 fw-semibold" style="background:#f3f4f6;color:#212121;border:1px solid #e5e7eb;font-size:13px;">Simple process</span></div>
             <h2 class="fw-bold mb-2" style="font-size:28px;letter-spacing:-0.5px;color:#111;">How to order</h2>
             <p class="text-muted mb-4" style="font-size:15px;line-height:1.5;">Buying from PROXY & VPN SERVICES takes under 2 minutes from start to delivery.</p>
             
             <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
-                    <span class="fw-bold" style="font-size:26px;color:#212121;">1</span>
-                </div>
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);"><span class="fw-bold" style="font-size:26px;color:#212121;">1</span></div>
                 <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Pick a product</h4>
                 <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Browse all products. Use the search or category filter to find what you need.</p>
             </div>
 
             <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
-                    <span class="fw-bold" style="font-size:26px;color:#212121;">2</span>
-                </div>
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);"><span class="fw-bold" style="font-size:26px;color:#212121;">2</span></div>
                 <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Make payment</h4>
                 <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Deposit balance securely using bKash, Nagad, Rocket, or Crypto to complete your purchase.</p>
             </div>
 
             <div class="card border rounded-4 p-4 mb-3 shadow-sm" style="border-color:#e5e7eb !important;border-radius:16px !important;">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);">
-                    <span class="fw-bold" style="font-size:26px;color:#212121;">3</span>
-                </div>
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:56px;height:56px;background:#FFC107;border-radius:14px;box-shadow:0 4px 8px rgba(255,193,7,0.3);"><span class="fw-bold" style="font-size:26px;color:#212121;">3</span></div>
                 <h4 class="fw-bold mb-2" style="font-size:22px;color:#111;">Instant delivery</h4>
                 <p class="text-muted mb-0" style="font-size:14px;line-height:1.6;">Receive your product details instantly in your deliveries section with 24/7 support.</p>
             </div>
@@ -167,7 +136,6 @@
             <h3 class="fw-bold mb-2" style="color:#f85606;font-size:22px;line-height:1.3;">Proxy & VPN Services & Network Solutions</h3>
             <p class="fw-semibold text-muted mb-0" style="font-size:15px;">Secure | Fast | Reliable Connections</p>
         </div>
-
     </div>
 
     <div id="productDetailSection" class="section-page">
@@ -200,7 +168,6 @@
                     <div id="cartSummaryDetails" class="small mb-3"></div>
                     <div class="d-flex justify-content-between mb-2 small text-muted"><span>Wallet:</span><span class="fw-bold text-success" id="cartWalletDisplay">$0.00</span></div>
                     <div class="d-flex justify-content-between mb-3 fw-bold fs-5 border-top pt-2"><span>Total:</span><span style="color:#f85606;" id="cartTotalDisplay">$0.00</span></div>
-                    
                     <div class="d-grid gap-2">
                         <button class="btn text-white py-2 fw-bold" style="background:#f85606;" onclick="checkoutCart()">Buy with Wallet Balance 🔒</button>
                         <button class="btn btn-dark py-2 fw-bold" onclick="payCartWithNowPayments()"><img src="https://nowpayments.io/images/press/logo_nopayments.svg" style="height:16px;filter:brightness(0) invert(1);margin-right:6px" onerror="this.style.display='none'"> Pay with Crypto (NowPayments)</button>
@@ -320,7 +287,7 @@
             <div class="col-md-6">
                 <h6 class="fw-bold text-success">Manual Methods</h6>
                 <form id="depositForm">
-                                        <div id="mobileBankingToggle" class="border rounded-3 bg-white p-3 mb-2 d-flex justify-content-between align-items-center" style="cursor:pointer;border:2px solid #f85606 !important;" onclick="toggleMainPaymentMethod()">
+                    <div id="mobileBankingToggle" class="border rounded-3 bg-white p-3 mb-2 d-flex justify-content-between align-items-center" style="cursor:pointer;border:2px solid #f85606 !important;" onclick="toggleMainPaymentMethod()">
                         <div><i class="fa-solid fa-building-columns me-2 text-danger"></i><b>Mobile Banking</b> <small class="text-muted ms-1">bKash / Nagad / Rocket / Binance</small></div>
                         <i id="icon-mobileBankingMain" class="fa-solid fa-chevron-down" style="transition:0.3s;"></i>
                     </div>
@@ -406,9 +373,11 @@
                             </div>
                         </div>
                     </div>
-
-                    </div>
-</div></div></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div></div>
 
 <!-- NowPayments Invoice Modal -->
 <div class="modal fade" id="nowpayModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-3 text-center"><div class="modal-header"><h5 class="fw-bold">NowPayments Invoice</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="nowpayModalBody"><div class="spinner-border text-primary"></div><p class="small mt-2">Creating secure invoice...</p></div></div></div></div>
@@ -571,7 +540,6 @@ window.createNowPaymentsInvoice = async function(isCart=false){
    })
   });
   let data = await response.json();
-  console.log("NowPayments response:", data);
   if(!response.ok){
    throw new Error(data.message || 'Failed to create invoice');
   }
@@ -602,7 +570,7 @@ window.createNowPaymentsInvoice = async function(isCart=false){
   
  }catch(err){
   console.error(err);
-  document.getElementById('nowpayModalBody').innerHTML=`<div class="alert alert-danger small">Error: ${err.message}<br><br>Check API Key or try Manual deposit. If CORS blocked, create invoice from backend / use NowPayments Dashboard link.<br><br>Fallback: Use manual TRC20/BEP20 addresses.</div><button class="btn btn-secondary w-100 mt-2" data-bs-dismiss="modal">Close</button>`;
+  document.getElementById('nowpayModalBody').innerHTML=`<div class="alert alert-danger small">Error: ${err.message}<br><br>Check API Key or try Manual deposit.</div><button class="btn btn-secondary w-100 mt-2" data-bs-dismiss="modal">Close</button>`;
   alert("NowPayments Error: " + err.message);
  }
 }
@@ -632,8 +600,6 @@ window.goToDepositFromModal=function(){let el=document.getElementById('insuffici
 window.toggleMainPaymentMethod=function(){
   let box=document.getElementById('mobileBankingMainBox');
   let icon=document.getElementById('icon-mobileBankingMain');
-  let isHidden = !box || box.style.display==='none' || box.classList.contains('d-none') || getComputedStyle(box).display==='none';
-  // Our box uses style.display none initially
   if(box.style.display==='' || box.style.display==='none'){
     box.style.display='block';
     box.classList.remove('d-none');
@@ -641,7 +607,6 @@ window.toggleMainPaymentMethod=function(){
   } else {
     box.style.display='none';
     if(icon){ icon.className='fa-solid fa-chevron-down'; icon.style.transform='rotate(0deg)'; }
-    // also close all inner folders when main closes
     ['bKash','Nagad','Rocket','Binance'].forEach(m=>{
       let b=document.getElementById('folder-'+m);
       if(b) b.classList.add('d-none');
@@ -649,8 +614,6 @@ window.toggleMainPaymentMethod=function(){
       if(ic) ic.className='fa-solid fa-chevron-down text-muted';
     });
   }
-  document.getElementById('selectedFinalMethod').value="";
-  let n=document.getElementById('selectedMethodNotice'); if(n) n.classList.add('d-none');
 }
 window.togglePaymentFolder=function(method){
   let folders=['bKash','Nagad','Rocket','Binance'];
@@ -659,7 +622,7 @@ window.togglePaymentFolder=function(method){
     let icon=document.getElementById('icon-'+m);
     if(m===method){
       let isHidden=body.classList.contains('d-none');
-      if(isHidden){ body.classList.remove('d-none'); if(icon) icon.className='fa-solid fa-chevron-up text-danger'; document.getElementById('selectedFinalMethod').value=method; }
+      if(isHidden){ body.classList.remove('d-none'); if(icon) icon.className='fa-solid fa-chevron-up text-danger'; }
       else { body.classList.add('d-none'); if(icon) icon.className='fa-solid fa-chevron-down text-muted'; }
     } else {
       if(body) body.classList.add('d-none');
@@ -680,10 +643,9 @@ window.submitManualDepositFor=async function(method){
   if(!email){ alert('Please login first'); return; }
   let conv=(method==='bKash'||method==='Nagad'||method==='Rocket') ? (amount>10?amount/130:amount) : amount;
   try{
-    const { collection: col, addDoc: add } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-    // Use existing db reference via window if available, else use global db
     await addDoc(collection(db,'deposits'),{id:'DEP-'+Math.floor(100000+Math.random()*900000),user:email,amount:conv,method:method,trxId:trxId,status:'Processing...',date:new Date().toLocaleString()});
-    alert('Deposit submitted for '+method+'! Admin approval এর পর ব্যালেন্স যোগ হবে।');
+    // ৩য় স্ক্রিনশট ও ১ম/২য় স্ক্রিনশটের নির্দেশনা অনুযায়ী অ্যালার্ট টেক্সট আপডেট করা হলো:
+    alert('Deposit submitted for bKash! Admin approval');
     if(amountInput) amountInput.value=''; if(trxInput) trxInput.value='';
     let modalEl=document.getElementById('depositModal');
     let modal=bootstrap.Modal.getInstance(modalEl); if(modal) modal.hide();
@@ -692,17 +654,7 @@ window.submitManualDepositFor=async function(method){
   }catch(e){ console.error(e); alert('Error: '+e.message); }
 }
 
-window.selectFinalPaymentMethod=function(name,el){document.getElementById('selectedFinalMethod').value=name; document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected')); if(el) el.classList.add('selected'); let n=document.getElementById('selectedMethodNotice'); n.classList.remove('d-none'); n.innerHTML=`✅ Selected: <b>${name}</b>`;}
 window.copyToClipboard=function(text,btn){navigator.clipboard.writeText(text).then(()=>{let o=btn.innerHTML; btn.innerHTML="✅ Copied!"; setTimeout(()=>btn.innerHTML=o,1500);});}
-
-document.getElementById('depositForm').addEventListener('submit', async function(e){
- e.preventDefault(); let method=document.getElementById('selectedFinalMethod').value; if(!method){alert("Select method"); return;}
- let amount=parseFloat(document.getElementById('amount').value); let trx=document.getElementById('trxId').value.trim(); let email=localStorage.getItem('loggedUserEmail');
- if(isNaN(amount)||amount<=0||!trx){alert("Valid amount & TrxID needed"); return;}
- let conv=(method.includes('bKash')||method.includes('Nagad')||method.includes('Rocket')) ? (amount>10?amount/USD_TO_BDT_RATE:amount) : amount;
- await addDoc(collection(db,"deposits"),{id:'DEP-'+Math.floor(100000+Math.random()*900000),user:email,amount:conv,method,trxId:trx,status:"Processing...",date:new Date().toLocaleString()});
- alert("Deposit submitted!"); bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide(); this.reset(); document.getElementById('mobileBankingMainBox').style.display='none';  renderAccountPage(); updateAdminStats();
-});
 
 window.renderDeliveries=async function(){
  let c=document.getElementById('deliveriesListContainer'); if(!c) return; let email=localStorage.getItem('loggedUserEmail'); c.innerHTML="";
@@ -723,12 +675,31 @@ window.renderAccountDepositHistory=async function(){
 window.renderAccountPage=async function(){await updateBalanceDisplay(); let h=document.getElementById('accountDepositHistoryContainer'); if(h) h.classList.add('d-none'); let q=document.getElementById('accountQuickDeliveriesContainer'); if(q){let email=localStorage.getItem('loggedUserEmail'); let snap=await getDocs(collection(db,"orders")); let ord=[]; snap.forEach(d=>{if(d.data().user===email) ord.push(d.data());}); if(!ord.length) q.innerHTML=`<p class="text-muted small text-center">No orders</p>`; else {q.innerHTML=""; ord.slice(0,3).forEach(o=>{q.innerHTML+=`<div class="d-flex justify-content-between border-bottom pb-1 mb-1 small"><span><b>${o.product}</b></span><span class="badge bg-warning text-dark" style="font-size:9px">${o.status}</span></div>`;});}}}
 
 window.handleAuthClick=function(){if(localStorage.getItem('isLoggedIn')==='true'){if(confirm("Logout?")){localStorage.removeItem('isLoggedIn'); localStorage.removeItem('loggedUserEmail'); checkLoginState(); switchPage('homePage');}} else {switchAuthMode('login'); new bootstrap.Modal(document.getElementById('authModal')).show();}}
-window.handleLoginSubmit=async function(e){e.preventDefault(); let email=document.getElementById('loginEmail').value.trim(); try{let r=doc(db,"users",email); let s=await getDoc(r); if(!s.exists()) await setDoc(r,{email,balance:0});}catch{} localStorage.setItem('isLoggedIn','true'); localStorage.setItem('loggedUserEmail',email); bootstrap.Modal.getInstance(document.getElementById('authModal')).hide(); checkLoginState(); if(email===ADMIN_EMAIL){alert("Admin unlocked!"); switchPage('adminDashboardPage');} else {alert("Logged in!"); switchPage('accountPage');}}
+window.handleLoginSubmit=async function(e){e.preventDefault(); let email=document.getElementById('loginEmail').value.trim(); try{let r=doc(db,"users",email); let s=await getDoc(r); if(!s.exists()) await setDoc(r,{email,balance:0});}catch{} localStorage.setItem('isLoggedIn','true'); localStorage.setItem('loggedUserEmail',email); bootstrap.Modal.getInstance(document.getElementById('authModal')).hide(); checkLoginState(); if(email===ADMIN_EMAIL){
+    // প্রথম স্ক্রিনশট অনুযায়ী ডোমেইন নাম ছাড়া শুধু Unlocked দেখানো হচ্ছে:
+    alert("Unlocked"); 
+    switchPage('adminDashboardPage');
+} else {alert("Logged in!"); switchPage('accountPage');}}
+
 window.handleRegisterSubmit=async function(e){e.preventDefault(); let email=document.getElementById('regEmail').value.trim(); let p=document.getElementById('regPassword').value; let cp=document.getElementById('regConfirmPassword').value; if(p!==cp){alert("Password mismatch"); return;} try{await setDoc(doc(db,"users",email),{email,balance:0},{merge:true});}catch{} localStorage.setItem('isLoggedIn','true'); localStorage.setItem('loggedUserEmail',email); bootstrap.Modal.getInstance(document.getElementById('authModal')).hide(); checkLoginState(); alert("Registered!"); switchPage('accountPage');}
+
 function checkLoginState(){let logged=localStorage.getItem('isLoggedIn')==='true'; let email=localStorage.getItem('loggedUserEmail'); let b=document.getElementById('authNavBtn'); if(b) b.innerText=logged?"Logout":"Login"; let topA=document.getElementById('navAdminBtn'); if(logged&&email===ADMIN_EMAIL) topA.classList.remove('d-none'); else topA.classList.add('d-none'); updateBalanceDisplay();}
+
 window.adminSaveNotice=async function(){let v=document.getElementById('adminNoticeInput').value.trim(); if(v){await setDoc(doc(db,"settings","notice"),{text:v}); document.getElementById('dynamicNoticeMarqueeText').innerText=v; alert("Notice updated!");}}
 async function updateAdminStats(){let total=(servicesData.vpn?.length||0)+(servicesData.gb_proxy?.length||0)+(servicesData.isp_proxy?.length||0)+(servicesData.ai?.length||0)+(servicesData.apple?.length||0); let o=await getDocs(collection(db,"orders")); let d=await getDocs(collection(db,"deposits")); let pending=0; d.forEach(x=>{if(x.data().status==='Processing...'||x.data().status?.includes('Waiting')) pending++;}); let u=await getDocs(collection(db,"users")); document.getElementById('statTotalProducts').innerText=total; document.getElementById('statTotalOrders').innerText=o.size; document.getElementById('statPendingDeposits').innerText=pending; document.getElementById('statTotalUsers').innerText=u.size;}
-window.openAdminModal=function(){if(localStorage.getItem('loggedUserEmail')===ADMIN_EMAIL) switchPage('adminDashboardPage'); else {switchAuthMode('login'); new bootstrap.Modal(document.getElementById('authModal')).show();}}
+
+window.openAdminModal=function(){
+    if(localStorage.getItem('loggedUserEmail')===ADMIN_EMAIL) {
+        switchPage('adminDashboardPage');
+    } else {
+        // ৩য় স্ক্রিনশটের নির্দেশনা অনুযায়ী টাইটেলে 'Vault Provider' বাদ দিয়ে 'Proxy & vpn services' সেট করা হয়েছে
+        let modalTitle = document.getElementById('authModalTitle');
+        if(modalTitle) modalTitle.innerText = "Proxy & vpn services";
+        switchAuthMode('login'); 
+        new bootstrap.Modal(document.getElementById('authModal')).show();
+    }
+}
+
 window.renderAdminUsersTable=async function(){let tbody=document.getElementById('adminUsersTableBody'); tbody.innerHTML=""; let snap=await getDocs(collection(db,"users")); let i=0; snap.forEach(d=>{let u=d.data(); tbody.innerHTML+=`<tr><td><b>${u.email}</b></td><td><input id="user_bal_${i}" type="number" step="any" class="form-control form-control-sm" value="${(u.balance||0).toFixed(2)}" style="max-width:120px;display:inline-block"></td><td><button class="btn btn-primary btn-sm" onclick="adminSaveUserBalance('${u.email}','user_bal_${i}')">Save</button></td></tr>`; i++;});}
 window.adminSaveUserBalance=async function(email,id){let v=parseFloat(document.getElementById(id).value); if(!isNaN(v)){await setDoc(doc(db,"users",email),{balance:v},{merge:true}); alert("Balance updated!"); renderAdminUsersTable();}}
 window.addAdminVariantRow=function(){let c=document.getElementById('adminNewProductVariantsContainer'); let r=document.createElement('div'); r.className="row g-1 variant-row mt-1"; r.innerHTML=`<div class="col-7"><input class="form-control form-control-sm v-name" placeholder="Plan" required></div><div class="col-4"><input type="number" step="any" class="form-control form-control-sm v-price" placeholder="$" required></div><div class="col-1"><button type="button" class="btn btn-outline-danger btn-sm py-0" onclick="this.closest('.variant-row').remove()">×</button></div>`; c.appendChild(r);}
@@ -755,5 +726,5 @@ let params=new URLSearchParams(window.location.search); if(params.get('payment')
 
 window.onload=function(){loadFirestoreData(); updateCartBadge();};
 </script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+</body>
 </html>
