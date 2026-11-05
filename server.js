@@ -1,80 +1,55 @@
-const express = require("express");
-const cors = require("cors");
-const crypto = require("crypto");
-const fetch = require("node-fetch");
-const admin = require("firebase-admin");
+const express = require('express');
+const path = require('path');
+const crypto = require('crypto');
+const cors = require('cors');
 
 const app = express();
+const PORT = process.env.PORT || 10000;
+
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // index.html serve করবে
+app.use(express.static(path.join(__dirname)));
 
-// Firebase Admin Init
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+const IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || "/Rczecy1IsRbDWiBCun27es7v8XOS50N";
+const API_KEY = process.env.NOWPAYMENTS_API_KEY || "QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ";
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
-const db = admin.firestore();
 
-const NOWPAY_API_KEY = process.env.NOWPAY_API_KEY || "QCWYJDM-26JM2FM-NT9KYQT-WK27HVQ";
-const IPN_SECRET = process.env.IPN_SECRET;
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', ipn: '/api/ipn ready' });
+});
 
-// Frontend থেকে Invoice Create - CORS Fix
-app.post("/api/create-invoice", async (req, res) => {
+app.get('/api/ipn', (req, res) => {
+  res.status(200).send('IPN webhook endpoint is active - Ready to receive POST from NowPayments. IPN Secret: /Rcz...S50N');
+});
+
+app.post('/api/ipn', (req, res) => {
   try {
-    const { price_amount, order_id, order_description } = req.body;
-    const response = await fetch("https://api.nowpayments.io/v1/invoice", {
-      method: "POST",
-      headers: { "x-api-key": NOWPAY_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        price_amount,
-        price_currency: "usd",
-        order_id,
-        order_description,
-        ipn_callback_url: `https://${req.get("host")}/api/ipn`,
-        success_url: `https://${req.get("host")}/?payment=success&order_id=${order_id}`,
-        cancel_url: `https://${req.get("host")}/?payment=cancel`,
-      })
-    });
-    const data = await response.json();
-    res.json(data);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    const signature = req.headers['x-nowpayments-sig'];
+    const payload = req.body;
+    console.log('IPN Received:', JSON.stringify(payload));
+    console.log('Signature:', signature);
+    
+    const { payment_status, order_id, price_amount, invoice_id } = payload;
+    console.log(`Payment ${order_id} status: ${payment_status}, amount: ${price_amount}`);
+
+    if (payment_status === 'finished' || payment_status === 'confirmed') {
+      console.log(`✅ CONFIRMED: Order ${order_id}, Amount ${price_amount}`);
+    }
+    res.status(200).json({ message: 'IPN received', status: 'ok' });
+  } catch (err) {
+    console.error('IPN error:', err);
+    res.status(200).json({ message: 'IPN error but acknowledged' });
   }
 });
 
-// IPN Callback - Auto Balance Add
-app.post("/api/ipn", async (req, res) => {
-  try {
-    const sig = req.headers["x-nowpayments-sig"];
-    const sortedBody = JSON.stringify(req.body, Object.keys(req.body).sort());
-    if (IPN_SECRET) {
-      const expected = crypto.createHmac("sha512", IPN_SECRET).update(sortedBody).digest("hex");
-      if (sig !== expected) console.log("IPN Sig mismatch, but continuing for test");
-    }
-
-    const { order_id, payment_status, price_amount } = req.body;
-    console.log("IPN:", req.body);
-
-    if (payment_status === "finished" || payment_status === "confirmed") {
-      const snap = await db.collection("deposits").where("id", "==", order_id).get();
-      if (!snap.empty) {
-        const doc = snap.docs[0];
-        if (doc.data().status !== "Approved") {
-          await doc.ref.update({ status: "Approved", payment_status });
-          const userRef = db.collection("users").doc(doc.data().user);
-          const userSnap = await userRef.get();
-          const bal = userSnap.exists ? (userSnap.data().balance || 0) : 0;
-          await userRef.set({ email: doc.data().user, balance: bal + parseFloat(price_amount) }, { merge: true });
-        }
-      }
-    }
-    res.send("OK");
-  } catch (e) {
-    console.error(e);
-    res.status(500).send("Error");
-  }
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ Webhook: https://vaultproviderapk.onrender.com/api/ipn`);
+});
